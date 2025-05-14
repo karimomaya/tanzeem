@@ -5,99 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/SecurityApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/AuthContext.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/AuthContextHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/TenantInterceptor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/exception/TokenExpiredException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common-security/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/IamApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/config/DataInitializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/controller/UserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/AuthResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/LoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/RegisterRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/RoleDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/UserResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/entity/Permission.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/entity/RefreshToken.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/entity/Role.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/entity/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/repository/PermissionRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/repository/RefreshTokenRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/repository/RoleRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/repository/UserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/CustomUserDetails.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/CustomUserDetailsService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/AuthService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/RefreshTokenService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/RoleService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/UserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/resources/application.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/test/java/com/tanzeem/iam/AuthControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iam-service/src/test/java/com/tanzeem/iam/UserControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/ProductApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/ProductController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/ProductDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Product.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/ProductRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/ProductService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/ProductServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/purchase-service/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/purchase-service/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/purchase-service/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/purchase-service/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/purchase-service/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/TenantLibApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/config/WebConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/context/TenantContext.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/interceptor/TenantInterceptor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tenant-lib/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,12 +45,16 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "/Users/karimomaya/Desktop/projects/java-projects/erp/iam/src/main/java/com/tanzeem/iam",
-    "last_opened_file_path": "/Users/karimomaya/Desktop/projects/java-projects/erp/src/main/resources"
+    "last_opened_file_path": "/Users/karimomaya/Desktop/projects/java-projects/erp"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/tenant-lib" />
+      <recent name="$PROJECT_DIR$/purchase-service" />
+      <recent name="$PROJECT_DIR$/product-service" />
+      <recent name="$PROJECT_DIR$/iam-service" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/iam/src" />
