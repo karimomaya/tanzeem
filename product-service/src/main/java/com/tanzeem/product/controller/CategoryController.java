@@ -6,6 +6,7 @@ import com.tanzeem.product.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('PRODUCT_CREATE')")
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
         return ResponseEntity.ok(categoryService.createCategory(request));

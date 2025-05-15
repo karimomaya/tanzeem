@@ -29,6 +29,7 @@ public class Product {
 
     private Integer minimumStock;
 
+
     @ManyToOne
     private Category category;
 
