@@ -1,7 +1,7 @@
 <template>
    <v-app>
      <v-main>
-       <v-container fluid class="fill-height d-flex align-center justify-center">
+       <v-container style="padding: 0; height: 100%;" fluid class="fill-height d-flex align-center justify-center">
          <v-row>
            <v-col cols="12" md="6">
              <v-card class="pa-6 elevation-3" rounded="lg">
@@ -41,8 +41,8 @@
              </v-card>
            </v-col>
  
-           <v-col cols="12" md="6" class="d-none d-md-flex align-center justify-center">
-             <img :src="loginImage" alt="Login Illustration" class="rounded-lg" />
+           <v-col cols="12" md="6" style="height: 100%;" class="d-none d-md-flex align-center justify-center">
+             <img style="height: 100%;" :src="loginImage" alt="Login Illustration" class="rounded-lg" />
            </v-col>
          </v-row>
        </v-container>

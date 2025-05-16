@@ -4,23 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/components/Sidebar.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/vite.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.0" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.0" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.2" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.3" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.6" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.6" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.8" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.8" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" afterDir="false" />
-    </list>
+    <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,12 +72,26 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.com.tanzeem.iam.IamApplication">
+  <component name="RunManager" selected="Application.IamApplication">
     <configuration name="IamApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="IamApplication" />
       <module name="erp" />
       <method v="2">
         <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="IamApplication" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="com.tanzeem.iam.IamApplication" />
+      <module name="iam-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.tanzeem.iam.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
       </method>
     </configuration>
     <configuration name="IamApplication" type="Application" factoryName="Application" temporary="true">
@@ -115,20 +113,6 @@
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.tanzeem.product.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration name="com.tanzeem.iam.IamApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.tanzeem.iam.IamApplication" />
-      <module name="iam-service" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.tanzeem.iam.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -170,14 +154,13 @@
     </configuration>
     <list>
       <item itemvalue="Application.ProductApplication" />
-      <item itemvalue="Application.com.tanzeem.iam.IamApplication" />
       <item itemvalue="Application.IamApplication" />
       <item itemvalue="JUnit.CategoryControllerTest" />
       <item itemvalue="JUnit.UserControllerTest (1)" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.com.tanzeem.iam.IamApplication" />
+        <item itemvalue="Application.IamApplication" />
         <item itemvalue="Application.ProductApplication" />
         <item itemvalue="JUnit.CategoryControllerTest" />
         <item itemvalue="JUnit.UserControllerTest (1)" />
