@@ -5,26 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/security/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/AuthContextHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/AuthContextHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/vite.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/Sidebar.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/vite.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.0" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.0" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.2" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.3" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.4" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.5" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.6" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.6" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.7" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.7" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.8" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.8" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.9" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.9" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +88,7 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ProductApplication">
+  <component name="RunManager" selected="Application.com.tanzeem.iam.IamApplication">
     <configuration name="IamApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="IamApplication" />
       <module name="erp" />
@@ -182,8 +177,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ProductApplication" />
         <item itemvalue="Application.com.tanzeem.iam.IamApplication" />
+        <item itemvalue="Application.ProductApplication" />
         <item itemvalue="JUnit.CategoryControllerTest" />
         <item itemvalue="JUnit.UserControllerTest (1)" />
         <item itemvalue="Application.IamApplication" />
@@ -232,11 +227,6 @@
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java</url>
-          <line>37</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java</url>
           <line>25</line>
           <option name="timeStamp" value="10" />
@@ -247,19 +237,9 @@
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java</url>
-          <line>31</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java</url>
           <line>44</line>
           <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java</url>
-          <line>35</line>
-          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

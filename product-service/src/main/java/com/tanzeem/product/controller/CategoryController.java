@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('PRODUCT_CREATE')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CATEGORY_CREATE')")
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
         return ResponseEntity.ok(categoryService.createCategory(request));
@@ -26,13 +26,13 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CATEGORY_CREATE')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id,
                                                            @RequestBody @Valid CategoryRequest request) {
         return ResponseEntity.ok(categoryService.updateCategory(id, request));
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CATEGORY_DELETE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
