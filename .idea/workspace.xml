@@ -5,29 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/config/AuditorAwareImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/assets/login-background.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/components/layout/NavBar.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/components/login/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/login/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/components/login/Registration.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/login/Registration.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/plugins/vuetify.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/plugins/vuetify.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/routes/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/routes/router.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/LoginRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/RegisterRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/exception/GlobalExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/AuthService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.0" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.0" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.2" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.3" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.4" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.4" afterDir="false" />
@@ -36,18 +17,6 @@
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.7" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.7" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.8" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.8" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.9" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.9" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/ProductApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/ProductApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,29 +47,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.IamApplication (1).executor": "Run",
-    "Application.IamApplication.executor": "Debug",
-    "Application.ProductApplication.executor": "Debug",
-    "Application.com.tanzeem.iam.IamApplication.executor": "Debug",
-    "JUnit.AuthControllerTest.executor": "Run",
-    "JUnit.AuthControllerTest.testExpiredRefreshToken.executor": "Run",
-    "JUnit.CategoryControllerTest.executor": "Run",
-    "JUnit.ProductCategoryServiceTest.executor": "Run",
-    "JUnit.UserControllerTest (1).executor": "Debug",
-    "JUnit.UserControllerTest.executor": "Run",
-    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_directory_selection": "/Users/karimomaya/Desktop/projects/java-projects/erp/iam/src/main/java/com/tanzeem/iam",
-    "last_opened_file_path": "C:/Users/User/IdeaProjects/tanzeem/product-service/src/main/resources",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.IamApplication (1).executor&quot;: &quot;Run&quot;,
+    &quot;Application.IamApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.ProductApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.com.tanzeem.iam.IamApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.AuthControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.AuthControllerTest.testExpiredRefreshToken.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CategoryControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ProductCategoryServiceTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.UserControllerTest (1).executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.UserControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;/Users/karimomaya/Desktop/projects/java-projects/erp/iam/src/main/java/com/tanzeem/iam&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/IdeaProjects/tanzeem/product-service/src/main/resources&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\User\IdeaProjects\tanzeem\product-service\src\main\resources" />
@@ -210,8 +179,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ProductApplication" />
         <item itemvalue="Application.IamApplication" />
+        <item itemvalue="Application.ProductApplication" />
         <item itemvalue="JUnit.CategoryControllerTest" />
         <item itemvalue="JUnit.UserControllerTest (1)" />
         <item itemvalue="Application.IamApplication" />

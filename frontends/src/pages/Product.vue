@@ -30,12 +30,12 @@
                                 <v-btn class="float-left ma-1 font-weight-bold" color="#37ABE9" width="120" variant="flat"
                                     prepend-icon="mdi-plus"
                                     @click="activeTab === 'products' ? openNewProductDialog() : openNewCategoryDialog()">
-                                    {{ buttonLabel }}
+                                    {{ addButtonLabel }}
                                 </v-btn>
 
                                 <v-btn class="float-left ma-1 font-weight-bold" color="#C4C4C4" width="120" variant="flat"
                                     @click="changeTab">
-                                    {{ title }}
+                                    {{ switchButtonLabel }}
                                 </v-btn>
                             </v-col>
                         </v-row>
@@ -211,7 +211,8 @@ export default {
             drawer: false,
             activeTab: 'products',
             title: 'المنتجات',
-            buttonLabel: 'إضافة منتج',
+            switchButtonLabel: 'التصنيفات',
+            addButtonLabel: 'إضافة منتج',
             productSearch: '',
             productCategoryFilter: null,
             productSort: 'name-asc',
@@ -318,9 +319,10 @@ export default {
 
         changeTab() {
             this.activeTab = this.activeTab === 'products' ? 'categories' : 'products';
-            this.title = this.activeTab === 'products' ? 'المنتجات' : 'الفئات';
+            this.switchButtonLabel = this.activeTab === 'products' ? 'التصنيفات' : 'المنتجات';
+            this.title = this.activeTab === 'products'? 'المنتجات' : 'التصنيفات';
             this.$emitter.emit('update-title', this.title);
-            this.buttonLabel = this.activeTab === 'products' ? 'إضافة منتج' : 'إضافة فئه'
+            this.addButtonLabel = this.activeTab === 'products' ? 'إضافة منتج' : 'إضافة تصنيف'
             if (this.activeTab === 'categories') {
                 this.$nextTick(() => {
                     if (this.$refs.categoryTable) {
