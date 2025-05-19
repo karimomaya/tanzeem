@@ -11,5 +11,6 @@ export default createVuetify({
       ar: true, // Enable RTL for Arabic
     },
     locale: 'ar', // Default locale
+    fallback: 'en',
   }
 })

@@ -8,6 +8,8 @@ import com.tanzeem.product.service.CategoryService;
 import com.tanzeem.tenantlib.context.TenantContext;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,17 +25,18 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = new Category();
         category.setName(request.getName());
         category.setTenantId(TenantContext.getTenantId());
+        category.setIcon(request.getIcon());
+        category.setDescription(request.getDescription());
+        category.setActive(request.isActive());
 
         categoryRepository.save(category);
         return mapToResponse(category);
     }
 
     @Override
-    public List<CategoryResponse> getAllCategories() {
-        return categoryRepository.findByTenantId(TenantContext.getTenantId())
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<CategoryResponse> getAllCategories(Pageable pageable) {
+        return categoryRepository.findByTenantId(TenantContext.getTenantId(), pageable)
+                .map(this::mapToResponse);
     }
 
     @Override
@@ -42,7 +45,11 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         category.setName(request.getName());
-        return mapToResponse(categoryRepository.save(category));
+        category.setIcon(request.getIcon());
+        category.setDescription(request.getDescription());
+        category.setActive(request.isActive());
+        category = categoryRepository.save(category);
+        return mapToResponse(category);
     }
 
     @Override
@@ -51,6 +58,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private CategoryResponse mapToResponse(Category category) {
-        return new CategoryResponse(category.getId(), category.getName());
+        Long productCount = categoryRepository.countProductsByCategoryId(category.getId());
+        return new CategoryResponse(category.getId(), category.getName(),  category.getIcon(), category.getDescription(), category.isActive(), category.getCreatedAt(), category.getUpdatedAt(),
+                category.getCreatedBy(),
+                category.getUpdatedBy(),
+                productCount);
     }
 }

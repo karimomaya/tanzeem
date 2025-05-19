@@ -13,4 +13,5 @@ public class LoginRequest {
     private String password;
     @NotBlank(message = "Tenant ID is required")
     private String tenantId;
+    private Boolean rememberMe;
 }

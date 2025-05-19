@@ -23,12 +23,18 @@ public class JwtUtil {
 
     // Generate JWT Token
     public String generateToken(String email, List<String> roles, String tenantId) {
+        return this.generateToken(email, roles, tenantId, EXPIRATION_TIME);
+    }
+
+    public String generateToken(String email, List<String> roles, String tenantId,  Long expirationTime) {
+        if (expirationTime == null) expirationTime = EXPIRATION_TIME;
+
         return Jwts.builder()
                 .setSubject(email)
                 .claim("roles", roles)
                 .claim("tenantId", tenantId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -4,7 +4,51 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="" />
+    <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/config/AuditorAwareImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/assets/login-background.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/layout/NavBar.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/login/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/login/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/login/Registration.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/login/Registration.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/plugins/vuetify.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/plugins/vuetify.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/routes/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/routes/router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/LoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/dto/RegisterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.0" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.0" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.2" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.3" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.4" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.5" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.6" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.6" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.7" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.7" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.8" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.8" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.9" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.9" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/ProductApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/ProductApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -72,10 +116,16 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.IamApplication">
+  <component name="RunManager" selected="Application.ProductApplication">
     <configuration name="IamApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="IamApplication" />
-      <module name="erp" />
+      <option name="MAIN_CLASS_NAME" value="com.tanzeem.iam.IamApplication" />
+      <module name="iam-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.tanzeem.iam.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -153,15 +203,15 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.ProductApplication" />
       <item itemvalue="Application.IamApplication" />
+      <item itemvalue="Application.ProductApplication" />
       <item itemvalue="JUnit.CategoryControllerTest" />
       <item itemvalue="JUnit.UserControllerTest (1)" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.IamApplication" />
         <item itemvalue="Application.ProductApplication" />
+        <item itemvalue="Application.IamApplication" />
         <item itemvalue="JUnit.CategoryControllerTest" />
         <item itemvalue="JUnit.UserControllerTest (1)" />
         <item itemvalue="Application.IamApplication" />
@@ -191,7 +241,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/GlobalExceptionHandler.java</url>
-          <line>16</line>
+          <line>18</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -211,17 +261,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java</url>
-          <line>25</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/iam-service/src/main/java/com/tanzeem/iam/service/AuthService.java</url>
-          <line>32</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java</url>
-          <line>44</line>
+          <line>50</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>

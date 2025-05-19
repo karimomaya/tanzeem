@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -46,57 +49,95 @@ public class CategoryControllerTest {
     void testCreateCategory() throws Exception {
         CategoryRequest request = new CategoryRequest();
         request.setName("Electronics");
+        request.setIcon("mdi-laptop");
+        request.setDescription("Category for electronic items");
+        request.setActive(true);
 
-        CategoryResponse response = new CategoryResponse(1L, "Electronics");
+        CategoryResponse response = new CategoryResponse(
+                1L,
+                "Electronics",
+                "mdi-laptop",
+                "Category for electronic items",
+                true,
+                null,
+                null
+        );
 
         when(categoryService.createCategory(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                        {
-                          "name": "Electronics"
-                        }
-                        """))
+                    {
+                      "name": "Electronics",
+                      "icon": "mdi-laptop",
+                      "description": "Category for electronic items",
+                      "active": true
+                    }
+                    """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Electronics"));
+                .andExpect(jsonPath("$.name").value("Electronics"))
+                .andExpect(jsonPath("$.icon").value("mdi-laptop"))
+                .andExpect(jsonPath("$.description").value("Category for electronic items"))
+                .andExpect(jsonPath("$.active").value(true));
     }
 
     @Test
     void testGetAllCategories() throws Exception {
-        List<CategoryResponse> responses = List.of(
-                new CategoryResponse(1L, "Electronics"),
-                new CategoryResponse(2L, "Groceries")
-        );
+        CategoryResponse response1 = new CategoryResponse(1L, "Electronics", "mdi-laptop", "Description 1", true, null, null);
+        CategoryResponse response2 = new CategoryResponse(2L, "Groceries", "mdi-cart", "Description 2", true, null, null);
 
-        when(categoryService.getAllCategories()).thenReturn(responses);
+        Page<CategoryResponse> page = new PageImpl<>(List.of(response1, response2));
 
-        mockMvc.perform(get("/api/categories"))
+        when(categoryService.getAllCategories(any(Pageable.class))).thenReturn(page);
+
+        mockMvc.perform(get("/api/categories")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "name,asc"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("Electronics"))
-                .andExpect(jsonPath("$[1].name").value("Groceries"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].name").value("Electronics"))
+                .andExpect(jsonPath("$.content[1].name").value("Groceries"))
+                .andExpect(jsonPath("$.totalElements").value(2));
     }
 
     @Test
     void testUpdateCategory() throws Exception {
         CategoryRequest request = new CategoryRequest();
         request.setName("Updated");
+        request.setIcon("mdi-update");
+        request.setDescription("Updated description");
+        request.setActive(true);
 
-        CategoryResponse response = new CategoryResponse(1L, "Updated");
-
+        CategoryResponse response = new CategoryResponse(
+                1L,
+                "Updated",
+                "mdi-update",
+                "Updated description",
+                true,
+                null,
+                null
+        );
         when(categoryService.updateCategory(eq(1L), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/categories/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
-                          "name": "Updated"
+                          "name": "Updated",
+                          "icon": "mdi-update",
+                          "description": "Updated description",
+                          "active": true
                         }
                         """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Updated"))
+                .andExpect(jsonPath("$.icon").value("mdi-update"))
+                .andExpect(jsonPath("$.description").value("Updated description"))
+                .andExpect(jsonPath("$.active").value(true));
     }
 
     @Test

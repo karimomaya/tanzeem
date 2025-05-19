@@ -7,4 +7,7 @@ import lombok.Data;
 public class CategoryRequest {
     @NotBlank
     private String name;
+    private String icon;
+    private String description;
+    private boolean isActive;
 }

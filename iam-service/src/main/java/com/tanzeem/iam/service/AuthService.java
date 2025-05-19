@@ -29,10 +29,10 @@ public class AuthService {
             );
 
             User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-
+            Long expirationTime = request.getRememberMe() ? 604800000L : null;
             String accessToken = jwtUtil.generateToken(user.getEmail(), user.getRoles().stream()
                     .map(Role::getName)
-                    .toList(), user.getTenantId());
+                    .toList(), user.getTenantId(), expirationTime);
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
 
@@ -63,13 +63,12 @@ public class AuthService {
         User newUser = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .fullName(request.getFullName())
                 .roles(Set.of(defaultRole))
                 .tenantId(request.getTenantId())
                 .enabled(true)
                 .build();
 
         userRepository.save(newUser);
-        return login(new LoginRequest(request.getEmail(), request.getPassword(), request.getTenantId()));
+        return login(new LoginRequest(request.getEmail(), request.getPassword(), request.getTenantId(), false));
     }
 }

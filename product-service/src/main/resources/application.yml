@@ -34,4 +34,4 @@ logging:
     org.springframework: INFO
     com.hub.marketinganalysis: DEBUG
 server:
-  port: 8081
+  port: 8083
