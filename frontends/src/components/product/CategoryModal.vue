@@ -14,33 +14,16 @@
                         <!-- Row 1: Category Name -->
                         <v-row>
                             <v-col cols="12" sm="6" class="d-flex flex-column">
-                                <v-text-field
-                                    label="اسم التصنيف"
-                                    v-model="editedCategory.name"
-                                    :rules="[rules.required]"
-                                    variant="outlined"
-                                    density="comfortable"
-                                    hide-details
-                                    class="mb-4"
-                                    placeholder="ادخل اسم التصنيف"
-                                ></v-text-field>
+                                <v-text-field label="اسم التصنيف" v-model="editedCategory.name" :rules="[rules.required]"
+                                    variant="outlined" density="comfortable" hide-details class="mb-4"
+                                    placeholder="ادخل اسم التصنيف"></v-text-field>
                             </v-col>
 
                             <!-- Row 2: Icon Selector -->
                             <v-col cols="12" sm="6" class="d-flex flex-column">
-                                <v-select
-                                    v-model="editedCategory.icon"
-                                    :items="iconOptions"
-                                    label="اختر الأيقونة"
-                                    :rules="[rules.required]"
-                                    variant="outlined"
-                                    density="comfortable"
-                                    item-value="value"
-                                    item-title="text"
-                                    hide-details
-                                    class="mb-4"
-                                    return-object
-                                >
+                                <v-select v-model="editedCategory.icon" :items="iconOptions" label="اختر الأيقونة"
+                                    :rules="[rules.required]" variant="outlined" density="comfortable" item-value="value"
+                                    item-title="text" hide-details class="mb-4" return-object>
                                     <template v-slot:item="{ props, item }">
                                         <v-list-item v-bind="props" :title="item.raw.text">
                                             <template v-slot:prepend>
@@ -59,28 +42,17 @@
                         <!-- Row 3: Description -->
                         <v-row>
                             <v-col cols="12" class="d-flex flex-column">
-                                <v-textarea
-                                    v-model="editedCategory.description"
-                                    label="الوصف"
-                                    placeholder="ادخل وصف الفئة"
-                                    variant="outlined"
-                                    density="comfortable"
-                                    rows="3"
-                                    hide-details
-                                    class="mb-4"
-                                ></v-textarea>
+                                <v-textarea v-model="editedCategory.description" label="الوصف" placeholder="ادخل وصف الفئة"
+                                    variant="outlined" density="comfortable" rows="3" hide-details
+                                    class="mb-4"></v-textarea>
                             </v-col>
                         </v-row>
 
                         <!-- Row 4: Active Switch -->
                         <v-row>
                             <v-col cols="12" class="d-flex flex-column">
-                                <v-switch
-                                    v-model="editedCategory.active"
-                                    color="primary"
-                                    label="نشط"
-                                    hide-details
-                                ></v-switch>
+                                <v-switch v-model="editedCategory.active" color="primary" label="نشط"
+                                    hide-details></v-switch>
                             </v-col>
                         </v-row>
                     </v-form>
@@ -89,22 +61,10 @@
 
             <v-card-actions class="pa-4">
                 <v-row justify="end" class="ma-0">
-                    <v-btn
-                        color="primary"
-                        variant="flat"
-                        width="100"
-                        :disabled="!formValid"
-                        @click="saveCategory"
-                    >
+                    <v-btn color="primary" variant="flat" width="100" :disabled="!formValid" @click="saveCategory">
                         حفظ
                     </v-btn>
-                    <v-btn
-                        color="grey-lighten-1"
-                        variant="flat"
-                        width="100"
-                        class="mr-3"
-                        @click="closeDialog"
-                    >
+                    <v-btn color="grey-lighten-1" variant="flat" width="100" class="mr-3" @click="closeDialog">
                         إلغاء
                     </v-btn>
                 </v-row>
@@ -121,6 +81,7 @@ export default {
         return {
             formValid: false,
             editedCategoryId: null,
+
             editedCategory: {
                 name: '',
                 icon: '',
@@ -147,6 +108,17 @@ export default {
             default: null
         }
     },
+    watch: {
+        categoryToEdit: {
+            immediate: true,
+            handler(newCategory) {
+                if (newCategory) {
+                    this.editedCategory = { ...newCategory };
+                    this.editedCategoryId = newCategory.id;
+                }
+            }
+        }
+    },
     computed: {
         dialogVisible: {
             get() {
@@ -171,27 +143,27 @@ export default {
                 icon: this.editedCategory.icon?.value || this.editedCategory.icon // Extract the value
             };
 
-            if(categoryData.id == null) {
-                    for (var i =0; i< 24; i++){
-                        categoryData.name = categoryData.name + i;
-                        let response = await saveCateogry(categoryData);
-                    if(response != null && response.id != null) {
-                    // this.$emit(response);
-                    this.$emit('save', response);
-                }else {
-                    console.log(response);
-                }
+            if (categoryData.id == null) {
+                for (var i = 0; i < 24; i++) {
+                    categoryData.name = categoryData.name + i;
+                    let response = await saveCateogry(categoryData);
+                    if (response != null && response.id != null) {
+                        // this.$emit(response);
+                        this.$emit('save', response);
+                    } else {
+                        console.log(response);
                     }
-                    
-                
-                
-                
-            }else {
+                }
+
+
+
+
+            } else {
                 // handle update
             }
-            
+
             this.dialogVisible = false;
-            
+
         }
     }
 };

@@ -91,7 +91,7 @@
 
                         <!-- Categories Tab -->
                         <v-window-item value="categories">
-                            <CategoryTable ref="categoryTable" />
+                            <CategoryTable @edit-category="openEditCategoryDialog" ref="categoryTable" />
                         </v-window-item>
                     </v-window>
                 </v-card>
@@ -171,7 +171,7 @@
             </v-card>
         </v-dialog>
         <!-- Category Dialog -->
-        <CategoryModal v-model="categoryDialog" :categories="categories" :category-to-edit="selectedCategory"
+        <CategoryModal  v-model="categoryDialog" :categories="categories" :category-to-edit="selectedCategory"
             @save="handleCategorySave" />
 
         <!-- Delete Confirmation Dialog -->
@@ -302,6 +302,10 @@ export default {
         };
     },
     methods: {
+        openEditCategoryDialog(category){
+            this.selectedCategory = category; 
+            this.categoryDialog = true; 
+        },
         getCategoryName(categoryId) {
             const category = { "name": "ملابس" };
             return category ? category.name : 'Unknown';

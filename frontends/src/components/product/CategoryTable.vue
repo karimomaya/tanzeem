@@ -59,7 +59,7 @@ export default {
                 { title: 'Actions', key: 'actions', sortable: false, align: 'end' }
             ],
             categories: [],
-            selectedCategory: null,
+            // selectedCategory: null,
             categoryDialog: false,
             deleteDialog: false,
             deleteType: '',
@@ -75,7 +75,8 @@ export default {
     methods: {
         editCategory(item) {
             // Pass the category to edit to the modal
-            this.selectedCategory = { ...item };
+            // this.selectedCategory = { ...item };
+            this.$emit('edit-category', item);
             this.categoryDialog = true;
         },
         updatePage(newPage) {
