@@ -13,7 +13,6 @@ export async function saveCateogry(data) {
 }
 
 export async function updateCateogry(data) {
-    
     const options = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

@@ -373,20 +373,11 @@ export default {
 
 
         handleCategorySave(categoryData) {
-            // if (categoryData.id === null) {
-            //     // Create new category
-            //     const newCategory = {
-            //         ...categoryData,
-            //         id: Math.max(0, ...this.categories.map(c => c.id)) + 1
-            //     };
-            //     this.categories.push(newCategory);
-            // } else {
-            //     // Update existing category
-            //     const index = this.categories.findIndex(c => c.id === categoryData.id);
-            //     if (index !== -1) {
-            //         this.categories[index] = { ...categoryData };
-            //     }
-            // }
+            this.$nextTick(() => {
+                if (this.$refs.categoryTable) {
+                    this.$refs.categoryTable.getCategories();
+                }
+            });
         },
 
         confirmDeleteProduct(item) {

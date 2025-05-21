@@ -5,19 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontends/src/components/product/CategoryModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/product/CategoryModal.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/components/product/CategoryTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/product/CategoryTable.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/pages/Product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/pages/Product.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontends/src/utils/product-util.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/utils/product-util.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.0" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.0" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.3" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.4" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.5" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.6" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.6" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.7" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.7" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.8" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.8" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/erp-iam.log.9" beforeDir="false" afterPath="$PROJECT_DIR$/logs/erp-iam.log.9" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,16 +223,6 @@
           <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java</url>
           <line>50</line>
           <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java</url>
-          <line>34</line>
-          <option name="timeStamp" value="23" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

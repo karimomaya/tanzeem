@@ -134,7 +134,6 @@ export default {
             this.dialogVisible = false;
         },
         async saveCategory() {
-            debugger;
             if (!this.$refs.categoryForm.validate()) return;
 
             const categoryData = {
