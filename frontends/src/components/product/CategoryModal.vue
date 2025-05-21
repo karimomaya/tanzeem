@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { saveCateogry } from '@/utils/product-util';
+import { saveCateogry, updateCateogry } from '@/utils/product-util';
 export default {
     name: 'CategoryModal',
     data() {
@@ -154,12 +154,14 @@ export default {
                         console.log(response);
                     }
                 }
-
-
-
-
             } else {
-                // handle update
+                let response = await updateCateogry(categoryData);
+                if (response != null && response.id != null) {
+                    // this.$emit(response);
+                    this.$emit('save', response);
+                } else {
+                    console.log(response);
+                }
             }
 
             this.dialogVisible = false;

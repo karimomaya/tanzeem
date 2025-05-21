@@ -85,7 +85,6 @@ export default {
             this.getCategories();
         },
         updateItemsPerPage(newItemsPerPage) {
-            debugger
             console.log('Items per page changed to:', newItemsPerPage);
             this.itemsPerPage = newItemsPerPage.itemsPerPage;
             this.page = newItemsPerPage.page || 1; // Reset to first page
