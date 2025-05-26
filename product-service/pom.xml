@@ -10,7 +10,6 @@
     <name>product-service</name>
     <properties>
         <dl4j.version>1.0.0-M2.1</dl4j.version>
-        <deeplearning4j-cuda.version>1.0.0-beta7</deeplearning4j-cuda.version>
     </properties>
 
     <dependencies>

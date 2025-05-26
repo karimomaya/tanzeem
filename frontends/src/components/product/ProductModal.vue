@@ -16,14 +16,8 @@
                         </p>
                     </div>
                 </div>
-                <v-btn 
-                    icon="mdi-close" 
-                    variant="text" 
-                    color="white"
-                    size="small"
-                    class="close-btn"
-                    @click="closeDialog"
-                ></v-btn>
+                <v-btn icon="mdi-close" variant="text" color="white" size="small" class="close-btn"
+                    @click="closeDialog"></v-btn>
             </div>
 
             <!-- Form Content -->
@@ -35,7 +29,7 @@
                             <v-icon color="primary" class="me-2">mdi-information</v-icon>
                             <h3 class="section-title">المعلومات الأساسية</h3>
                         </div>
-                        
+
                         <v-row>
                             <!-- Product Name -->
                             <v-col cols="12" md="6">
@@ -43,15 +37,9 @@
                                     <label class="form-label">
                                         اسم المنتج <span class="required">*</span>
                                     </label>
-                                    <v-text-field
-                                        v-model="editedProduct.name"
-                                        :rules="[rules.required]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="أدخل اسم المنتج"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    ></v-text-field>
+                                    <v-text-field v-model="editedProduct.name" :rules="[rules.required]" variant="outlined"
+                                        density="comfortable" placeholder="أدخل اسم المنتج" hide-details="auto"
+                                        class="modern-field"></v-text-field>
                                 </div>
                             </v-col>
 
@@ -61,15 +49,9 @@
                                     <label class="form-label">
                                         رمز المنتج (SKU) <span class="required">*</span>
                                     </label>
-                                    <v-text-field
-                                        v-model="editedProduct.sku"
-                                        :rules="[rules.required, rules.sku]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="مثال: PRD-001"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    ></v-text-field>
+                                    <v-text-field v-model="editedProduct.sku" :rules="[rules.required, rules.sku]"
+                                        variant="outlined" density="comfortable" placeholder="مثال: PRD-001"
+                                        hide-details="auto" class="modern-field"></v-text-field>
                                 </div>
                             </v-col>
 
@@ -77,15 +59,9 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">الباركود</label>
-                                    <v-text-field
-                                        v-model="editedProduct.barcode"
-                                        :rules="[rules.barcode]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="أدخل رقم الباركود"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
+                                    <v-text-field v-model="editedProduct.barcode" :rules="[rules.barcode]"
+                                        variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="info" size="20">mdi-barcode</v-icon>
                                         </template>
@@ -99,16 +75,9 @@
                                     <label class="form-label">
                                         الوحدة <span class="required">*</span>
                                     </label>
-                                    <v-select
-                                        v-model="editedProduct.unit"
-                                        :items="unitOptions"
-                                        :rules="[rules.required]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="اختر الوحدة"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
+                                    <v-select v-model="editedProduct.unit" :items="unitOptions" :rules="[rules.required]"
+                                        variant="outlined" density="comfortable" placeholder="اختر الوحدة"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
@@ -136,23 +105,15 @@
                                     <label class="form-label">
                                         التصنيف <span class="required">*</span>
                                     </label>
-                                    <v-select
-                                        v-model="editedProduct.categoryId"
-                                        :items="categories"
-                                        item-title="name"
-                                        item-value="id"
-                                        :rules="[rules.required]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="اختر التصنيف"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
+                                    <v-select v-model="editedProduct.categoryId" :items="categories" item-title="name"
+                                        item-value="id" :rules="[rules.required]" variant="outlined" density="comfortable"
+                                        placeholder="اختر التصنيف" hide-details="auto" class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props" class="category-item">
                                                 <template v-slot:prepend>
                                                     <v-avatar size="32" :color="item.raw.color || 'primary'" class="me-3">
-                                                        <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder' }}</v-icon>
+                                                        <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder'
+                                                        }}</v-icon>
                                                     </v-avatar>
                                                 </template>
                                             </v-list-item>
@@ -160,7 +121,8 @@
                                         <template v-slot:selection="{ item }">
                                             <div class="d-flex align-center">
                                                 <v-avatar size="24" :color="item.raw.color || 'primary'" class="me-2">
-                                                    <v-icon color="white" size="12">{{ item.raw.icon || 'mdi-folder' }}</v-icon>
+                                                    <v-icon color="white" size="12">{{ item.raw.icon || 'mdi-folder'
+                                                    }}</v-icon>
                                                 </v-avatar>
                                                 {{ item.raw.name }}
                                             </div>
@@ -173,14 +135,8 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">حالة المنتج</label>
-                                    <v-select
-                                        v-model="editedProduct.status"
-                                        :items="statusOptions"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
+                                    <v-select v-model="editedProduct.status" :items="statusOptions" variant="outlined"
+                                        density="comfortable" hide-details="auto" class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
@@ -210,7 +166,7 @@
                             <v-icon color="success" class="me-2">mdi-currency-usd</v-icon>
                             <h3 class="section-title">التسعير والمخزون</h3>
                         </div>
-                        
+
                         <v-row>
                             <!-- Price -->
                             <v-col cols="12" md="6">
@@ -218,17 +174,10 @@
                                     <label class="form-label">
                                         السعر (ر.س) <span class="required">*</span>
                                     </label>
-                                    <v-text-field
-                                        v-model.number="editedProduct.price"
-                                        :rules="[rules.required, rules.positive]"
-                                        type="number"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="0.00"
-                                        prefix="ر.س"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
+                                    <v-text-field v-model.number="editedProduct.price"
+                                        :rules="[rules.required, rules.positive]" type="number" variant="outlined"
+                                        density="comfortable" placeholder="0.00" prefix="ر.س" hide-details="auto"
+                                        class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="success" size="20">mdi-currency-usd</v-icon>
                                         </template>
@@ -242,26 +191,16 @@
                                     <label class="form-label">
                                         الكمية في المخزون <span class="required">*</span>
                                     </label>
-                                    <v-text-field
-                                        v-model.number="editedProduct.stock"
-                                        :rules="[rules.required, rules.nonNegative]"
-                                        type="number"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="0"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                        @input="updateStatusFromStock"
-                                    >
+                                    <v-text-field v-model.number="editedProduct.stock"
+                                        :rules="[rules.required, rules.nonNegative]" type="number" variant="outlined"
+                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field"
+                                        @input="updateStatusFromStock">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="info" size="20">mdi-package-variant</v-icon>
                                         </template>
                                         <template v-slot:append-inner>
-                                            <v-chip 
-                                                :color="getStockStatusColor(editedProduct.stock)" 
-                                                size="x-small"
-                                                class="stock-indicator"
-                                            >
+                                            <v-chip :color="getStockStatusColor(editedProduct.stock)" size="x-small"
+                                                class="stock-indicator">
                                                 {{ getStockStatusText(editedProduct.stock) }}
                                             </v-chip>
                                         </template>
@@ -275,17 +214,10 @@
                                     <label class="form-label">
                                         الحد الأدنى للمخزون <span class="required">*</span>
                                     </label>
-                                    <v-text-field
-                                        v-model.number="editedProduct.minimumStock"
-                                        :rules="[rules.required, rules.nonNegative]"
-                                        type="number"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="0"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                        @input="updateStatusFromStock"
-                                    >
+                                    <v-text-field v-model.number="editedProduct.minimumStock"
+                                        :rules="[rules.required, rules.nonNegative]" type="number" variant="outlined"
+                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field"
+                                        @input="updateStatusFromStock">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-alert-circle</v-icon>
                                         </template>
@@ -301,28 +233,16 @@
                             <v-icon color="warning" class="me-2">mdi-image</v-icon>
                             <h3 class="section-title">صورة المنتج</h3>
                         </div>
-                        
+
                         <v-row>
                             <!-- Image Upload Type Selection -->
                             <v-col cols="12">
                                 <div class="form-group">
                                     <label class="form-label">طريقة إضافة الصورة</label>
-                                    <v-radio-group
-                                        v-model="imageUploadType"
-                                        inline
-                                        hide-details
-                                        class="image-type-selector"
-                                    >
-                                        <v-radio
-                                            label="رفع ملف"
-                                            value="file"
-                                            color="primary"
-                                        ></v-radio>
-                                        <v-radio
-                                            label="رابط خارجي"
-                                            value="url"
-                                            color="primary"
-                                        ></v-radio>
+                                    <v-radio-group v-model="imageUploadType" inline hide-details
+                                        class="image-type-selector">
+                                        <v-radio label="رفع ملف" value="file" color="primary"></v-radio>
+                                        <v-radio label="رابط خارجي" value="url" color="primary"></v-radio>
                                     </v-radio-group>
                                 </div>
                             </v-col>
@@ -331,28 +251,28 @@
                             <v-col cols="12" v-if="imageUploadType === 'file'">
                                 <div class="form-group">
                                     <label class="form-label">اختر صورة المنتج</label>
-                                    <v-file-input
-                                        v-model="selectedImageFile"
-                                        :rules="[rules.imageFile]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="اختر ملف الصورة"
-                                        prepend-icon=""
-                                        accept="image/*"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                        @change="handleFileSelect"
-                                    >
+                                    <v-file-input v-model="selectedImageFile" :rules="[rules.imageFile]" variant="outlined"
+                                        density="comfortable" placeholder="اختر ملف الصورة" prepend-icon="" accept="image/*"
+                                        hide-details="auto" class="modern-field" @change="handleFileSelect"
+                                        :loading="uploadLoading">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-cloud-upload</v-icon>
                                         </template>
-                                        <template v-slot:append-inner v-if="selectedImageFile && selectedImageFile.length > 0">
-                                            <v-btn
-                                                icon="mdi-eye"
-                                                size="x-small"
-                                                variant="text"
-                                                @click="previewUploadedImage"
-                                            ></v-btn>
+                                        <template v-slot:append-inner>
+                                            <div class="d-flex align-center">
+                                                <v-progress-circular v-if="uploadLoading" 
+                                                    :model-value="uploadProgress" 
+                                                    size="20" 
+                                                    color="primary" 
+                                                    class="me-2">
+                                                </v-progress-circular>
+                                                <v-btn v-if="selectedImageFile && selectedImageFile.length > 0" 
+                                                    icon="mdi-eye" 
+                                                    size="x-small" 
+                                                    variant="text"
+                                                    @click="previewUploadedImage">
+                                                </v-btn>
+                                            </div>
                                         </template>
                                     </v-file-input>
                                 </div>
@@ -362,27 +282,34 @@
                             <v-col cols="12" v-if="imageUploadType === 'url'">
                                 <div class="form-group">
                                     <label class="form-label">رابط الصورة</label>
-                                    <v-text-field
-                                        v-model="editedProduct.image"
-                                        :rules="[rules.url]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="https://example.com/image.jpg"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
+                                    <v-text-field v-model="imageUrlInput" :rules="[rules.url]" variant="outlined"
+                                        density="comfortable" placeholder="https://example.com/image.jpg"
+                                        hide-details="auto" class="modern-field" :loading="urlDownloadLoading">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-link</v-icon>
                                         </template>
-                                        <template v-slot:append-inner v-if="editedProduct.image">
-                                            <v-btn
-                                                icon="mdi-eye"
-                                                size="x-small"
-                                                variant="text"
-                                                @click="previewImage = true"
-                                            ></v-btn>
+                                        <template v-slot:append-inner>
+                                            <div class="d-flex align-center">
+                                                <v-btn v-if="imageUrlInput && !urlDownloadLoading" 
+                                                    icon="mdi-download" 
+                                                    size="x-small" 
+                                                    variant="text"
+                                                    color="primary"
+                                                    @click="downloadImageFromUrl"
+                                                    :disabled="!isValidImageUrl(imageUrlInput)">
+                                                </v-btn>
+                                                <v-btn v-if="imageUrlInput" 
+                                                    icon="mdi-eye" 
+                                                    size="x-small" 
+                                                    variant="text"
+                                                    @click="previewImageUrl">
+                                                </v-btn>
+                                            </div>
                                         </template>
                                     </v-text-field>
+                                    <div v-if="imageUrlInput && !isValidImageUrl(imageUrlInput)" class="text-caption text-warning mt-1">
+                                        سيتم تحميل الصورة وحفظها محلياً عند الحفظ
+                                    </div>
                                 </div>
                             </v-col>
 
@@ -391,27 +318,16 @@
                                 <div class="image-preview-container">
                                     <label class="form-label">معاينة الصورة</label>
                                     <div class="image-preview">
-                                        <v-img
-                                            :src="imagePreviewUrl"
-                                            max-height="200"
-                                            max-width="200"
-                                            contain
-                                            class="preview-image"
-                                        >
+                                        <v-img :src="imagePreviewUrl" max-height="200" max-width="200" contain
+                                            class="preview-image">
                                             <template v-slot:error>
                                                 <div class="d-flex align-center justify-center h-100">
                                                     <v-icon size="48" color="grey-lighten-1">mdi-image-broken</v-icon>
                                                 </div>
                                             </template>
                                         </v-img>
-                                        <v-btn
-                                            icon="mdi-close"
-                                            size="x-small"
-                                            variant="elevated"
-                                            color="error"
-                                            class="remove-image-btn"
-                                            @click="removeImage"
-                                        ></v-btn>
+                                        <v-btn icon="mdi-close" size="x-small" variant="elevated" color="error"
+                                            class="remove-image-btn" @click="removeImage"></v-btn>
                                     </div>
                                 </div>
                             </v-col>
@@ -424,21 +340,15 @@
                             <v-icon color="info" class="me-2">mdi-text</v-icon>
                             <h3 class="section-title">معلومات إضافية</h3>
                         </div>
-                        
+
                         <v-row>
                             <!-- Description -->
                             <v-col cols="12">
                                 <div class="form-group">
                                     <label class="form-label">الوصف</label>
-                                    <v-textarea
-                                        v-model="editedProduct.description"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="أدخل وصف المنتج..."
-                                        rows="3"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    ></v-textarea>
+                                    <v-textarea v-model="editedProduct.description" variant="outlined" density="comfortable"
+                                        placeholder="أدخل وصف المنتج..." rows="3" hide-details="auto"
+                                        class="modern-field"></v-textarea>
                                 </div>
                             </v-col>
                         </v-row>
@@ -450,36 +360,21 @@
             <div class="modal-actions">
                 <div class="d-flex align-center justify-space-between">
                     <div class="form-status">
-                        <v-icon 
-                            :color="formValid ? 'success' : 'warning'" 
-                            size="16" 
-                            class="me-1"
-                        >
+                        <v-icon :color="formValid ? 'success' : 'warning'" size="16" class="me-1">
                             {{ formValid ? 'mdi-check-circle' : 'mdi-alert-circle' }}
                         </v-icon>
                         <span class="text-caption" :class="formValid ? 'text-success' : 'text-warning'">
                             {{ formValid ? 'النموذج صحيح' : 'يرجى ملء الحقول المطلوبة' }}
                         </span>
                     </div>
-                    
+
                     <div class="d-flex ga-3">
-                        <v-btn
-                            variant="outlined"
-                            color="grey-darken-1"
-                            size="large"
-                            class="cancel-btn"
-                            @click="closeDialog"
-                        >
+                        <v-btn variant="outlined" color="grey-darken-1" size="large" class="cancel-btn"
+                            @click="closeDialog">
                             إلغاء
                         </v-btn>
-                        <v-btn
-                            color="primary"
-                            size="large"
-                            :disabled="!formValid"
-                            :loading="loading"
-                            class="save-btn"
-                            @click="saveProduct"
-                        >
+                        <v-btn color="primary" size="large" :disabled="!formValid || uploadLoading || urlDownloadLoading" 
+                            :loading="loading" class="save-btn" @click="saveProduct">
                             <v-icon start>{{ editedProductId ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
                             {{ editedProductId ? 'تحديث المنتج' : 'حفظ المنتج' }}
                         </v-btn>
@@ -496,12 +391,7 @@
                     <v-btn icon="mdi-close" variant="text" @click="previewImage = false"></v-btn>
                 </v-card-title>
                 <v-card-text class="pa-0">
-                    <v-img
-                        :src="editedProduct.image"
-                        max-height="400"
-                        contain
-                        class="grey-lighten-2"
-                    >
+                    <v-img :src="previewImageUrl" max-height="400" contain class="grey-lighten-2">
                         <template v-slot:error>
                             <div class="d-flex align-center justify-center h-100">
                                 <div class="text-center">
@@ -520,6 +410,7 @@
 <script>
 import { saveProduct, updateProduct } from '@/utils/product-util';
 import { success, error } from '@/utils/system-util';
+import { ImageServiceClient } from '@/utils/image-service-client'; // Import the image service client
 
 export default {
     name: 'ProductModal',
@@ -542,9 +433,14 @@ export default {
         return {
             formValid: false,
             loading: false,
+            uploadLoading: false,
+            urlDownloadLoading: false,
+            uploadProgress: 0,
             previewImage: false,
+            previewImageUrl: null,
             imageUploadType: 'url', // 'file' or 'url'
             selectedImageFile: [],
+            imageUrlInput: '',
             imagePreviewUrl: null,
             editedProductId: null,
             editedProduct: {
@@ -558,8 +454,9 @@ export default {
                 unit: 'piece',
                 status: 'active',
                 description: '',
-                image: ''
+                imageUrl: '' // Changed from 'image' to 'imageUrl' to match backend
             },
+            imageServiceClient: new ImageServiceClient(), // Initialize image service client
             statusOptions: [
                 { title: 'نشط', value: 'active' },
                 { title: 'مخزون منخفض', value: 'low-stock' },
@@ -595,17 +492,18 @@ export default {
                 },
                 url: value => {
                     if (!value) return true;
-                    const pattern = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i;
-                    return pattern.test(value) || 'يرجى إدخال رابط صورة صحيح';
+                    const pattern = /^https?:\/\/.+/i;
+                    return pattern.test(value) || 'يرجى إدخال رابط صحيح';
                 },
                 imageFile: value => {
                     if (!value || value.length === 0) return true;
-                    const file = value[0];
-                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    let file = value;
+                    if(value instanceof Array) file = value[0];
+                    const maxSize = 10 * 1024 * 1024; // 10MB (matching backend)
                     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                    
+
                     if (file.size > maxSize) {
-                        return 'حجم الملف يجب أن يكون أقل من 5 ميجابايت';
+                        return 'حجم الملف يجب أن يكون أقل من 10 ميجابايت';
                     }
                     if (!allowedTypes.includes(file.type)) {
                         return 'نوع الملف غير مدعوم. يرجى اختيار صورة بصيغة JPG, PNG, GIF, أو WebP';
@@ -632,7 +530,11 @@ export default {
                 if (newProduct) {
                     this.editedProduct = { ...newProduct };
                     this.editedProductId = newProduct.id;
-                    this.updateImagePreview();
+                    // Set imageUrl in local input for display
+                    if (newProduct.imageUrl) {
+                        this.imageUrlInput = newProduct.imageUrl;
+                        this.updateImagePreview();
+                    }
                 } else {
                     this.resetForm();
                 }
@@ -645,11 +547,6 @@ export default {
         },
         imageUploadType() {
             this.clearImageData();
-        },
-        'editedProduct.image'() {
-            if (this.imageUploadType === 'url') {
-                this.updateImagePreview();
-            }
         }
     },
     methods: {
@@ -666,11 +563,13 @@ export default {
                 unit: 'piece',
                 status: 'active',
                 description: '',
-                image: ''
+                imageUrl: ''
             };
             this.imageUploadType = 'url';
             this.selectedImageFile = [];
+            this.imageUrlInput = '';
             this.imagePreviewUrl = null;
+            this.uploadProgress = 0;
             if (this.$refs.productForm) {
                 this.$refs.productForm.resetValidation();
             }
@@ -683,7 +582,7 @@ export default {
         updateStatusFromStock() {
             const stock = this.editedProduct.stock;
             const minStock = this.editedProduct.minimumStock || 0;
-            
+
             if (stock === 0) {
                 this.editedProduct.status = 'out-of-stock';
             } else if (stock <= minStock) {
@@ -745,31 +644,70 @@ export default {
             return icons[unit] || 'mdi-cube';
         },
 
-        handleFileSelect(files) {
+        isValidImageUrl(url) {
+            if (!url) return false;
+            const pattern = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
+            return pattern.test(url);
+        },
+
+        async handleFileSelect(files) {
             if (files && files.length > 0) {
                 const file = files[0];
+                
+                // Show local preview immediately
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.imagePreviewUrl = e.target.result;
-                    this.editedProduct.image = ''; // Clear URL when file is selected
                 };
                 reader.readAsDataURL(file);
+                
+                // Clear any URL input
+                this.imageUrlInput = '';
+                this.editedProduct.imageUrl = '';
             } else {
                 this.imagePreviewUrl = null;
             }
         },
 
+        async downloadImageFromUrl() {
+            if (!this.imageUrlInput) return;
+            
+            this.urlDownloadLoading = true;
+            try {
+                const response = await this.imageServiceClient.uploadImageFromUrl(this.imageUrlInput, 'product');
+                
+                // Set the downloaded image URL
+                this.editedProduct.imageUrl = response.url;
+                this.imagePreviewUrl = response.url;
+                
+                success('تم تحميل الصورة بنجاح');
+            } catch (err) {
+                error('فشل تحميل الصورة: ' + err.message);
+                console.error('Error downloading image:', err);
+            } finally {
+                this.urlDownloadLoading = false;
+            }
+        },
+
         previewUploadedImage() {
-            if (this.selectedImageFile && this.selectedImageFile.length > 0) {
+            if (this.selectedImageFile) {
+                this.previewImageUrl = this.imagePreviewUrl;
+                this.previewImage = true;
+            }
+        },
+
+        previewImageUrl() {
+            if (this.imageUrlInput) {
+                this.previewImageUrl = this.imageUrlInput;
                 this.previewImage = true;
             }
         },
 
         updateImagePreview() {
-            if (this.imageUploadType === 'url' && this.editedProduct.image) {
-                this.imagePreviewUrl = this.editedProduct.image;
-            } else if (this.imageUploadType === 'file' && this.selectedImageFile && this.selectedImageFile.length > 0) {
-                const file = this.selectedImageFile[0];
+            if (this.imageUploadType === 'url' && this.imageUrlInput) {
+                this.imagePreviewUrl = this.imageUrlInput;
+            } else if (this.imageUploadType === 'file' && this.selectedImageFile ) {
+                const file = this.selectedImageFile;
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.imagePreviewUrl = e.target.result;
@@ -782,35 +720,13 @@ export default {
 
         clearImageData() {
             this.selectedImageFile = [];
-            this.editedProduct.image = '';
+            this.imageUrlInput = '';
+            this.editedProduct.imageUrl = '';
             this.imagePreviewUrl = null;
         },
 
         removeImage() {
             this.clearImageData();
-        },
-
-        async uploadImageFile(file) {
-            // This is a placeholder function - you'll need to implement actual file upload
-            // based on your backend/storage solution (e.g., AWS S3, Firebase Storage, etc.)
-            try {
-                const formData = new FormData();
-                formData.append('image', file);
-                
-                // Example API call - replace with your actual upload endpoint
-                // const response = await this.$axios.post('/api/upload/product-image', formData, {
-                //     headers: {
-                //         'Content-Type': 'multipart/form-data'
-                //     }
-                // });
-                // return response.data.url;
-                
-                // For now, return a placeholder URL
-                return `https://example.com/uploads/${Date.now()}-${file.name}`;
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                throw new Error('فشل رفع الصورة');
-            }
         },
 
         async saveProduct() {
@@ -819,24 +735,48 @@ export default {
             this.loading = true;
             try {
                 const productData = { ...this.editedProduct, id: this.editedProductId };
-            
+
                 // Auto-generate SKU if empty
                 if (!productData.sku && productData.name) {
                     productData.sku = productData.name.replace(/\s+/g, '-').toUpperCase().substring(0, 10);
                 }
-
-                // Handle image upload if file is selected
-                if (this.imageUploadType === 'file' && this.selectedImageFile && this.selectedImageFile.length > 0) {
+                console.log(this.imageUploadType)
+                console.log(this.selectedImageFile)
+                if(this.selectedImageFile) console.log(this.selectedImageFile.length)
+                // Handle image upload based on type
+                if (this.imageUploadType === 'file' && this.selectedImageFile ) {
+                    // Upload file to image service
                     try {
-                        const uploadedImageUrl = await this.uploadImageFile(this.selectedImageFile[0]);
-                        productData.image = uploadedImageUrl;
+                        this.uploadLoading = true;
+                        const uploadResponse = await this.imageServiceClient.uploadImage(
+                            this.selectedImageFile, 
+                            'product'
+                        );
+                        productData.imageUrl = uploadResponse.url;
                     } catch (uploadError) {
-                        error('فشل رفع الصورة');
-                        this.loading = false;
+                        error('فشل رفع الصورة: ' + uploadError.message);
                         return;
+                    } finally {
+                        this.uploadLoading = false;
+                    }
+                } else if (this.imageUploadType === 'url' && this.imageUrlInput && !this.editedProduct.imageUrl) {
+                    // Download and store image from URL if not already downloaded
+                    try {
+                        this.urlDownloadLoading = true;
+                        const downloadResponse = await this.imageServiceClient.uploadImageFromUrl(
+                            this.imageUrlInput, 
+                            'product'
+                        );
+                        productData.imageUrl = downloadResponse.url;
+                    } catch (downloadError) {
+                        error('فشل تحميل الصورة من الرابط: ' + downloadError.message);
+                        return;
+                    } finally {
+                        this.urlDownloadLoading = false;
                     }
                 }
 
+                // Save or update product
                 if (productData.id == null) {
                     let response = await saveProduct(productData);
                     if (response != null && response.id != null) {
@@ -879,7 +819,8 @@ export default {
 
 /* Header Styling */
 .modal-header {
-    background: #366091; /*linear-gradient(135deg, #366091 0%, #4299e1 100%);*/
+    background: #366091;
+    /*linear-gradient(135deg, #366091 0%, #4299e1 100%);*/
     padding: 24px 32px;
     display: flex;
     align-items: center;
@@ -1128,32 +1069,32 @@ export default {
     .modal-header {
         padding: 20px 24px;
     }
-    
+
     .header-title {
         font-size: 18px;
     }
-    
+
     .modal-body {
         padding: 24px 20px;
     }
-    
+
     .form-section {
         padding: 20px 16px;
         margin-bottom: 24px;
     }
-    
+
     .modal-actions {
         padding: 20px 24px;
         flex-direction: column;
         gap: 16px;
     }
-    
+
     .modal-actions .d-flex {
         flex-direction: column;
         align-items: stretch !important;
         gap: 12px;
     }
-    
+
     .form-status {
         justify-content: center;
     }

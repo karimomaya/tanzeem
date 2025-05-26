@@ -1,5 +1,5 @@
 spring:
-  sql:
+  web:
     init:
       platform: h2
       mode: always

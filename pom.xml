@@ -11,6 +11,7 @@
     <module>tenant-lib</module>
     <module>purchase-service</module>
     <module>common-security</module>
+      <module>image-service</module>
   </modules>
   <packaging>pom</packaging>
   <parent>

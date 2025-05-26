@@ -35,6 +35,7 @@ public class Product {
     private Integer stock;
 
     private Integer minimumStock;
+    private String imageUrl;
 
 
     @ManyToOne

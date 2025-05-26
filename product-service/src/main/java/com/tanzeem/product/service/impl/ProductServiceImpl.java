@@ -1,13 +1,18 @@
 package com.tanzeem.product.service.impl;
 
+import com.tanzeem.product.dto.CategoryResponse;
 import com.tanzeem.product.dto.ProductDto;
+import com.tanzeem.product.dto.ProductResponse;
 import com.tanzeem.product.entity.Category;
 import com.tanzeem.product.entity.Product;
 import com.tanzeem.product.repository.CategoryRepository;
 import com.tanzeem.product.repository.ProductRepository;
 import com.tanzeem.product.service.ProductService;
+import com.tanzeem.security.common.AuthContextHolder;
 import com.tanzeem.tenantlib.context.TenantContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,8 +45,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAll() {
-        return productRepo.findByTenantId(TenantContext.getTenantId());
+    public Page<ProductResponse> getAll(String search, Pageable pageable) {
+        Page<Product> products;
+        System.out.println(AuthContextHolder.getTenantId());
+        if (search != null && !search.isEmpty()) {
+            products = productRepo.findByTenantIdAndNameContainingIgnoreCase(
+                    AuthContextHolder.getTenantId(), search, pageable);
+        } else {
+            products = productRepo.findByTenantId(AuthContextHolder.getTenantId(), pageable);
+        }
+        return products.map(this::mapToResponse);
+
+
     }
 
     @Override
@@ -74,5 +89,14 @@ public class ProductServiceImpl implements ProductService {
                 TenantContext.getTenantId(),
                 productRepo.getMinimumStockThreshold(TenantContext.getTenantId())
         );
+    }
+
+    private ProductResponse mapToResponse(Product product) {
+        return ProductResponse.builder().sku(product.getSku()).barcode(product.getBarcode()).price(product.getPrice()).stock(product.getStock())
+                .minimumStock(product.getMinimumStock()).unit(product.getUnit()).name(product.getName())
+                .categoryId(product.getCategory().getId()).id(product.getId()).createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt()).createdBy(product.getCreatedBy()).updatedBy(product.getUpdatedBy())
+                .build();
+
     }
 }

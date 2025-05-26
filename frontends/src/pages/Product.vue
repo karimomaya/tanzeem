@@ -220,7 +220,7 @@
                                         :search-term="searchTerm" :status-filter="statusFilter" :total-items="totalProducts"
                                         @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:sort-by="updateSorting" @refresh="loadCategories"
+                                        @update:sort-by="updateSorting" @refresh="loadProducts"
                                         @toggle-status="updateCategoryStatus" />
                                     <ProductList v-else :products="products" @edit="editProduct"
                                         @delete="confirmDeleteProduct" @view="viewProduct" />
@@ -372,6 +372,8 @@ export default {
         activeTab(newTab) {
             if (newTab === 'categories') {
                 this.loadCategories();
+            }else if (newTab === 'products') {
+                this.loadProducts();
             }
         },
         searchTerm() {
@@ -417,7 +419,8 @@ export default {
         async loadProducts() {
             try {
                 this.loading = true;
-                const response = await getProducts();
+                let params = this.buildSearchParameter();
+                const response = await getProducts(params);
                 if (response && response.content) {
                     this.products = response.content;
 

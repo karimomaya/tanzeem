@@ -1,0 +1,23 @@
+spring:
+  web:
+    resources:
+      static-locations: file:uploads/
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+logging:
+  file:
+    name: logs/erp-image.log
+  level:
+    root: INFO
+    org.springframework: INFO
+    com.hub.marketinganalysis: DEBUG
+server:
+  port: 8085
+app:
+  upload:
+    dir: uploads
+  base:
+    url: http://localhost:${server.port}
