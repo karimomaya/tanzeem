@@ -73,6 +73,63 @@
                                 </div>
                             </v-col>
 
+                            <!-- Barcode -->
+                            <v-col cols="12" md="6">
+                                <div class="form-group">
+                                    <label class="form-label">الباركود</label>
+                                    <v-text-field
+                                        v-model="editedProduct.barcode"
+                                        :rules="[rules.barcode]"
+                                        variant="outlined"
+                                        density="comfortable"
+                                        placeholder="أدخل رقم الباركود"
+                                        hide-details="auto"
+                                        class="modern-field"
+                                    >
+                                        <template v-slot:prepend-inner>
+                                            <v-icon color="info" size="20">mdi-barcode</v-icon>
+                                        </template>
+                                    </v-text-field>
+                                </div>
+                            </v-col>
+
+                            <!-- Unit -->
+                            <v-col cols="12" md="6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        الوحدة <span class="required">*</span>
+                                    </label>
+                                    <v-select
+                                        v-model="editedProduct.unit"
+                                        :items="unitOptions"
+                                        :rules="[rules.required]"
+                                        variant="outlined"
+                                        density="comfortable"
+                                        placeholder="اختر الوحدة"
+                                        hide-details="auto"
+                                        class="modern-field"
+                                    >
+                                        <template v-slot:item="{ props, item }">
+                                            <v-list-item v-bind="props">
+                                                <template v-slot:prepend>
+                                                    <v-icon color="primary" size="16" class="me-2">
+                                                        {{ getUnitIcon(item.raw.value) }}
+                                                    </v-icon>
+                                                </template>
+                                            </v-list-item>
+                                        </template>
+                                        <template v-slot:selection="{ item }">
+                                            <div class="d-flex align-center">
+                                                <v-icon color="primary" size="16" class="me-2">
+                                                    {{ getUnitIcon(item.raw.value) }}
+                                                </v-icon>
+                                                {{ item.raw.title }}
+                                            </div>
+                                        </template>
+                                    </v-select>
+                                </div>
+                            </v-col>
+
                             <!-- Category -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
@@ -98,10 +155,6 @@
                                                         <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder' }}</v-icon>
                                                     </v-avatar>
                                                 </template>
-                                                <!-- <v-list-item-title>{{ item.raw.name }}</v-list-item-title> -->
-                                                <!-- <v-list-item-subtitle v-if="item.raw.description">
-                                                    {{ item.raw.description }}
-                                                </v-list-item-subtitle> -->
                                             </v-list-item>
                                         </template>
                                         <template v-slot:selection="{ item }">
@@ -135,17 +188,16 @@
                                                         {{ getStatusIcon(item.raw.value) }}
                                                     </v-icon>
                                                 </template>
-                                                <!-- <v-list-item-title>{{ item.raw.title }}</v-list-item-title> -->
                                             </v-list-item>
                                         </template>
-                                        <!-- <template v-slot:selection="{ item }">
+                                        <template v-slot:selection="{ item }">
                                             <div class="d-flex align-center">
                                                 <v-icon :color="getStatusColor(item.raw.value)" size="16" class="me-2">
                                                     {{ getStatusIcon(item.raw.value) }}
                                                 </v-icon>
                                                 {{ item.raw.title }}
                                             </div>
-                                        </template> -->
+                                        </template>
                                     </v-select>
                                 </div>
                             </v-col>
@@ -216,6 +268,153 @@
                                     </v-text-field>
                                 </div>
                             </v-col>
+
+                            <!-- Minimum Stock -->
+                            <v-col cols="12" md="6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        الحد الأدنى للمخزون <span class="required">*</span>
+                                    </label>
+                                    <v-text-field
+                                        v-model.number="editedProduct.minimumStock"
+                                        :rules="[rules.required, rules.nonNegative]"
+                                        type="number"
+                                        variant="outlined"
+                                        density="comfortable"
+                                        placeholder="0"
+                                        hide-details="auto"
+                                        class="modern-field"
+                                        @input="updateStatusFromStock"
+                                    >
+                                        <template v-slot:prepend-inner>
+                                            <v-icon color="warning" size="20">mdi-alert-circle</v-icon>
+                                        </template>
+                                    </v-text-field>
+                                </div>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- Image Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <v-icon color="warning" class="me-2">mdi-image</v-icon>
+                            <h3 class="section-title">صورة المنتج</h3>
+                        </div>
+                        
+                        <v-row>
+                            <!-- Image Upload Type Selection -->
+                            <v-col cols="12">
+                                <div class="form-group">
+                                    <label class="form-label">طريقة إضافة الصورة</label>
+                                    <v-radio-group
+                                        v-model="imageUploadType"
+                                        inline
+                                        hide-details
+                                        class="image-type-selector"
+                                    >
+                                        <v-radio
+                                            label="رفع ملف"
+                                            value="file"
+                                            color="primary"
+                                        ></v-radio>
+                                        <v-radio
+                                            label="رابط خارجي"
+                                            value="url"
+                                            color="primary"
+                                        ></v-radio>
+                                    </v-radio-group>
+                                </div>
+                            </v-col>
+
+                            <!-- File Upload -->
+                            <v-col cols="12" v-if="imageUploadType === 'file'">
+                                <div class="form-group">
+                                    <label class="form-label">اختر صورة المنتج</label>
+                                    <v-file-input
+                                        v-model="selectedImageFile"
+                                        :rules="[rules.imageFile]"
+                                        variant="outlined"
+                                        density="comfortable"
+                                        placeholder="اختر ملف الصورة"
+                                        prepend-icon=""
+                                        accept="image/*"
+                                        hide-details="auto"
+                                        class="modern-field"
+                                        @change="handleFileSelect"
+                                    >
+                                        <template v-slot:prepend-inner>
+                                            <v-icon color="warning" size="20">mdi-cloud-upload</v-icon>
+                                        </template>
+                                        <template v-slot:append-inner v-if="selectedImageFile && selectedImageFile.length > 0">
+                                            <v-btn
+                                                icon="mdi-eye"
+                                                size="x-small"
+                                                variant="text"
+                                                @click="previewUploadedImage"
+                                            ></v-btn>
+                                        </template>
+                                    </v-file-input>
+                                </div>
+                            </v-col>
+
+                            <!-- URL Input -->
+                            <v-col cols="12" v-if="imageUploadType === 'url'">
+                                <div class="form-group">
+                                    <label class="form-label">رابط الصورة</label>
+                                    <v-text-field
+                                        v-model="editedProduct.image"
+                                        :rules="[rules.url]"
+                                        variant="outlined"
+                                        density="comfortable"
+                                        placeholder="https://example.com/image.jpg"
+                                        hide-details="auto"
+                                        class="modern-field"
+                                    >
+                                        <template v-slot:prepend-inner>
+                                            <v-icon color="warning" size="20">mdi-link</v-icon>
+                                        </template>
+                                        <template v-slot:append-inner v-if="editedProduct.image">
+                                            <v-btn
+                                                icon="mdi-eye"
+                                                size="x-small"
+                                                variant="text"
+                                                @click="previewImage = true"
+                                            ></v-btn>
+                                        </template>
+                                    </v-text-field>
+                                </div>
+                            </v-col>
+
+                            <!-- Image Preview -->
+                            <v-col cols="12" v-if="imagePreviewUrl">
+                                <div class="image-preview-container">
+                                    <label class="form-label">معاينة الصورة</label>
+                                    <div class="image-preview">
+                                        <v-img
+                                            :src="imagePreviewUrl"
+                                            max-height="200"
+                                            max-width="200"
+                                            contain
+                                            class="preview-image"
+                                        >
+                                            <template v-slot:error>
+                                                <div class="d-flex align-center justify-center h-100">
+                                                    <v-icon size="48" color="grey-lighten-1">mdi-image-broken</v-icon>
+                                                </div>
+                                            </template>
+                                        </v-img>
+                                        <v-btn
+                                            icon="mdi-close"
+                                            size="x-small"
+                                            variant="elevated"
+                                            color="error"
+                                            class="remove-image-btn"
+                                            @click="removeImage"
+                                        ></v-btn>
+                                    </div>
+                                </div>
+                            </v-col>
                         </v-row>
                     </div>
 
@@ -240,34 +439,6 @@
                                         hide-details="auto"
                                         class="modern-field"
                                     ></v-textarea>
-                                </div>
-                            </v-col>
-
-                            <!-- Image URL -->
-                            <v-col cols="12">
-                                <div class="form-group">
-                                    <label class="form-label">رابط الصورة</label>
-                                    <v-text-field
-                                        v-model="editedProduct.image"
-                                        :rules="[rules.url]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="https://example.com/image.jpg"
-                                        hide-details="auto"
-                                        class="modern-field"
-                                    >
-                                        <template v-slot:prepend-inner>
-                                            <v-icon color="warning" size="20">mdi-image</v-icon>
-                                        </template>
-                                        <template v-slot:append-inner v-if="editedProduct.image">
-                                            <v-btn
-                                                icon="mdi-eye"
-                                                size="x-small"
-                                                variant="text"
-                                                @click="previewImage = true"
-                                            ></v-btn>
-                                        </template>
-                                    </v-text-field>
                                 </div>
                             </v-col>
                         </v-row>
@@ -349,6 +520,7 @@
 <script>
 import { saveProduct, updateProduct } from '@/utils/product-util';
 import { success, error } from '@/utils/system-util';
+
 export default {
     name: 'ProductModal',
     props: {
@@ -371,13 +543,19 @@ export default {
             formValid: false,
             loading: false,
             previewImage: false,
+            imageUploadType: 'url', // 'file' or 'url'
+            selectedImageFile: [],
+            imagePreviewUrl: null,
             editedProductId: null,
             editedProduct: {
                 name: '',
                 sku: '',
+                barcode: '',
                 categoryId: null,
                 price: 0,
                 stock: 0,
+                minimumStock: 0,
+                unit: 'piece',
                 status: 'active',
                 description: '',
                 image: ''
@@ -388,6 +566,20 @@ export default {
                 { title: 'نفد المخزون', value: 'out-of-stock' },
                 { title: 'غير نشط', value: 'inactive' }
             ],
+            unitOptions: [
+                { title: 'قطعة', value: 'piece' },
+                { title: 'كيلوغرام', value: 'kg' },
+                { title: 'غرام', value: 'gram' },
+                { title: 'لتر', value: 'liter' },
+                { title: 'مليلتر', value: 'ml' },
+                { title: 'متر', value: 'meter' },
+                { title: 'سنتيمتر', value: 'cm' },
+                { title: 'صندوق', value: 'box' },
+                { title: 'علبة', value: 'can' },
+                { title: 'زجاجة', value: 'bottle' },
+                { title: 'كيس', value: 'bag' },
+                { title: 'عبوة', value: 'pack' }
+            ],
             rules: {
                 required: value => !!value || 'هذا الحقل مطلوب',
                 positive: value => value > 0 || 'يجب أن يكون أكبر من صفر',
@@ -396,10 +588,29 @@ export default {
                     const pattern = /^[A-Z0-9-_]+$/i;
                     return pattern.test(value) || 'رمز المنتج يجب أن يحتوي على أحرف وأرقام فقط';
                 },
+                barcode: value => {
+                    if (!value) return true;
+                    const pattern = /^[0-9]+$/;
+                    return pattern.test(value) || 'الباركود يجب أن يحتوي على أرقام فقط';
+                },
                 url: value => {
                     if (!value) return true;
                     const pattern = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i;
                     return pattern.test(value) || 'يرجى إدخال رابط صورة صحيح';
+                },
+                imageFile: value => {
+                    if (!value || value.length === 0) return true;
+                    const file = value[0];
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    
+                    if (file.size > maxSize) {
+                        return 'حجم الملف يجب أن يكون أقل من 5 ميجابايت';
+                    }
+                    if (!allowedTypes.includes(file.type)) {
+                        return 'نوع الملف غير مدعوم. يرجى اختيار صورة بصيغة JPG, PNG, GIF, أو WebP';
+                    }
+                    return true;
                 }
             }
         };
@@ -421,6 +632,7 @@ export default {
                 if (newProduct) {
                     this.editedProduct = { ...newProduct };
                     this.editedProductId = newProduct.id;
+                    this.updateImagePreview();
                 } else {
                     this.resetForm();
                 }
@@ -430,6 +642,14 @@ export default {
             if (!newValue) {
                 this.resetForm();
             }
+        },
+        imageUploadType() {
+            this.clearImageData();
+        },
+        'editedProduct.image'() {
+            if (this.imageUploadType === 'url') {
+                this.updateImagePreview();
+            }
         }
     },
     methods: {
@@ -438,13 +658,19 @@ export default {
             this.editedProduct = {
                 name: '',
                 sku: '',
+                barcode: '',
                 categoryId: null,
                 price: 0,
                 stock: 0,
+                minimumStock: 0,
+                unit: 'piece',
                 status: 'active',
                 description: '',
                 image: ''
             };
+            this.imageUploadType = 'url';
+            this.selectedImageFile = [];
+            this.imagePreviewUrl = null;
             if (this.$refs.productForm) {
                 this.$refs.productForm.resetValidation();
             }
@@ -455,9 +681,12 @@ export default {
         },
 
         updateStatusFromStock() {
-            if (this.editedProduct.stock === 0) {
+            const stock = this.editedProduct.stock;
+            const minStock = this.editedProduct.minimumStock || 0;
+            
+            if (stock === 0) {
                 this.editedProduct.status = 'out-of-stock';
-            } else if (this.editedProduct.stock < 10) {
+            } else if (stock <= minStock) {
                 this.editedProduct.status = 'low-stock';
             } else if (this.editedProduct.status === 'out-of-stock' || this.editedProduct.status === 'low-stock') {
                 this.editedProduct.status = 'active';
@@ -485,15 +714,103 @@ export default {
         },
 
         getStockStatusColor(stock) {
+            const minStock = this.editedProduct.minimumStock || 0;
             if (stock === 0) return 'error';
-            if (stock < 10) return 'warning';
+            if (stock <= minStock) return 'warning';
             return 'success';
         },
 
         getStockStatusText(stock) {
+            const minStock = this.editedProduct.minimumStock || 0;
             if (stock === 0) return 'نفد';
-            if (stock < 10) return 'منخفض';
+            if (stock <= minStock) return 'منخفض';
             return 'متوفر';
+        },
+
+        getUnitIcon(unit) {
+            const icons = {
+                'piece': 'mdi-cube',
+                'kg': 'mdi-weight-kilogram',
+                'gram': 'mdi-weight-gram',
+                'liter': 'mdi-cup-water',
+                'ml': 'mdi-eyedropper',
+                'meter': 'mdi-ruler',
+                'cm': 'mdi-ruler',
+                'box': 'mdi-package-variant-closed',
+                'can': 'mdi-can',
+                'bottle': 'mdi-bottle-soda',
+                'bag': 'mdi-bag-personal',
+                'pack': 'mdi-package'
+            };
+            return icons[unit] || 'mdi-cube';
+        },
+
+        handleFileSelect(files) {
+            if (files && files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.imagePreviewUrl = e.target.result;
+                    this.editedProduct.image = ''; // Clear URL when file is selected
+                };
+                reader.readAsDataURL(file);
+            } else {
+                this.imagePreviewUrl = null;
+            }
+        },
+
+        previewUploadedImage() {
+            if (this.selectedImageFile && this.selectedImageFile.length > 0) {
+                this.previewImage = true;
+            }
+        },
+
+        updateImagePreview() {
+            if (this.imageUploadType === 'url' && this.editedProduct.image) {
+                this.imagePreviewUrl = this.editedProduct.image;
+            } else if (this.imageUploadType === 'file' && this.selectedImageFile && this.selectedImageFile.length > 0) {
+                const file = this.selectedImageFile[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.imagePreviewUrl = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                this.imagePreviewUrl = null;
+            }
+        },
+
+        clearImageData() {
+            this.selectedImageFile = [];
+            this.editedProduct.image = '';
+            this.imagePreviewUrl = null;
+        },
+
+        removeImage() {
+            this.clearImageData();
+        },
+
+        async uploadImageFile(file) {
+            // This is a placeholder function - you'll need to implement actual file upload
+            // based on your backend/storage solution (e.g., AWS S3, Firebase Storage, etc.)
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                // Example API call - replace with your actual upload endpoint
+                // const response = await this.$axios.post('/api/upload/product-image', formData, {
+                //     headers: {
+                //         'Content-Type': 'multipart/form-data'
+                //     }
+                // });
+                // return response.data.url;
+                
+                // For now, return a placeholder URL
+                return `https://example.com/uploads/${Date.now()}-${file.name}`;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw new Error('فشل رفع الصورة');
+            }
         },
 
         async saveProduct() {
@@ -508,6 +825,18 @@ export default {
                     productData.sku = productData.name.replace(/\s+/g, '-').toUpperCase().substring(0, 10);
                 }
 
+                // Handle image upload if file is selected
+                if (this.imageUploadType === 'file' && this.selectedImageFile && this.selectedImageFile.length > 0) {
+                    try {
+                        const uploadedImageUrl = await this.uploadImageFile(this.selectedImageFile[0]);
+                        productData.image = uploadedImageUrl;
+                    } catch (uploadError) {
+                        error('فشل رفع الصورة');
+                        this.loading = false;
+                        return;
+                    }
+                }
+
                 if (productData.id == null) {
                     let response = await saveProduct(productData);
                     if (response != null && response.id != null) {
@@ -517,7 +846,7 @@ export default {
                         error('فشل حفظ المنتج');
                         console.log(response);
                     }
-                }else{
+                } else {
                     let response = await updateProduct(productData);
                     if (response != null && response.id != null) {
                         success('تم تحديث المنتج بنجاح');
@@ -550,7 +879,7 @@ export default {
 
 /* Header Styling */
 .modal-header {
-    background: linear-gradient(135deg, #366091 0%, #4299e1 100%);
+    background: #366091; /*linear-gradient(135deg, #366091 0%, #4299e1 100%);*/
     padding: 24px 32px;
     display: flex;
     align-items: center;
@@ -694,6 +1023,40 @@ export default {
     font-size: 10px !important;
     height: 20px !important;
     font-weight: 600 !important;
+}
+
+/* Image Upload Styling */
+.image-type-selector {
+    margin-top: 8px;
+}
+
+.image-type-selector .v-radio {
+    margin-right: 24px;
+}
+
+.image-preview-container {
+    margin-top: 16px;
+}
+
+.image-preview {
+    position: relative;
+    display: inline-block;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    padding: 8px;
+    background: white;
+}
+
+.preview-image {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    z-index: 2;
 }
 
 /* Modal Actions */

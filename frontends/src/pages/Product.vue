@@ -642,11 +642,10 @@ export default {
 }
 
 .modern-add-btn {
-    background: linear-gradient(135deg, #366091 0%, #4299e1 100%);
+    background: #366091; /*linear-gradient(135deg, #366091 0%, #4299e1 100%);*/
     color: white;
     font-weight: 600;
     text-transform: none;
-    border-radius: 12px;
     box-shadow: 0 4px 15px rgba(54, 96, 145, 0.3);
     transition: all 0.3s ease;
 }
@@ -664,7 +663,6 @@ export default {
 
 .stat-card {
     background: white;
-    border-radius: 16px;
     padding: 24px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: flex;
@@ -698,7 +696,6 @@ export default {
 .stat-icon {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -747,13 +744,11 @@ export default {
 
 .modern-toggle {
     background: #f7fafc;
-    border-radius: 12px;
     padding: 4px;
     border: 1px solid #e2e8f0;
 }
 
 .toggle-btn {
-    border-radius: 8px !important;
     padding: 12px 24px !important;
     font-weight: 500 !important;
     text-transform: none !important;
@@ -769,11 +764,9 @@ export default {
 }
 
 .modern-search {
-    border-radius: 12px;
 }
 
 .modern-search .v-field {
-    border-radius: 12px !important;
 }
 
 .modern-search .v-field__outline {
@@ -786,11 +779,9 @@ export default {
 }
 
 .modern-filter {
-    border-radius: 12px;
 }
 
 .modern-filter .v-field {
-    border-radius: 12px !important;
 }
 
 .modern-filter .v-field__outline {
@@ -804,13 +795,11 @@ export default {
 
 .view-toggle {
     background: #f7fafc;
-    border-radius: 12px;
     padding: 4px;
     border: 1px solid #e2e8f0;
 }
 
 .view-toggle .v-btn {
-    border-radius: 8px !important;
     color: #718096 !important;
     background: transparent !important;
 }
@@ -822,7 +811,6 @@ export default {
 }
 
 .export-btn {
-    border-radius: 12px !important;
     border-color: #e2e8f0 !important;
     color: #718096 !important;
     font-weight: 500 !important;
@@ -855,7 +843,6 @@ export default {
 
 .content-card {
     background: white !important;
-    border-radius: 16px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
     border: 1px solid #e2e8f0 !important;
     overflow: hidden;
@@ -965,7 +952,6 @@ export default {
 .v-select:focus-within {
     outline: 2px solid rgba(54, 96, 145, 0.3);
     outline-offset: 2px;
-    border-radius: 12px;
 }
 
 /* Animation Classes */
@@ -1000,12 +986,10 @@ export default {
 
 ::-webkit-scrollbar-track {
     background: #f1f5f9;
-    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, #366091 0%, #4299e1 100%);
-    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -1019,7 +1003,6 @@ export default {
 
 /* Table Enhancements (if using tables) */
 .v-data-table {
-    border-radius: 0 !important;
 }
 
 .v-data-table .v-data-table__tr:hover {
@@ -1041,7 +1024,6 @@ export default {
 
 .v-pagination .v-pagination__item {
     color: #718096 !important;
-    border-radius: 8px !important;
 }
 
 .v-pagination .v-pagination__item:hover {
@@ -1050,7 +1032,6 @@ export default {
 
 /* Chip Styling */
 .v-chip {
-    border-radius: 8px !important;
     font-weight: 500 !important;
 }
 
