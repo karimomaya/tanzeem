@@ -5,34 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/image-service/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/java/com/tanzeem/image/ImageApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/java/com/tanzeem/image/controller/ImageController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/java/com/tanzeem/image/dto/ImageUploadResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/java/com/tanzeem/image/dto/ImageUrlRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/java/com/tanzeem/image/security/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/java/com/tanzeem/image/service/ImageService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/resources/application.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/image-service/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/ProductResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/.env.development" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/.env.development" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/components/product/ProductModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/product/ProductModal.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/pages/Product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/pages/Product.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontends/src/utils/request-util.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/utils/request-util.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/ProductDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/ProductDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/ProductRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/ProductServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/tanzeem/product/138d3c7d-70e8-445f-ac69-2744319830f0.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/tanzeem/product/ed924559-125d-48e6-bd1d-290b8a05f586.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/tanzeem/product/f586ff42-f08d-4f13-b485-29fdde813478.jpeg" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
