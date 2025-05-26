@@ -5,9 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="865f1367-97bf-4ae6-9050-86c9f4741177" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/AuthContextHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/AuthContextHolder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/TenantInterceptor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/layouts/MainLayout.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/layouts/MainLayout.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/layouts/NavBar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/layouts/NavBar.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontends/src/components/product/CategoryModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/components/product/CategoryModal.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/components/product/CategoryTable.vue" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/frontends/src/pages/Product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/pages/Product.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/plugins/vuetify.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/plugins/vuetify.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontends/src/utils/product-util.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/utils/product-util.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/utils/request-util.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/utils/request-util.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontends/src/utils/system-util.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontends/src/utils/system-util.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/controller/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/dto/CategoryResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/entity/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/CategoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/java/com/tanzeem/product/service/impl/CategoryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/CategoryControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/test/java/com/tanzeem/product/ProductCategoryServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/config/WebConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/interceptor/TenantInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/interceptor/TenantInterceptor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,9 +242,14 @@
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtUtil.java</url>
-          <line>50</line>
-          <option name="timeStamp" value="16" />
+          <url>file://$PROJECT_DIR$/tenant-lib/src/main/java/com/tanzeem/tenantlib/interceptor/TenantInterceptor.java</url>
+          <line>10</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/common-security/src/main/java/com/tanzeem/security/common/JwtAuthFilter.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

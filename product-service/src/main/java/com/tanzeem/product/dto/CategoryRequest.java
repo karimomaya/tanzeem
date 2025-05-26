@@ -10,4 +10,5 @@ public class CategoryRequest {
     private String icon;
     private String description;
     private boolean isActive;
+    private String color;
 }

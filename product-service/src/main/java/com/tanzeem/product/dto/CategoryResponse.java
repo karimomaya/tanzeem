@@ -25,4 +25,5 @@ public class CategoryResponse {
     private String createdBy;
     private String updatedBy;
     private Long productCount;
+    private String color;
 }

@@ -62,7 +62,7 @@ public class ProductCategoryServiceTest {
 
         when(repository.findByTenantId(eq("tenant123"), any(Pageable.class))).thenReturn(page);
 
-        Page<CategoryResponse> responses = service.getAllCategories(Pageable.unpaged());
+        Page<CategoryResponse> responses = service.getAllCategories("",Pageable.unpaged());
 
         assertEquals(2, responses.getContent().size());
         assertEquals("A", responses.getContent().get(0).getName());

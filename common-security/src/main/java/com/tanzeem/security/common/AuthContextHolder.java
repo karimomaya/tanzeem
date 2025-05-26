@@ -9,6 +9,11 @@ public class AuthContextHolder {
         CONTEXT.set(new AuthContext(email, roles, tenantId));
     }
 
+    public static String getTenantId() {
+        AuthContext authContext = CONTEXT.get();
+        return authContext != null ? authContext.getTenantId() : null;
+    }
+
     public static AuthContext getCurrentUser() {
         return CONTEXT.get();
     }

@@ -28,42 +28,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        try{
+            String token = extractJwtFromRequest(request);
+            if (token != null && jwtUtil.validateToken(token)) {
+                String email = jwtUtil.getEmailFromToken(token);
+                List<String> roles = jwtUtil.getRoles(token);
+                String tenantId = jwtUtil.getTenantId(token);
 
-        String token = extractJwtFromRequest(request);
-        if (token != null && jwtUtil.validateToken(token)) {
-            String email = jwtUtil.getEmailFromToken(token);
-            List<String> roles = jwtUtil.getRoles(token);
-            String tenantId = jwtUtil.getTenantId(token);
+                if (email != null){
 
-            if (email != null){
+                    AuthContextHolder.setCurrentUser(email, roles, tenantId);
 
-                AuthContextHolder.setCurrentUser(email, roles, tenantId);
+                    List<GrantedAuthority> authorities = roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
 
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(email, null, authorities);
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
 
 
-//                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-//                UsernamePasswordAuthenticationToken authToken =
-//                        new UsernamePasswordAuthenticationToken(
-//                                userDetails,
-//                                null,
-//                                userDetails.getAuthorities()
-//                        );
-//
-//                SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
-
+            filterChain.doFilter(request, response);
+        }finally {
+            // Clear the AuthContextHolder to avoid memory leaks
+            AuthContextHolder.clear();
         }
 
-        filterChain.doFilter(request, response);
     }
 
     private String extractJwtFromRequest(HttpServletRequest request) {

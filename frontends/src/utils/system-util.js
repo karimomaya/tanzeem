@@ -10,3 +10,8 @@ export function success(message) {
     emitter.emit('global-success', message);
     console.info(message);
 }
+
+export function warn(message) {
+    emitter.emit('global-warning', message);
+    console.warn(message);
+}

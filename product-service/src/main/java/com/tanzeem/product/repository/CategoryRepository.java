@@ -10,6 +10,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Page<Category> findByTenantIdAndNameContainingIgnoreCase(
+            String search,
+            String tenantId,
+            Pageable pageable);
     Page<Category> findByTenantId(String tenantId, Pageable pageable);
     @Query("SELECT COUNT(p.id) FROM Product p WHERE p.category.id = :categoryId")
     Long countProductsByCategoryId(@Param("categoryId") Long categoryId);

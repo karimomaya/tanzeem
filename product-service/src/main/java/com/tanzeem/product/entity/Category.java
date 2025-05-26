@@ -27,6 +27,7 @@ public class Category {
     private String icon;
     private String description;
     private boolean isActive;
+    private String color;
 
     @CreationTimestamp
     @Column(updatable = false)

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -59,8 +60,7 @@ public class CategoryControllerTest {
                 "mdi-laptop",
                 "Category for electronic items",
                 true,
-                null,
-                null
+                null, null, "test", null, 0L
         );
 
         when(categoryService.createCategory(any())).thenReturn(response);
@@ -85,12 +85,12 @@ public class CategoryControllerTest {
 
     @Test
     void testGetAllCategories() throws Exception {
-        CategoryResponse response1 = new CategoryResponse(1L, "Electronics", "mdi-laptop", "Description 1", true, null, null);
-        CategoryResponse response2 = new CategoryResponse(2L, "Groceries", "mdi-cart", "Description 2", true, null, null);
+        CategoryResponse response1 = new CategoryResponse(1L, "Electronics", "mdi-laptop", "Description 1", true, null, null, "Test", null, 0L);
+        CategoryResponse response2 = new CategoryResponse(2L, "Groceries", "mdi-cart", "Description 2", true, null, null, "test", null, 0L);
 
         Page<CategoryResponse> page = new PageImpl<>(List.of(response1, response2));
 
-        when(categoryService.getAllCategories(any(Pageable.class))).thenReturn(page);
+        when(categoryService.getAllCategories("", any(Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/api/categories")
                         .param("page", "0")
@@ -117,8 +117,7 @@ public class CategoryControllerTest {
                 "mdi-update",
                 "Updated description",
                 true,
-                null,
-                null
+                null, null, "test", null, 0L
         );
         when(categoryService.updateCategory(eq(1L), any())).thenReturn(response);
 

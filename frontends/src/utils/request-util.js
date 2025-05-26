@@ -20,6 +20,10 @@ export async function makeRequest(url, options = {}, excludeAuth = false) {
             error(`Error: ${errorData.error || response.statusText}`);
             return null;
         }
+        if (response.status === 204) {
+            // No content to return
+            return null;
+        }
 
         // Handle successful response
         return await response.json();

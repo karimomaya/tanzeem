@@ -25,8 +25,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryResponse>> getAllCategories(Pageable pageable) {
-        return ResponseEntity.ok(categoryService.getAllCategories(pageable));
+    public ResponseEntity<Page<CategoryResponse>> getAllCategories(Pageable pageable,  @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(categoryService.getAllCategories(search, pageable));
     }
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CATEGORY_CREATE')")
     @PutMapping("/{id}")

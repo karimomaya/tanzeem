@@ -5,7 +5,7 @@ import com.tanzeem.product.dto.CategoryResponse;
 import com.tanzeem.product.entity.Category;
 import com.tanzeem.product.repository.CategoryRepository;
 import com.tanzeem.product.service.CategoryService;
-import com.tanzeem.tenantlib.context.TenantContext;
+import com.tanzeem.security.common.AuthContextHolder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,19 +24,27 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CategoryRequest request) {
         Category category = new Category();
         category.setName(request.getName());
-        category.setTenantId(TenantContext.getTenantId());
+        category.setTenantId(AuthContextHolder.getTenantId());
         category.setIcon(request.getIcon());
         category.setDescription(request.getDescription());
         category.setActive(request.isActive());
+        category.setColor(request.getColor());
 
         categoryRepository.save(category);
         return mapToResponse(category);
     }
 
     @Override
-    public Page<CategoryResponse> getAllCategories(Pageable pageable) {
-        return categoryRepository.findByTenantId(TenantContext.getTenantId(), pageable)
-                .map(this::mapToResponse);
+    public Page<CategoryResponse> getAllCategories(String search, Pageable pageable) {
+        Page<Category> categories;
+        System.out.println(AuthContextHolder.getTenantId());
+        if (search != null && !search.isEmpty()) {
+            categories = categoryRepository.findByTenantIdAndNameContainingIgnoreCase(
+                    AuthContextHolder.getTenantId(), search, pageable);
+        } else {
+            categories = categoryRepository.findByTenantId(AuthContextHolder.getTenantId(), pageable);
+        }
+        return categories.map(this::mapToResponse);
     }
 
     @Override
@@ -62,6 +70,6 @@ public class CategoryServiceImpl implements CategoryService {
         return new CategoryResponse(category.getId(), category.getName(),  category.getIcon(), category.getDescription(), category.isActive(), category.getCreatedAt(), category.getUpdatedAt(),
                 category.getCreatedBy(),
                 category.getUpdatedBy(),
-                productCount);
+                productCount, category.getColor());
     }
 }
