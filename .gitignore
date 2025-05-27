@@ -47,4 +47,5 @@ logs/erp-*
 
 # Logs
 logs/*
-!logs/.gitkeep  (if you need an empty logs directory)
+!logs/.gitkeep
+.idea
