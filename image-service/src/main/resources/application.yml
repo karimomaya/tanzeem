@@ -13,9 +13,8 @@ logging:
   level:
     root: INFO
     org.springframework: INFO
-    com.hub.marketinganalysis: DEBUG
 server:
-  port: 8085
+  port: 8086
 app:
   upload:
     dir: uploads
