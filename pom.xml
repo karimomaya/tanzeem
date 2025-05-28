@@ -8,7 +8,6 @@
   <modules>
     <module>iam-service</module>
       <module>product-service</module>
-    <module>tenant-lib</module>
     <module>purchase-service</module>
     <module>common-security</module>
       <module>image-service</module>

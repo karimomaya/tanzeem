@@ -83,12 +83,6 @@
         </dependency>
         <dependency>
             <groupId>com.hub</groupId>
-            <artifactId>tenant-lib</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.hub</groupId>
             <artifactId>common-security</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>

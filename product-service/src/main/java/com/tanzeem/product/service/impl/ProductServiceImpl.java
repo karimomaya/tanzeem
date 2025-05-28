@@ -9,7 +9,6 @@ import com.tanzeem.product.repository.CategoryRepository;
 import com.tanzeem.product.repository.ProductRepository;
 import com.tanzeem.product.service.ProductService;
 import com.tanzeem.security.common.AuthContextHolder;
-import com.tanzeem.tenantlib.context.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
