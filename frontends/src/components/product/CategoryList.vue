@@ -198,37 +198,6 @@
                                 </v-list-item>
                             </v-list>
                         </v-menu>
-
-                        <!-- Quick Actions -->
-                        <!-- <div class="quick-actions">
-                            <v-tooltip text="عرض سريع" location="top">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn
-                                        v-bind="props"
-                                        icon="mdi-eye"
-                                        size="x-small"
-                                        variant="tonal"
-                                        color="info"
-                                        class="quick-action-btn"
-                                        @click="viewCategory(item)"
-                                    ></v-btn>
-                                </template>
-                            </v-tooltip>
-
-                            <v-tooltip text="تعديل سريع" location="top">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn
-                                        v-bind="props"
-                                        icon="mdi-pencil"
-                                        size="x-small"
-                                        variant="tonal"
-                                        color="primary"
-                                        class="quick-action-btn"
-                                        @click="$emit('edit-category', item)"
-                                    ></v-btn>
-                                </template>
-                            </v-tooltip>
-                        </div> -->
                     </div>
                 </template>
 
@@ -756,15 +725,6 @@ export default {
     background: rgba(54, 96, 145, 0.1) !important;
 }
 
-.quick-actions {
-    display: none;
-    gap: 4px;
-}
-
-.actions-cell:hover .quick-actions {
-    display: flex;
-}
-
 .actions-cell:hover .actions-trigger {
     display: none;
 }
@@ -903,10 +863,6 @@ export default {
     
     .description-cell {
         max-width: 200px;
-    }
-    
-    .actions-cell:hover .quick-actions {
-        display: none;
     }
     
     .actions-cell:hover .actions-trigger {

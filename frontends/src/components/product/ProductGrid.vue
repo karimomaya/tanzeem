@@ -41,25 +41,25 @@
                                 <!-- Status Badge -->
                                 <div class="status-badge">
                                     <v-chip
-                                        :color="getStatusColor(product.status)"
+                                        :color="getStockColor(product.stock, product.minimumStock)"
                                         size="small"
                                         class="status-chip"
                                     >
-                                        <v-icon start size="12">{{ getStatusIcon(product.status) }}</v-icon>
-                                        {{ getStatusText(product.status) }}
+                                        <v-icon start size="12">{{ getStockIcon(product.stock, product.minimumStock) }}</v-icon>
+                                        {{ getStockText(product.stock, product.minimumStock) }}
                                     </v-chip>
                                 </div>
                                 
                                 <!-- Quick Actions -->
                                 <div class="quick-actions">
-                                    <v-btn
+                                    <!-- <v-btn
                                         icon="mdi-heart-outline"
                                         size="small"
                                         variant="elevated"
                                         color="white"
                                         class="action-btn favorite-btn"
                                         @click.stop="toggleFavorite(product)"
-                                    ></v-btn>
+                                    ></v-btn> -->
                                     
                                     <v-menu>
                                         <template v-slot:activator="{ props }">
@@ -150,17 +150,17 @@
                         <!-- Stock Section -->
                         <div class="stock-section">
                             <div class="stock-info">
-                                <div class="stock-indicator" :class="`stock-${getStockLevel(product.stock)}`">
+                                <div class="stock-indicator" :class="`stock-${getStockLevel(product.stock, product.minimumStock)}`">
                                     <div class="stock-dot"></div>
-                                    <span class="stock-text">{{ getStockText(product.stock) }}</span>
+                                    <span class="stock-text">{{ getStockText(product.stock, product.minimumStock) }}</span>
                                 </div>
                                 <div class="stock-count">{{ product.stock }} في المخزون</div>
                             </div>
                             
                             <!-- Stock Progress Bar -->
                             <v-progress-linear
-                                :model-value="getStockPercentage(product.stock)"
-                                :color="getStockColor(product.stock)"
+                                :model-value="getStockPercentage(product.stock, product.minimumStock)"
+                                :color="getStockColor(product.stock, product.minimumStock)"
                                 height="4"
                                 rounded
                                 class="stock-progress"
@@ -221,6 +221,7 @@
 </template>
 
 <script>
+import { getStockStatus, getStockText, getStockColor, getStockIcon, getStockLevel, getStockPercentage } from '@/utils/product-util';
 export default {
     name: 'ProductGrid',
     props: {
@@ -241,62 +242,15 @@ export default {
         };
     },
     methods: {
-        // Status methods
-        getStatusColor(status) {
-            const colorMap = {
-                'active': 'success',
-                'low-stock': 'warning',
-                'out-of-stock': 'error',
-                'inactive': 'grey'
-            };
-            return colorMap[status] || 'grey';
-        },
+        getStockStatus,
+        getStockIcon,
+        getStockText,
+        getStockColor,
+        getStockLevel,
+        getStockPercentage,
 
-        getStatusIcon(status) {
-            const iconMap = {
-                'active': 'mdi-check-circle',
-                'low-stock': 'mdi-alert-circle',
-                'out-of-stock': 'mdi-close-circle',
-                'inactive': 'mdi-pause-circle'
-            };
-            return iconMap[status] || 'mdi-help-circle';
-        },
 
-        getStatusText(status) {
-            const textMap = {
-                'active': 'نشط',
-                'low-stock': 'منخفض',
-                'out-of-stock': 'نفد',
-                'inactive': 'غير نشط'
-            };
-            return textMap[status] || 'غير محدد';
-        },
-
-        // Stock methods
-        getStockLevel(stock) {
-            if (stock <= 0) return 'empty';
-            if (stock < 10) return 'low';
-            if (stock < 50) return 'medium';
-            return 'high';
-        },
-
-        getStockColor(stock) {
-            if (stock <= 0) return 'error';
-            if (stock < 10) return 'warning';
-            return 'success';
-        },
-
-        getStockText(stock) {
-            if (stock <= 0) return 'نفد المخزون';
-            if (stock < 10) return 'مخزون منخفض';
-            return 'متوفر';
-        },
-
-        getStockPercentage(stock) {
-            // Assuming max stock is 100 for percentage calculation
-            const maxStock = 100;
-            return Math.min((stock / maxStock) * 100, 100);
-        },
+        
 
         // Category methods
         getCategoryName(categoryId) {

@@ -56,3 +56,47 @@ export async function deleteCategory(id) {
     };
     return await makeRequest(`${url}/categories` + "/" + id, options);
 }
+export function getStockText(stock, minimumStock) {
+    const minStock = minimumStock || 0;
+    if (stock === 0) return 'نفد';
+    if (stock <= minStock) return 'منخفض';
+    return 'متوفر';
+}
+
+export function getStockColor(stock, minimumStock) {
+    const minStock = minimumStock || 0;
+    if (stock === 0) return 'error';
+    if (stock <= minStock) return 'warning';
+    return 'success';
+}
+
+export function getStockLevel(stock, minimumStock) {
+    const status = getStockStatus(stock, minimumStock);
+    if (status == 'out-of-stock') return 'empty';
+    if (status == 'low-stock') return 'low';
+    return 'medium';
+    //  'high';
+}
+
+export function getStockStatus(stock, minimumStock) {
+    if (stock === 0) {
+        return 'out-of-stock';
+    } else if (stock <= minimumStock) {
+        return 'low-stock';
+    }
+    return 'active';   
+}
+export function getStockPercentage(currentStock, minimumStock) {
+    if (minimumStock === 0) {
+      return currentStock === 0 ? 100 : Infinity; // or return 0 if you prefer
+    }
+  
+    const percentage = (currentStock / minimumStock) * 100;
+    return Math.round(percentage * 100) / 100; // rounded to 2 decimal places
+}
+
+export function getStockIcon(stock, minimumStock) {
+    if (stock <= 0) return 'mdi-close-circle';
+    if (stock <= minimumStock) return 'mdi-alert-circle';
+    return 'mdi-check-circle';
+}

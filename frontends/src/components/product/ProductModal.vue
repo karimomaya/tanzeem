@@ -408,7 +408,7 @@
 </template>
 
 <script>
-import { saveProduct, updateProduct } from '@/utils/product-util';
+import { saveProduct, updateProduct, getStockText, getStockColor } from '@/utils/product-util';
 import { success, error } from '@/utils/system-util';
 import { ImageServiceClient } from '@/utils/image-service-client'; // Import the image service client
 
@@ -613,17 +613,11 @@ export default {
         },
 
         getStockStatusColor(stock) {
-            const minStock = this.editedProduct.minimumStock || 0;
-            if (stock === 0) return 'error';
-            if (stock <= minStock) return 'warning';
-            return 'success';
+            return getStockColor(stock, this.editedProduct.minimumStock);
         },
 
         getStockStatusText(stock) {
-            const minStock = this.editedProduct.minimumStock || 0;
-            if (stock === 0) return 'نفد';
-            if (stock <= minStock) return 'منخفض';
-            return 'متوفر';
+            return getStockText(stock, this.editedProduct.minimumStock);
         },
 
         getUnitIcon(unit) {

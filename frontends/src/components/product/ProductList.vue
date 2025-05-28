@@ -107,15 +107,15 @@
                 <template v-slot:item.stock="{ item }">
                     <div class="stock-cell">
                         <v-chip
-                            :color="getStockColor(item.stock)"
+                            :color="getStockColor(item.stock, item.minimumStock)"
                             :variant="item.stock === 0 ? 'elevated' : 'tonal'"
                             size="small"
                             class="stock-chip"
                         >
-                            <v-icon start size="14">{{ getStockIcon(item.stock) }}</v-icon>
+                            <v-icon start size="14">{{ getStockIcon(item.stock, item.minimumStock) }}</v-icon>
                             {{ item.stock }}
                         </v-chip>
-                        <div class="stock-status">{{ getStockStatus(item.stock) }}</div>
+                        <div class="stock-status">{{ getStockStatus(item.stock, item.minimumStock) }}</div>
                     </div>
                 </template>
 
@@ -124,14 +124,14 @@
                     <div class="status-cell">
                         <div class="status-indicator" :class="`status-${item.status}`">
                             <div class="status-dot"></div>
-                            <span class="status-text">{{ getStatusText(item.status) }}</span>
+                            <span class="status-text">{{ getStockText(item.stock, item.minimumStock) }}</span>
                         </div>
                     </div>
                 </template>
 
                 <!-- Enhanced Actions Column -->
                 <template v-slot:item.actions="{ item }">
-                    <div class="actions-cell">
+                    <div>
                         <v-menu>
                             <template v-slot:activator="{ props }">
                                 <v-btn
@@ -174,37 +174,6 @@
                                 </v-list-item>
                             </v-list>
                         </v-menu>
-
-                        <!-- Quick Actions -->
-                        <div class="quick-actions">
-                            <v-tooltip text="عرض سريع" location="top">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn
-                                        v-bind="props"
-                                        icon="mdi-eye"
-                                        size="x-small"
-                                        variant="tonal"
-                                        color="info"
-                                        class="quick-action-btn"
-                                        @click="$emit('view', item)"
-                                    ></v-btn>
-                                </template>
-                            </v-tooltip>
-
-                            <v-tooltip text="تعديل سريع" location="top">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn
-                                        v-bind="props"
-                                        icon="mdi-pencil"
-                                        size="x-small"
-                                        variant="tonal"
-                                        color="primary"
-                                        class="quick-action-btn"
-                                        @click="$emit('edit', item)"
-                                    ></v-btn>
-                                </template>
-                            </v-tooltip>
-                        </div>
                     </div>
                 </template>
 
@@ -306,6 +275,7 @@
 </template>
 
 <script>
+import { getStockStatus, getStockIcon, getStockText, getStockColor, getStockLevel, getStockPercentage } from '@/utils/product-util';
 export default {
     name: 'ProductList',
     props: {
@@ -373,35 +343,10 @@ export default {
         };
     },
     methods: {
-        // Status methods
-        getStatusText(status) {
-            const statusMap = {
-                'active': 'نشط',
-                'low-stock': 'مخزون منخفض',
-                'out-of-stock': 'نفد المخزون',
-                'inactive': 'غير نشط'
-            };
-            return statusMap[status] || 'غير محدد';
-        },
-
-        // Stock methods
-        getStockColor(stock) {
-            if (stock <= 0) return 'error';
-            if (stock < 10) return 'warning';
-            return 'success';
-        },
-
-        getStockIcon(stock) {
-            if (stock <= 0) return 'mdi-close-circle';
-            if (stock < 10) return 'mdi-alert-circle';
-            return 'mdi-check-circle';
-        },
-
-        getStockStatus(stock) {
-            if (stock <= 0) return 'نفد المخزون';
-            if (stock < 10) return 'مخزون منخفض';
-            return 'متوفر';
-        },
+        getStockText,
+        getStockColor,
+        getStockIcon,
+        getStockStatus,
 
         // Category methods
         getCategoryName(categoryId) {
@@ -451,7 +396,7 @@ export default {
                     this.getCategoryName(product.categoryId),
                     product.price,
                     product.stock,
-                    this.getStatusText(product.status)
+                    this.getStockText(product.stock, product.minimumStock)
                 ].join(','))
             ].join('\n');
 
@@ -739,13 +684,6 @@ export default {
 }
 
 /* Actions Cell */
-.actions-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    position: relative;
-}
 
 .actions-trigger {
     color: #718096 !important;
@@ -759,14 +697,6 @@ export default {
 .quick-actions {
     display: none;
     gap: 4px;
-}
-
-.actions-cell:hover .quick-actions {
-    display: flex;
-}
-
-.actions-cell:hover .actions-trigger {
-    display: none;
 }
 
 .quick-action-btn {
@@ -897,15 +827,7 @@ export default {
     .product-name {
         font-size: 13px;
     }
-    
-    .actions-cell:hover .quick-actions {
-        display: none;
-    }
-    
-    .actions-cell:hover .actions-trigger {
-        display: inline-flex;
-    }
-    
+
     .table-footer {
         flex-direction: column;
         gap: 12px;
@@ -942,10 +864,6 @@ export default {
     transition: background-color 0.2s ease;
 }
 
-.actions-cell {
-    transition: all 0.2s ease;
-}
-
 .status-indicator {
     transition: all 0.2s ease;
 }
@@ -953,7 +871,6 @@ export default {
 /* Print Styles */
 @media print {
     .table-controls,
-    .actions-cell,
     .table-footer {
         display: none !important;
     }
