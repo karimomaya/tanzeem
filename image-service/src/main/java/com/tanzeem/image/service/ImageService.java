@@ -87,8 +87,7 @@ public class ImageService {
 
     public ResponseEntity<byte[]> getImage(String filename) {
         try {
-            String dir = uploadDir + "/"+ AuthContextHolder.getTenantId();
-            Path filePath = Paths.get(dir, filename);
+            Path filePath = Paths.get(uploadDir, filename);
 
             if (!Files.exists(filePath)) {
                 return ResponseEntity.notFound().build();

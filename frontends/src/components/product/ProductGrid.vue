@@ -19,8 +19,8 @@
                     <div class="product-image-section">
                         <div class="product-image-container">
                             <v-img 
-                                v-if="product.image" 
-                                :src="product.image" 
+                                v-if="product.imageUrl" 
+                                :src="product.imageUrl" 
                                 :alt="product.name"
                                 cover
                                 class="product-image"

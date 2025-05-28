@@ -4,6 +4,7 @@ package com.tanzeem.image.controller;
 import com.tanzeem.image.dto.ImageUploadResponse;
 import com.tanzeem.image.dto.ImageUrlRequest;
 import com.tanzeem.image.service.ImageService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,13 +30,15 @@ public class ImageController {
         return ResponseEntity.ok(imageService.downloadAndStoreImage(request.getImageUrl(), request.getContext()));
     }
 
-    @GetMapping("/{filename}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
+    @GetMapping("/**")
+    public ResponseEntity<byte[]> getImage(HttpServletRequest request) {
+        String filename = request.getRequestURI().substring("/api/images/".length());
         return imageService.getImage(filename);
     }
 
-    @DeleteMapping("/{filename}")
-    public ResponseEntity<Void> deleteImage(@PathVariable String filename) {
+    @DeleteMapping("/**")
+    public ResponseEntity<Void> deleteImage(HttpServletRequest request) {
+        String filename = request.getRequestURI().substring("/api/images/".length());
         imageService.deleteImage(filename);
         return ResponseEntity.noContent().build();
     }

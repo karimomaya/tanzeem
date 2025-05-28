@@ -53,8 +53,8 @@
                     <div class="product-cell">
                         <div class="product-image">
                             <v-img 
-                                v-if="item.image" 
-                                :src="item.image" 
+                                v-if="item.imageUrl" 
+                                :src="item.imageUrl" 
                                 :alt="item.name"
                                 cover
                                 class="product-img"

@@ -35,7 +35,8 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setMinimumStock(dto.getMinimumStock());
-        product.setTenantId(TenantContext.getTenantId());
+        product.setImageUrl(dto.getImageUrl());
+        product.setTenantId(AuthContextHolder.getTenantId());
 
         Category category = categoryRepo.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -86,8 +87,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getLowStockProducts() {
         return productRepo.findByTenantIdAndStockLessThan(
-                TenantContext.getTenantId(),
-                productRepo.getMinimumStockThreshold(TenantContext.getTenantId())
+                AuthContextHolder.getTenantId(),
+                productRepo.getMinimumStockThreshold(AuthContextHolder.getTenantId())
         );
     }
 
@@ -96,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
                 .minimumStock(product.getMinimumStock()).unit(product.getUnit()).name(product.getName())
                 .categoryId(product.getCategory().getId()).id(product.getId()).createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt()).createdBy(product.getCreatedBy()).updatedBy(product.getUpdatedBy())
+                .imageUrl(product.getImageUrl())
                 .build();
 
     }
