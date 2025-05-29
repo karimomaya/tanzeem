@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,9 +24,9 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepo;
     private final CategoryRepository categoryRepo;
 
-
+    @Transactional
     @Override
-    public Product create(ProductDto dto) {
+    public ProductResponse create(ProductDto dto) {
         Product product = new Product();
         product.setName(dto.getName());
         product.setSku(dto.getSku());
@@ -41,9 +42,10 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         product.setCategory(category);
 
-        return productRepo.save(product);
+        product=  productRepo.save(product);
+        return mapToResponse(product);
     }
-
+    @Transactional
     @Override
     public Page<ProductResponse> getAll(String search, Pageable pageable) {
         Page<Product> products;
@@ -95,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.builder().sku(product.getSku()).barcode(product.getBarcode()).price(product.getPrice()).stock(product.getStock())
                 .minimumStock(product.getMinimumStock()).unit(product.getUnit()).name(product.getName())
                 .categoryId(product.getCategory().getId()).id(product.getId()).createdAt(product.getCreatedAt())
+                .categoryName(product.getCategory().getName())
                 .updatedAt(product.getUpdatedAt()).createdBy(product.getCreatedBy()).updatedBy(product.getUpdatedBy())
                 .imageUrl(product.getImageUrl())
                 .build();

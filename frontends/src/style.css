@@ -21,8 +21,8 @@
 	border-left-color: rgb(var(--v-theme-info)) !important;
 	background: rgba(33, 150, 243, 0.08)!important; 
 }
-.v-btn.v-btn--disabled {
-	cursor: disabled!important;
+.v-btn.v-btn--disabled, .v-pagination__item--is-active {
+	cursor: not-allowed!important;
 }
 .v-pagination__item--is-active .v-btn.v-btn--disabled {
 	background-color: rgb(var(--v-theme-primary-hover))!important;

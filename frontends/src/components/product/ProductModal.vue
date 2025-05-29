@@ -105,29 +105,47 @@
                                     <label class="form-label">
                                         التصنيف <span class="required">*</span>
                                     </label>
-                                    <v-select v-model="editedProduct.categoryId" :items="categories" item-title="name"
-                                        item-value="id" :rules="[rules.required]" variant="outlined" density="comfortable"
-                                        placeholder="اختر التصنيف" hide-details="auto" class="modern-field">
+                                    <v-autocomplete
+                                        v-model="editedProduct.categoryId"
+                                        :items="searchableCategories"
+                                        :search="categorySearch"
+                                        @update:search="onCategorySearch"
+                                        item-title="name"
+                                        item-value="id"
+                                        :rules="[rules.required]"
+                                        variant="outlined"
+                                        density="comfortable"
+                                        placeholder="ابحث عن التصنيف..."
+                                        hide-details="auto"
+                                        class="modern-field"
+                                        :loading="categoryLoading"
+                                        no-data-text="لا توجد نتائج"
+                                        :menu-props="{ maxHeight: 300 }"
+                                        clearable
+                                    >
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props" class="category-item">
                                                 <template v-slot:prepend>
                                                     <v-avatar size="32" :color="item.raw.color || 'primary'" class="me-3">
-                                                        <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder'
-                                                        }}</v-icon>
+                                                        <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder' }}</v-icon>
                                                     </v-avatar>
                                                 </template>
+                                                <v-list-item-subtitle v-if="item.raw.description">
+                                                    {{ item.raw.description }}
+                                                </v-list-item-subtitle>
                                             </v-list-item>
                                         </template>
-                                        <template v-slot:selection="{ item }">
-                                            <div class="d-flex align-center">
-                                                <v-avatar size="24" :color="item.raw.color || 'primary'" class="me-2">
-                                                    <v-icon color="white" size="12">{{ item.raw.icon || 'mdi-folder'
-                                                    }}</v-icon>
-                                                </v-avatar>
-                                                {{ item.raw.name }}
-                                            </div>
+                                        <template v-slot:prepend-inner>
+                                            <v-icon color="primary" size="20">mdi-magnify</v-icon>
                                         </template>
-                                    </v-select>
+                                        <template v-slot:no-data>
+                                            <v-list-item>
+                                                <v-list-item-title class="text-center text-grey">
+                                                    {{ categorySearch ? 'لا توجد نتائج للبحث' : 'ابدأ بكتابة اسم التصنيف' }}
+                                                </v-list-item-title>
+                                            </v-list-item>
+                                        </template>
+                                    </v-autocomplete>
                                 </div>
                             </v-col>
 
@@ -408,7 +426,7 @@
 </template>
 
 <script>
-import { saveProduct, updateProduct, getStockText, getStockColor } from '@/utils/product-util';
+import { saveProduct, updateProduct, getStockText, getStockColor, getCategories } from '@/utils/product-util';
 import { success, error } from '@/utils/system-util';
 import { ImageServiceClient } from '@/utils/image-service-client'; // Import the image service client
 
@@ -422,10 +440,6 @@ export default {
         product: {
             type: Object,
             default: null
-        },
-        categories: {
-            type: Array,
-            default: () => []
         }
     },
     emits: ['update:modelValue', 'save'],
@@ -456,6 +470,10 @@ export default {
                 description: '',
                 imageUrl: '' // Changed from 'image' to 'imageUrl' to match backend
             },
+            searchableCategories: [],
+            categorySearch: '',
+            categoryLoading: false,
+            categorySearchTimeout: null,
             imageServiceClient: new ImageServiceClient(), // Initialize image service client
             statusOptions: [
                 { title: 'نشط', value: 'active' },
@@ -543,11 +561,17 @@ export default {
         modelValue(newValue) {
             if (!newValue) {
                 this.resetForm();
+            }else {
+                // Load initial categories when modal opens
+                this.loadInitialCategories();
             }
         },
         imageUploadType() {
             this.clearImageData();
         }
+    },
+    mounted() {
+        this.loadInitialCategories();
     },
     methods: {
         resetForm() {
@@ -573,6 +597,63 @@ export default {
             if (this.$refs.productForm) {
                 this.$refs.productForm.resetValidation();
             }
+        },
+        async loadInitialCategories() {
+            if (this.searchableCategories.length > 0) return; // Already loaded
+            
+            this.categoryLoading = true;
+            try {
+                const params = new URLSearchParams({
+                    page: 0, // Convert to 0-based index
+                    size: 5
+                });
+                const response = await getCategories(params); // Load first 5 categories
+                this.searchableCategories = response && response.content? response.content : [];
+            } catch (error) {
+                console.error('Error loading initial categories:', error);
+                this.searchableCategories = [];
+            } finally {
+                this.categoryLoading = false;
+            }
+        },
+        async searchCategoriesFromBackend(searchTerm) {
+            this.categoryLoading = true;
+            try {
+                const params = new URLSearchParams({
+                    page: 0, // Convert to 0-based index
+                    size: 5
+                });
+                if (searchTerm) {
+                    params.append('search', this.searchTerm);
+                }
+                const response = await getCategories(params); // Search with max 10 results
+                this.searchableCategories = response && response.content? response.content : [];
+            } catch (error) {
+                console.error('Error searching categories:', error);
+                this.searchableCategories = [];
+            } finally {
+                this.categoryLoading = false;
+            }
+        },
+
+        onCategorySearch(searchValue) {
+            this.categorySearch = searchValue;
+            
+            // Clear previous timeout
+            if (this.categorySearchTimeout) {
+                clearTimeout(this.categorySearchTimeout);
+            }
+
+            // If search is empty, load initial categories
+            if (!searchValue || searchValue.trim() === '') {
+                this.loadInitialCategories();
+                return;
+            }
+
+            // Debounce search to avoid too many API calls
+            this.categorySearchTimeout = setTimeout(() => {
+                this.searchCategoriesFromBackend(searchValue.trim());
+            }, 300); // 300ms delay
         },
 
         closeDialog() {

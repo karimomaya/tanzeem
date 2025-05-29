@@ -23,6 +23,7 @@ public class ProductResponse {
     private Integer minimumStock;
     private String imageUrl;
     private Long categoryId;
+    private String categoryName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;

@@ -248,10 +248,6 @@ export default {
         getStockColor,
         getStockLevel,
         getStockPercentage,
-
-
-        
-
         // Category methods
         getCategoryName(categoryId) {
             return this.categoryMap[categoryId]?.name || 'غير محدد';

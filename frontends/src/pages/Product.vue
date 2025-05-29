@@ -365,6 +365,7 @@ export default {
 
     created() {
         // Load categories when component is created
+        this.loadCategories();
         this.loadProducts();
     },
 
