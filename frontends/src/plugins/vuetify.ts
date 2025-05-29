@@ -109,9 +109,6 @@ export default createVuetify({
           'btn-elevation': '0',
           'toolbar-elevation': '0',
           
-          // Animation
-          'transition-primary': '0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          'transition-secondary': '0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           // button
           'theme-primary-hover': '#2f4e73',
         }

@@ -365,7 +365,7 @@ export default {
 
     created() {
         // Load categories when component is created
-        this.loadCategories();
+        this.loadProducts();
     },
 
     watch: {
@@ -955,30 +955,6 @@ export default {
 .v-select:focus-within {
     outline: 2px solid rgba(54, 96, 145, 0.3);
     outline-offset: 2px;
-}
-
-/* Animation Classes */
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-    transition: transform 0.3s ease;
-}
-
-.slide-enter-from {
-    transform: translateX(100%);
-}
-
-.slide-leave-to {
-    transform: translateX(-100%);
 }
 
 /* Custom Scrollbar */

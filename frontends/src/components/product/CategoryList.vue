@@ -909,7 +909,6 @@ export default {
     }
 }
 
-/* Animation */
 .modern-table :deep(.v-data-table__tr) {
     transition: background-color 0.2s ease;
 }
@@ -975,20 +974,6 @@ export default {
     background: linear-gradient(135deg, #2d4f73 0%, #3182ce 100%);
 }
 
-/* Loading Animation */
-.loading-content {
-    animation: pulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.8;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
 /* Hover Effects */
 .product-count-chip {
     transition: all 0.2s ease;
@@ -1002,21 +987,6 @@ export default {
     transform: scale(1.3);
 }
 
-/* Table Row Animation */
-.modern-table :deep(.v-data-table__tr) {
-    animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
 /* Enhanced Chip Styling */
 .v-chip {

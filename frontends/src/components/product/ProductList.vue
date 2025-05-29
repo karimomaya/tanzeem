@@ -859,7 +859,6 @@ export default {
     }
 }
 
-/* Animation */
 .v-data-table :deep(.v-data-table__tr) {
     transition: background-color 0.2s ease;
 }

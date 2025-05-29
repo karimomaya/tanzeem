@@ -21,3 +21,15 @@
 	border-left-color: rgb(var(--v-theme-info)) !important;
 	background: rgba(33, 150, 243, 0.08)!important; 
 }
+.v-btn.v-btn--disabled {
+	cursor: disabled!important;
+}
+.v-pagination__item--is-active .v-btn.v-btn--disabled {
+	background-color: rgb(var(--v-theme-primary-hover))!important;
+	color: white!important;
+	opacity: 0.6!important;
+}
+
+.v-pagination__next .v-btn.v-btn--variant-text, .v-pagination__last .v-btn.v-btn--variant-text, .v-pagination__prev .v-btn.v-btn--variant-text, .v-pagination__first .v-btn.v-btn--variant-text{
+	opacity: 0.7;
+}

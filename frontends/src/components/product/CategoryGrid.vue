@@ -246,43 +246,135 @@
             </div>
         </div>
 
-        <!-- Enhanced Pagination -->
+        <!-- Enhanced Pagination Card -->
         <v-card 
-            v-if="!loading && totalItems > itemsPerPage" 
+            v-if="!loading && totalItems > 0" 
             class="pagination-card" 
             elevation="0"
         >
             <v-card-text class="pagination-content">
+                <!-- Pagination Info -->
                 <div class="pagination-info">
-                    <span class="text-body-2 text-medium-emphasis">
-                        عرض {{ (page - 1) * itemsPerPage + 1 }} - {{ Math.min(page * itemsPerPage, totalItems) }} من أصل {{ totalItems }} تصنيف
-                    </span>
+                    <div class="info-section">
+                        <span class="text-body-2 text-medium-emphasis">
+                            عرض {{ startItem }} - {{ endItem }} من أصل {{ totalItems }} تصنيف
+                        </span>
+                        <div class="pagination-stats">
+                            <v-chip size="x-small" color="primary" variant="tonal" class="me-2">
+                                <v-icon start size="12">mdi-layers</v-icon>
+                                صفحة {{ page }} من {{ totalPages }}
+                            </v-chip>
+                            <v-chip size="x-small" color="info" variant="tonal">
+                                <v-icon start size="12">mdi-grid</v-icon>
+                                {{ itemsPerPage }} عنصر/صفحة
+                            </v-chip>
+                        </div>
+                    </div>
                 </div>
                 
-                <v-pagination 
-                    :model-value="page"
-                    :length="Math.ceil(totalItems / itemsPerPage)" 
-                    :total-visible="5"
-                    @update:model-value="$emit('update:page', $event)"
-                    color="primary" 
-                    size="small"
-                    class="pagination-control"
-                ></v-pagination>
+                <!-- Main Pagination Controls -->
+                <div class="pagination-controls">
+                    <v-pagination 
+                        :model-value="page"
+                        :length="totalPages" 
+                        :total-visible="getPaginationVisible"
+                        @update:model-value="handlePageChange"
+                        color="primary" 
+                        size="small"
+                        class="pagination-control"
+                        :disabled="loading"
+                        show-first-last-page
+                    ></v-pagination>
+                </div>
                 
-                <div class="items-per-page">
-                    <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
-                    <v-select 
-                        :model-value="itemsPerPage"
-                        :items="[6, 12, 24, 48]" 
-                        variant="outlined"
-                        density="compact" 
-                        hide-details 
-                        style="width: 80px;"
-                        class="items-select"
-                        @update:model-value="$emit('update:items-per-page', $event)"
-                    ></v-select>
+                <!-- Items Per Page & Actions -->
+                <div class="pagination-actions">
+                    <div class="items-per-page">
+                        <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                        <v-select 
+                            :model-value="itemsPerPage"
+                            :items="itemsPerPageOptions" 
+                            variant="outlined"
+                            density="compact" 
+                            hide-details 
+                            style="width: 90px;"
+                            class="items-select"
+                            @update:model-value="handleItemsPerPageChange"
+                            :disabled="loading"
+                        ></v-select>
+                    </div>
+                    
+                    <!-- Quick Jump -->
+                    <div class="quick-jump">
+                        <span class="text-body-2 text-medium-emphasis me-2">انتقال لصفحة:</span>
+                        <v-text-field
+                            v-model="jumpToPage"
+                            type="number"
+                            :min="1"
+                            :max="totalPages"
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            style="width: 80px;"
+                            class="jump-input"
+                            @keyup.enter="handleQuickJump"
+                            @blur="handleQuickJump"
+                            :disabled="loading || totalPages <= 1"
+                        ></v-text-field>
+                    </div>
                 </div>
             </v-card-text>
+            
+            <!-- Mobile Pagination -->
+            <div class="mobile-pagination d-md-none">
+                <v-card-text class="mobile-pagination-content">
+                    <div class="mobile-info">
+                        <span class="text-body-2 text-medium-emphasis">
+                            {{ startItem }} - {{ endItem }} من {{ totalItems }}
+                        </span>
+                    </div>
+                    
+                    <div class="mobile-controls">
+                        <v-btn
+                            icon="mdi-chevron-right"
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                            :disabled="page >= totalPages || loading"
+                            @click="handlePageChange(page + 1)"
+                        ></v-btn>
+                        
+                        <div class="mobile-page-info">
+                            <span class="text-body-2 font-weight-medium">
+                                {{ page }} / {{ totalPages }}
+                            </span>
+                        </div>
+                        
+                        <v-btn
+                            icon="mdi-chevron-left"
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                            :disabled="page <= 1 || loading"
+                            @click="handlePageChange(page - 1)"
+                        ></v-btn>
+                    </div>
+                    
+                    <div class="mobile-items-per-page">
+                        <v-select 
+                            :model-value="itemsPerPage"
+                            :items="itemsPerPageOptions" 
+                            label="عدد العناصر"
+                            variant="outlined"
+                            density="compact" 
+                            hide-details 
+                            class="mobile-items-select"
+                            @update:model-value="handleItemsPerPageChange"
+                            :disabled="loading"
+                        ></v-select>
+                    </div>
+                </v-card-text>
+            </div>
         </v-card>
 
         <!-- Floating Refresh Button -->
@@ -294,13 +386,38 @@
             class="refresh-fab"
             elevation="8"
             @click="$emit('refresh')"
+            :loading="loading"
         >
             <v-icon>mdi-refresh</v-icon>
-            <v-tooltip content-class="custom-tooltip" color="black" style="{{ color: 'black!important' }}" activator="parent" location="top">
-                <span color="black">تحديث التصنيفات</span>
-            
+            <v-tooltip content-class="custom-tooltip" color="black" activator="parent" location="top">
+                <span>تحديث التصنيفات</span>
             </v-tooltip>
         </v-btn>
+
+        <!-- Quick Stats Floating Card -->
+        <!-- <v-card 
+            v-if="!loading && categories.length > 0"
+            class="quick-stats-fab"
+            elevation="8"
+        >
+            <v-card-text class="quick-stats-content">
+                <div class="quick-stat">
+                    <v-icon size="16" color="primary">mdi-layers</v-icon>
+                    <span class="stat-number">{{ totalItems }}</span>
+                </div>
+                <div class="quick-stat">
+                    <v-icon size="16" color="success">mdi-check-circle</v-icon>
+                    <span class="stat-number">{{ activeCount }}</span>
+                </div>
+                <div class="quick-stat">
+                    <v-icon size="16" color="error">mdi-close-circle</v-icon>
+                    <span class="stat-number">{{ inactiveCount }}</span>
+                </div>
+            </v-card-text>
+            <v-tooltip content-class="custom-tooltip" color="black" activator="parent" location="top">
+                <span>إجمالي: {{ totalItems }} | نشط: {{ activeCount }} | غير نشط: {{ inactiveCount }}</span>
+            </v-tooltip>
+        </v-card> -->
     </div>
 </template>
 
@@ -342,17 +459,59 @@ export default {
         }
     },
     emits: ['edit', 'delete', 'update:page', 'update:items-per-page', 'update:sort-by', 'refresh', 'view', 'duplicate', 'favorite', 'toggle-status'],
+    data() {
+        return {
+            jumpToPage: null,
+            itemsPerPageOptions: [6, 12, 24, 48, 96]
+        };
+    },
     computed: {
         filteredCategories() {
             // Since filtering is now handled on the backend, 
             // we just return the categories as received
             return this.categories;
         },
+        
         paginatedCategories() {
             // Since pagination is handled on the backend,
             // we just return the categories as received
             return this.categories;
+        },
+        
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+        
+        startItem() {
+            return this.totalItems === 0 ? 0 : (this.page - 1) * this.itemsPerPage + 1;
+        },
+        
+        endItem() {
+            return Math.min(this.page * this.itemsPerPage, this.totalItems);
+        },
+        
+        getPaginationVisible() {
+            // Responsive pagination visibility
+            if (this.$vuetify.display.xs) return 3;
+            if (this.$vuetify.display.sm) return 5;
+            return 7;
+        },
+        
+        activeCount() {
+            return this.categories.filter(cat => cat.active).length;
+        },
+        
+        inactiveCount() {
+            return this.categories.filter(cat => !cat.active).length;
         }
+    },
+    watch: {
+        page(newPage) {
+            this.jumpToPage = newPage;
+        }
+    },
+    mounted() {
+        this.jumpToPage = this.page;
     },
     methods: {
         getDescription(category) {
@@ -411,12 +570,37 @@ export default {
 
         toggleCategoryStatus(category) {
             this.$emit('toggle-status', { ...category, active: !category.active });
+        },
+        
+        handlePageChange(newPage) {
+            if (newPage >= 1 && newPage <= this.totalPages && newPage !== this.page) {
+                this.$emit('update:page', newPage);
+            }
+        },
+        
+        handleItemsPerPageChange(newItemsPerPage) {
+            this.$emit('update:items-per-page', newItemsPerPage);
+            // Reset to first page when changing items per page
+            if (this.page !== 1) {
+                this.$emit('update:page', 1);
+            }
+        },
+        
+        handleQuickJump() {
+            const pageNum = parseInt(this.jumpToPage);
+            if (pageNum && pageNum >= 1 && pageNum <= this.totalPages && pageNum !== this.page) {
+                this.handlePageChange(pageNum);
+            } else {
+                // Reset to current page if invalid
+                this.jumpToPage = this.page;
+            }
         }
     }
 };
 </script>
 
 <style scoped>
+/* Previous styles remain the same... */
 /* Grid Container */
 .category-grid {
     width: 100%;
@@ -738,33 +922,67 @@ export default {
     margin: 0;
 }
 
-/* Enhanced Pagination */
+/* Enhanced Pagination Card */
 .pagination-card {
     margin-top: 32px;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .pagination-content {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 24px !important;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px !important;
 }
 
+/* Pagination Info Section */
 .pagination-info {
-    color: #718096;
-    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-controls .v-btn {
+    color: white!important;;
 }
 
 .pagination-control {
     margin: 0;
 }
 
+/* Pagination Actions */
+.pagination-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
 .items-per-page {
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .items-select {
@@ -772,6 +990,62 @@ export default {
 }
 
 .items-select .v-field {
+    border-radius: 8px !important;
+}
+
+.quick-jump {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jump-input {
+    border-radius: 8px;
+}
+
+.jump-input .v-field {
+    border-radius: 8px !important;
+}
+
+/* Mobile Pagination */
+.mobile-pagination {
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.mobile-pagination-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px !important;
+}
+
+.mobile-info {
+    text-align: center;
+}
+
+.mobile-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.mobile-page-info {
+    min-width: 60px;
+    text-align: center;
+}
+
+.mobile-items-per-page {
+    display: flex;
+    justify-content: center;
+}
+
+.mobile-items-select {
+    max-width: 120px;
+}
+
+.mobile-items-select .v-field {
     border-radius: 8px !important;
 }
 
@@ -784,13 +1058,76 @@ export default {
     background: linear-gradient(135deg, #366091 0%, #4299e1 100%) !important;
     color: white !important;
     border-radius: 16px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .refresh-fab:hover {
     transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(54, 96, 145, 0.3) !important;
+}
+
+/* Quick Stats Floating Card */
+.quick-stats-fab {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    z-index: 999;
+    background: white !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-stats-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.quick-stats-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px !important;
+    min-width: 60px;
+}
+
+.quick-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stat-number {
+    color: #2d3748;
+    font-weight: 700;
 }
 
 /* Responsive Design */
+@media (max-width: 960px) {
+    .pagination-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .items-per-page,
+    .quick-jump {
+        justify-content: center;
+    }
+    
+    .info-section {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .pagination-stats {
+        justify-content: center;
+    }
+}
+
 @media (max-width: 768px) {
     .category-icon-section {
         height: 120px;
@@ -821,13 +1158,22 @@ export default {
     }
     
     .pagination-content {
-        flex-direction: column;
+        padding: 20px 16px !important;
         gap: 16px;
-        align-items: stretch !important;
     }
     
-    .pagination-info {
-        text-align: center;
+    .pagination-actions {
+        gap: 12px;
+    }
+    
+    .quick-stats-fab {
+        bottom: 80px;
+        right: 16px;
+    }
+    
+    .refresh-fab {
+        bottom: 16px;
+        right: 16px;
     }
 }
 
@@ -849,42 +1195,54 @@ export default {
         font-size: 14px;
     }
     
-    .refresh-fab {
-        bottom: 16px;
-        right: 16px;
+    .pagination-content {
+        padding: 16px 12px !important;
+        gap: 12px;
+    }
+    
+    .quick-jump {
+        display: none; /* Hide quick jump on very small screens */
     }
 }
 
-/* Animation Classes */
-.category-card {
-    animation: fadeInUp 0.6s ease-out;
+.pagination-control :deep(.v-pagination__item) {
+    transition: all 0.2s ease;
+    border-radius: 8px !important;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.pagination-control :deep(.v-pagination__item:hover) {
+    transform: translateY(-1px);
 }
 
-/* Loading Animation */
-.category-card:nth-child(1) { animation-delay: 0.1s; }
-.category-card:nth-child(2) { animation-delay: 0.2s; }
-.category-card:nth-child(3) { animation-delay: 0.3s; }
-.category-card:nth-child(4) { animation-delay: 0.4s; }
-.category-card:nth-child(5) { animation-delay: 0.5s; }
-.category-card:nth-child(6) { animation-delay: 0.6s; }
+.pagination-control :deep(.v-pagination__item--is-active) {
+     background: #366091!important; /*linear-gradient(135deg, #366091 0%, #4299e1 100%) !important; */
+     color: white;
+    transform: scale(1.1);
+    opacity: 1
+}
+
+
+/* Refresh Button Animation */
+.refresh-fab:active {
+    transform: translateY(-2px) scale(0.95);
+}
+
+.refresh-fab .v-icon {
+    transition: transform 0.3s ease;
+}
+
+.refresh-fab:hover .v-icon {
+    transform: rotate(180deg);
+}
 
 /* Print Styles */
 @media print {
     .category-overlay,
     .category-actions,
     .pagination-card,
-    .refresh-fab {
+    .refresh-fab,
+    .quick-stats-fab,
+    .mobile-pagination {
         display: none !important;
     }
     
@@ -892,9 +1250,17 @@ export default {
         break-inside: avoid;
         box-shadow: none !important;
         border: 1px solid #000 !important;
+        margin-bottom: 16px;
+    }
+    
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
     }
 }
 
+/* Custom Tooltip Styling */
 :global(.custom-tooltip) {
     background: #2d3748 !important;
     color: white !important;
@@ -902,5 +1268,76 @@ export default {
     font-size: 12px !important;
     padding: 8px 12px !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Enhanced Chip Styling */
+.v-chip {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease;
+}
+
+.v-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Button Styling */
+.v-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-btn:hover:not(.v-btn--disabled) {
+    transform: translateY(-1px);
+}
+
+/* Text Selection */
+::selection {
+    background: rgba(54, 96, 145, 0.2);
+    color: #2d3748;
+}
+
+/* Focus States */
+.v-btn:focus-visible,
+.v-text-field:focus-within,
+.v-select:focus-within {
+    outline: 2px solid rgba(54, 96, 145, 0.5);
+    outline-offset: 2px;
+}
+
+/* Loading States */
+.pagination-control :deep(.v-pagination__item--is-disabled) {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Enhanced Scrollbar */
+.pagination-card::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pagination-card::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.pagination-card::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #366091 0%, #4299e1 100%);
+    border-radius: 3px;
+}
+
+.pagination-card::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #2d4f73 0%, #3182ce 100%);
+}
+
+/* Accessibility Improvements */
+.category-card:focus-visible {
+    outline: 2px solid rgba(54, 96, 145, 0.8);
+    outline-offset: 2px;
+}
+
+.pagination-control :deep(.v-pagination__item):focus-visible {
+    outline: 2px solid rgba(54, 96, 145, 0.8);
+    outline-offset: 2px;
 }
 </style>
