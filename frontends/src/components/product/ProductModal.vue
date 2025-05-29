@@ -302,7 +302,7 @@
                                                     icon="mdi-eye" 
                                                     size="x-small" 
                                                     variant="text"
-                                                    @click="previewImageUrl">
+                                                    @click="previewImageLogic">
                                                 </v-btn>
                                             </div>
                                         </template>
@@ -690,7 +690,7 @@ export default {
             }
         },
 
-        previewImageUrl() {
+        previewImageLogic() {
             if (this.imageUrlInput) {
                 this.previewImageUrl = this.imageUrlInput;
                 this.previewImage = true;

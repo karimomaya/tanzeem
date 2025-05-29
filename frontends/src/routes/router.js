@@ -7,7 +7,7 @@ import { isTokenValid } from '@/utils/auth-util'; // Adjust the import path as n
 const routes = [
     {
       path: '/',
-      name: 'login',
+      name: 'Home',
       component: Login,
       meta: { hideLayout: true },
     },

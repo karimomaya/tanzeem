@@ -1,0 +1,23 @@
+.v-btn.bg-primary:hover {
+    background-color: rgb(var(--v-theme-primary-hover))!important;
+}
+/* Card Type Specific Styles */
+.error-card {
+	border-left-color: rgb(var(--v-theme-error)) !important;
+	background: rgba(255, 82, 82, 0.08)!important;
+}
+
+.success-card {
+	border-left-color: rgb(var(--v-theme-success)) !important;
+	background: rgba(76, 175, 80, 0.08)!important; 
+}
+
+.warning-card {
+	border-left-color: rgb(var(--v-theme-warning)) !important;
+	background:rgba(255, 193, 7, 0.08)!important; 
+}
+
+.info-card {
+	border-left-color: rgb(var(--v-theme-info)) !important;
+	background: rgba(33, 150, 243, 0.08)!important; 
+}

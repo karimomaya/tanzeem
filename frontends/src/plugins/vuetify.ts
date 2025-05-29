@@ -2,6 +2,12 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { ar } from 'vuetify/locale'
+
+const customArabic = {
+  ...ar,
+  open: 'فتح',
+}
 
 export default createVuetify({
   components,
@@ -14,6 +20,7 @@ export default createVuetify({
         colors: {
           // Primary color family (Your requested #366091)
           primary: '#366091',
+          'primary-hover': '#2f4e73',
           'primary-light': '#4a7bb7',
           'primary-dark': '#2a4d73',
           'primary-faded': '#f0f4f8',
@@ -72,6 +79,7 @@ export default createVuetify({
           'border-radius-md': '12px',
           'border-radius-lg': '16px',
           'border-radius-xl': '20px',
+          'btn-hover-bg': '#2f4e73',
           
           // Spacing system (8px base)
           'spacing-xs': '4px',
@@ -104,6 +112,8 @@ export default createVuetify({
           // Animation
           'transition-primary': '0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           'transition-secondary': '0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          // button
+          'theme-primary-hover': '#2f4e73',
         }
       }
     }
@@ -175,5 +185,6 @@ export default createVuetify({
     },
     locale: 'ar', // Default locale
     fallback: 'en',
+    messages: { ar: customArabic },
   }
 })

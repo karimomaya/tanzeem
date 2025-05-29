@@ -234,26 +234,7 @@ export default {
 	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Card Type Specific Styles */
-.error-card {
-	border-left-color: rgb(var(--v-theme-error)) !important;
-	background: linear-gradient(135deg, rgba(255, 82, 82, 0.08), rgba(244, 67, 54, 0.05)) !important;
-}
 
-.success-card {
-	border-left-color: rgb(var(--v-theme-success)) !important;
-	background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(139, 195, 74, 0.05)) !important;
-}
-
-.warning-card {
-	border-left-color: rgb(var(--v-theme-warning)) !important;
-	background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 152, 0, 0.05)) !important;
-}
-
-.info-card {
-	border-left-color: rgb(var(--v-theme-info)) !important;
-	background: linear-gradient(135deg, rgba(33, 150, 243, 0.08), rgba(3, 169, 244, 0.05)) !important;
-}
 
 /* Animation Keyframes */
 @keyframes slideInRight {
@@ -317,7 +298,6 @@ export default {
 
 /* Enhanced Close Button */
 .v-btn:hover {
-	background-color: rgba(0, 0, 0, 0.05) !important;
 	transform: scale(1.1);
 }
 </style>

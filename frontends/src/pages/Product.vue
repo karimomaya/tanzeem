@@ -705,19 +705,19 @@ export default {
 }
 
 .stat-card-blue .stat-icon {
-    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+     background: #4299e1; /*linear-gradient(135deg, #4299e1 0%, #3182ce 100%); */
 }
 
 .stat-card-green .stat-icon {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+     background: #48bb78; /*linear-gradient(135deg, #48bb78 0%, #38a169 100%); */
 }
 
 .stat-card-purple .stat-icon {
-    background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+    background: #9f7aea /*linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);*/
 }
 
 .stat-card-yellow .stat-icon {
-    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    background: #ed8936; /*linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);*/
 }
 
 .stat-content {
