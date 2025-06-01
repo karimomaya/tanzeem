@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialogVisible" max-width="900px" persistent>
-        <v-card class="modern-modal" elevation="0">
+        <v-card rounded="xl" elevation="8">
             <!-- Modern Header -->
             <div class="modal-header">
                 <div class="d-flex align-center">
@@ -105,29 +105,18 @@
                                     <label class="form-label">
                                         التصنيف <span class="required">*</span>
                                     </label>
-                                    <v-autocomplete
-                                        v-model="editedProduct.categoryId"
-                                        :items="searchableCategories"
-                                        :search="categorySearch"
-                                        @update:search="onCategorySearch"
-                                        item-title="name"
-                                        item-value="id"
-                                        :rules="[rules.required]"
-                                        variant="outlined"
-                                        density="comfortable"
-                                        placeholder="ابحث عن التصنيف..."
-                                        hide-details="auto"
-                                        class="modern-field"
-                                        :loading="categoryLoading"
-                                        no-data-text="لا توجد نتائج"
-                                        :menu-props="{ maxHeight: 300 }"
-                                        clearable
-                                    >
+                                    <v-autocomplete v-model="selectedCategoryId" :items="searchableCategories"
+                                        :search="categorySearch" @update:search="onCategorySearch" item-title="name"
+                                        item-value="id" :rules="[rules.required]" variant="outlined" density="comfortable"
+                                        placeholder="ابحث عن التصنيف..." hide-details="auto" class="modern-field"
+                                        :loading="categoryLoading" no-data-text="لا توجد نتائج"
+                                        :menu-props="{ maxHeight: 300 }" clearable>
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props" class="category-item">
                                                 <template v-slot:prepend>
                                                     <v-avatar size="32" :color="item.raw.color || 'primary'" class="me-3">
-                                                        <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder' }}</v-icon>
+                                                        <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder'
+                                                        }}</v-icon>
                                                     </v-avatar>
                                                 </template>
                                                 <v-list-item-subtitle v-if="item.raw.description">
@@ -146,33 +135,6 @@
                                             </v-list-item>
                                         </template>
                                     </v-autocomplete>
-                                </div>
-                            </v-col>
-
-                            <!-- Status -->
-                            <v-col cols="12" md="6">
-                                <div class="form-group">
-                                    <label class="form-label">حالة المنتج</label>
-                                    <v-select v-model="editedProduct.status" :items="statusOptions" variant="outlined"
-                                        density="comfortable" hide-details="auto" class="modern-field">
-                                        <template v-slot:item="{ props, item }">
-                                            <v-list-item v-bind="props">
-                                                <template v-slot:prepend>
-                                                    <v-icon :color="getStatusColor(item.raw.value)" class="me-2">
-                                                        {{ getStatusIcon(item.raw.value) }}
-                                                    </v-icon>
-                                                </template>
-                                            </v-list-item>
-                                        </template>
-                                        <template v-slot:selection="{ item }">
-                                            <div class="d-flex align-center">
-                                                <v-icon :color="getStatusColor(item.raw.value)" size="16" class="me-2">
-                                                    {{ getStatusIcon(item.raw.value) }}
-                                                </v-icon>
-                                                {{ item.raw.title }}
-                                            </div>
-                                        </template>
-                                    </v-select>
                                 </div>
                             </v-col>
                         </v-row>
@@ -211,8 +173,7 @@
                                     </label>
                                     <v-text-field v-model.number="editedProduct.stock"
                                         :rules="[rules.required, rules.nonNegative]" type="number" variant="outlined"
-                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field"
-                                        @input="updateStatusFromStock">
+                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="info" size="20">mdi-package-variant</v-icon>
                                         </template>
@@ -234,8 +195,7 @@
                                     </label>
                                     <v-text-field v-model.number="editedProduct.minimumStock"
                                         :rules="[rules.required, rules.nonNegative]" type="number" variant="outlined"
-                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field"
-                                        @input="updateStatusFromStock">
+                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-alert-circle</v-icon>
                                         </template>
@@ -278,16 +238,11 @@
                                         </template>
                                         <template v-slot:append-inner>
                                             <div class="d-flex align-center">
-                                                <v-progress-circular v-if="uploadLoading" 
-                                                    :model-value="uploadProgress" 
-                                                    size="20" 
-                                                    color="primary" 
-                                                    class="me-2">
+                                                <v-progress-circular v-if="uploadLoading" :model-value="uploadProgress"
+                                                    size="20" color="primary" class="me-2">
                                                 </v-progress-circular>
-                                                <v-btn v-if="selectedImageFile && selectedImageFile.length > 0" 
-                                                    icon="mdi-eye" 
-                                                    size="x-small" 
-                                                    variant="text"
+                                                <v-btn v-if="selectedImageFile && selectedImageFile.length > 0"
+                                                    icon="mdi-eye" size="x-small" variant="text"
                                                     @click="previewUploadedImage">
                                                 </v-btn>
                                             </div>
@@ -308,24 +263,19 @@
                                         </template>
                                         <template v-slot:append-inner>
                                             <div class="d-flex align-center">
-                                                <v-btn v-if="imageUrlInput && !urlDownloadLoading" 
-                                                    icon="mdi-download" 
-                                                    size="x-small" 
-                                                    variant="text"
-                                                    color="primary"
+                                                <v-btn v-if="imageUrlInput && !urlDownloadLoading" icon="mdi-download"
+                                                    size="x-small" variant="text" color="primary"
                                                     @click="downloadImageFromUrl"
                                                     :disabled="!isValidImageUrl(imageUrlInput)">
                                                 </v-btn>
-                                                <v-btn v-if="imageUrlInput" 
-                                                    icon="mdi-eye" 
-                                                    size="x-small" 
-                                                    variant="text"
+                                                <v-btn v-if="imageUrlInput" icon="mdi-eye" size="x-small" variant="text"
                                                     @click="previewImageLogic">
                                                 </v-btn>
                                             </div>
                                         </template>
                                     </v-text-field>
-                                    <div v-if="imageUrlInput && !isValidImageUrl(imageUrlInput)" class="text-caption text-warning mt-1">
+                                    <div v-if="imageUrlInput && !isValidImageUrl(imageUrlInput)"
+                                        class="text-caption text-warning mt-1">
                                         سيتم تحميل الصورة وحفظها محلياً عند الحفظ
                                     </div>
                                 </div>
@@ -336,7 +286,7 @@
                                 <div class="image-preview-container">
                                     <label class="form-label">معاينة الصورة</label>
                                     <div class="image-preview">
-                                        <v-img :src="imagePreviewUrl" max-height="200" max-width="200" contain
+                                        <v-img :src="imagePreviewUrl" height="200" width="200" contain
                                             class="preview-image">
                                             <template v-slot:error>
                                                 <div class="d-flex align-center justify-center h-100">
@@ -391,7 +341,7 @@
                             @click="closeDialog">
                             إلغاء
                         </v-btn>
-                        <v-btn color="primary" size="large" :disabled="!formValid || uploadLoading || urlDownloadLoading" 
+                        <v-btn color="primary" size="large" :disabled="!formValid || uploadLoading || urlDownloadLoading"
                             :loading="loading" class="save-btn" @click="saveProduct">
                             <v-icon start>{{ editedProductId ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
                             {{ editedProductId ? 'تحديث المنتج' : 'حفظ المنتج' }}
@@ -461,12 +411,11 @@ export default {
                 name: '',
                 sku: '',
                 barcode: '',
-                categoryId: null,
+                category: { id: null, name: '' },
                 price: 0,
                 stock: 0,
                 minimumStock: 0,
                 unit: 'piece',
-                status: 'active',
                 description: '',
                 imageUrl: '' // Changed from 'image' to 'imageUrl' to match backend
             },
@@ -475,12 +424,6 @@ export default {
             categoryLoading: false,
             categorySearchTimeout: null,
             imageServiceClient: new ImageServiceClient(), // Initialize image service client
-            statusOptions: [
-                { title: 'نشط', value: 'active' },
-                { title: 'مخزون منخفض', value: 'low-stock' },
-                { title: 'نفد المخزون', value: 'out-of-stock' },
-                { title: 'غير نشط', value: 'inactive' }
-            ],
             unitOptions: [
                 { title: 'قطعة', value: 'piece' },
                 { title: 'كيلوغرام', value: 'kg' },
@@ -516,7 +459,7 @@ export default {
                 imageFile: value => {
                     if (!value || value.length === 0) return true;
                     let file = value;
-                    if(value instanceof Array) file = value[0];
+                    if (value instanceof Array) file = value[0];
                     const maxSize = 10 * 1024 * 1024; // 10MB (matching backend)
                     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
@@ -539,19 +482,45 @@ export default {
             set(value) {
                 this.$emit('update:modelValue', value);
             }
+        },
+        // Add this new computed property
+        selectedCategoryId: {
+            get() {
+                return this.editedProduct.category?.id || null;
+            },
+            set(value) {
+                if (value) {
+                    // Find the selected category from the list
+                    const selectedCategory = this.searchableCategories.find(cat => cat.id === value);
+                    if (selectedCategory) {
+                        this.editedProduct.category = {
+                            id: selectedCategory.id,
+                            name: selectedCategory.name
+                        };
+                    }
+                } else {
+                    this.editedProduct.category = { id: null, name: '' };
+                }
+            }
         }
     },
     watch: {
         product: {
             immediate: true,
-            handler(newProduct) {
+            async handler(newProduct) {
                 if (newProduct) {
                     this.editedProduct = { ...newProduct };
                     this.editedProductId = newProduct.id;
+
                     // Set imageUrl in local input for display
                     if (newProduct.imageUrl) {
                         this.imageUrlInput = newProduct.imageUrl;
                         this.updateImagePreview();
+                    }
+
+                    // Handle category for editing - ensure the current category is in the searchable list
+                    if (newProduct.category.id && newProduct.category.name) {
+                        await this.ensureCategoryInList(newProduct.category.id, newProduct.category.name);
                     }
                 } else {
                     this.resetForm();
@@ -561,7 +530,7 @@ export default {
         modelValue(newValue) {
             if (!newValue) {
                 this.resetForm();
-            }else {
+            } else {
                 // Load initial categories when modal opens
                 this.loadInitialCategories();
             }
@@ -580,12 +549,11 @@ export default {
                 name: '',
                 sku: '',
                 barcode: '',
-                categoryId: null,
+                category: { id: null, name: '' },
                 price: 0,
                 stock: 0,
                 minimumStock: 0,
                 unit: 'piece',
-                status: 'active',
                 description: '',
                 imageUrl: ''
             };
@@ -598,9 +566,23 @@ export default {
                 this.$refs.productForm.resetValidation();
             }
         },
+        async ensureCategoryInList(categoryId, categoryName) {
+            // Check if the category is already in the list
+            const existingCategory = this.searchableCategories.find(cat => cat.id === categoryId);
+
+            if (!existingCategory) {
+                // Add the current category to the list so it can be displayed
+                const currentCategory = {
+                    id: categoryId,
+                    name: categoryName,
+                    // Add any other properties that might be needed
+                };
+
+                // Add to the beginning of the array so it's easily visible
+                this.searchableCategories.unshift(currentCategory);
+            }
+        },
         async loadInitialCategories() {
-            if (this.searchableCategories.length > 0) return; // Already loaded
-            
             this.categoryLoading = true;
             try {
                 const params = new URLSearchParams({
@@ -608,7 +590,12 @@ export default {
                     size: 5
                 });
                 const response = await getCategories(params); // Load first 5 categories
-                this.searchableCategories = response && response.content? response.content : [];
+                this.searchableCategories = response && response.content ? response.content : [];
+
+                // If we're editing a product and its category isn't in the loaded list, add it
+                if (this.editedProduct.category && this.editedProduct.category.id && this.editedProduct.category.name) {
+                    await this.ensureCategoryInList(this.editedProduct.category.id, this.editedProduct.category.name);
+                }
             } catch (error) {
                 console.error('Error loading initial categories:', error);
                 this.searchableCategories = [];
@@ -624,10 +611,10 @@ export default {
                     size: 5
                 });
                 if (searchTerm) {
-                    params.append('search', this.searchTerm);
+                    params.append('search', searchTerm);
                 }
                 const response = await getCategories(params); // Search with max 10 results
-                this.searchableCategories = response && response.content? response.content : [];
+                this.searchableCategories = response && response.content ? response.content : [];
             } catch (error) {
                 console.error('Error searching categories:', error);
                 this.searchableCategories = [];
@@ -638,7 +625,7 @@ export default {
 
         onCategorySearch(searchValue) {
             this.categorySearch = searchValue;
-            
+
             // Clear previous timeout
             if (this.categorySearchTimeout) {
                 clearTimeout(this.categorySearchTimeout);
@@ -658,19 +645,6 @@ export default {
 
         closeDialog() {
             this.dialogVisible = false;
-        },
-
-        updateStatusFromStock() {
-            const stock = this.editedProduct.stock;
-            const minStock = this.editedProduct.minimumStock || 0;
-
-            if (stock === 0) {
-                this.editedProduct.status = 'out-of-stock';
-            } else if (stock <= minStock) {
-                this.editedProduct.status = 'low-stock';
-            } else if (this.editedProduct.status === 'out-of-stock' || this.editedProduct.status === 'low-stock') {
-                this.editedProduct.status = 'active';
-            }
         },
 
         getStatusColor(status) {
@@ -728,14 +702,14 @@ export default {
         async handleFileSelect(files) {
             if (files && files.length > 0) {
                 const file = files[0];
-                
+
                 // Show local preview immediately
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.imagePreviewUrl = e.target.result;
                 };
                 reader.readAsDataURL(file);
-                
+
                 // Clear any URL input
                 this.imageUrlInput = '';
                 this.editedProduct.imageUrl = '';
@@ -746,15 +720,15 @@ export default {
 
         async downloadImageFromUrl() {
             if (!this.imageUrlInput) return;
-            
+
             this.urlDownloadLoading = true;
             try {
                 const response = await this.imageServiceClient.uploadImageFromUrl(this.imageUrlInput, 'product');
-                
+
                 // Set the downloaded image URL
                 this.editedProduct.imageUrl = response.url;
                 this.imagePreviewUrl = response.url;
-                
+
                 success('تم تحميل الصورة بنجاح');
             } catch (err) {
                 error('فشل تحميل الصورة: ' + err.message);
@@ -781,7 +755,7 @@ export default {
         updateImagePreview() {
             if (this.imageUploadType === 'url' && this.imageUrlInput) {
                 this.imagePreviewUrl = this.imageUrlInput;
-            } else if (this.imageUploadType === 'file' && this.selectedImageFile ) {
+            } else if (this.imageUploadType === 'file' && this.selectedImageFile) {
                 const file = this.selectedImageFile;
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -817,14 +791,14 @@ export default {
                 }
                 console.log(this.imageUploadType)
                 console.log(this.selectedImageFile)
-                if(this.selectedImageFile) console.log(this.selectedImageFile.length)
+                if (this.selectedImageFile) console.log(this.selectedImageFile.length)
                 // Handle image upload based on type
-                if (this.imageUploadType === 'file' && this.selectedImageFile ) {
+                if (this.imageUploadType === 'file' && this.selectedImageFile) {
                     // Upload file to image service
                     try {
                         this.uploadLoading = true;
                         const uploadResponse = await this.imageServiceClient.uploadImage(
-                            this.selectedImageFile, 
+                            this.selectedImageFile,
                             'product'
                         );
                         productData.imageUrl = uploadResponse.url;
@@ -839,7 +813,7 @@ export default {
                     try {
                         this.urlDownloadLoading = true;
                         const downloadResponse = await this.imageServiceClient.uploadImageFromUrl(
-                            this.imageUrlInput, 
+                            this.imageUrlInput,
                             'product'
                         );
                         productData.imageUrl = downloadResponse.url;
@@ -885,144 +859,8 @@ export default {
 </script>
 
 <style scoped>
-/* Modern Modal Styling */
-.modern-modal {
-    border-radius: 20px !important;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
-}
+@import '@/styles/modal.css';
 
-/* Header Styling */
-.modal-header {
-    background: #366091;
-    /*linear-gradient(135deg, #366091 0%, #4299e1 100%);*/
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-}
-
-.modal-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-}
-
-.header-icon {
-    width: 48px;
-    height: 48px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-}
-
-.header-title {
-    color: white;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.header-subtitle {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    margin: 0;
-}
-
-.close-btn {
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px);
-}
-
-.close-btn:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Body Styling */
-.modal-body {
-    padding: 32px;
-    max-height: 70vh;
-    overflow-y: auto;
-}
-
-/* Form Sections */
-.form-section {
-    margin-bottom: 32px;
-    padding: 24px;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    background: #f8fafc;
-}
-
-.form-section:last-child {
-    margin-bottom: 0;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #e2e8f0;
-}
-
-.section-title {
-    color: #2d3748;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Form Groups */
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-label {
-    display: block;
-    color: #4a5568;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.required {
-    color: #e53e3e;
-}
-
-/* Modern Fields */
-.modern-field {
-    border-radius: 12px;
-}
-
-.modern-field .v-field {
-    border-radius: 12px !important;
-    background: white !important;
-}
-
-.modern-field .v-field__outline {
-    border-color: #e2e8f0 !important;
-    border-width: 1px !important;
-}
-
-.modern-field .v-field--focused .v-field__outline {
-    border-color: #366091 !important;
-    border-width: 2px !important;
-    box-shadow: 0 0 0 3px rgba(54, 96, 145, 0.1);
-}
-
-.modern-field .v-field--error .v-field__outline {
-    border-color: #e53e3e !important;
-}
 
 /* Category Item Styling */
 .category-item {
@@ -1058,7 +896,7 @@ export default {
     position: relative;
     display: inline-block;
     border: 2px dashed #e2e8f0;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 8px;
     background: white;
 }
@@ -1075,132 +913,8 @@ export default {
     z-index: 2;
 }
 
-/* Modal Actions */
-.modal-actions {
-    padding: 24px 32px;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-}
 
-.form-status {
-    display: flex;
-    align-items: center;
-}
 
-.cancel-btn {
-    border-radius: 12px !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
-    border-color: #e2e8f0 !important;
-    color: #718096 !important;
-}
 
-.cancel-btn:hover {
-    border-color: #cbd5e0 !important;
-    background: rgba(113, 128, 150, 0.05) !important;
-}
 
-.save-btn {
-    background: linear-gradient(135deg, #366091 0%, #4299e1 100%) !important;
-    border-radius: 12px !important;
-    font-weight: 600 !important;
-    text-transform: none !important;
-    box-shadow: 0 4px 15px rgba(54, 96, 145, 0.3) !important;
-}
-
-.save-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(54, 96, 145, 0.4) !important;
-}
-
-.save-btn:disabled {
-    background: #e2e8f0 !important;
-    color: #a0aec0 !important;
-    box-shadow: none !important;
-    transform: none !important;
-}
-
-/* Scrollbar Styling */
-.modal-body::-webkit-scrollbar {
-    width: 6px;
-}
-
-.modal-body::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #366091 0%, #4299e1 100%);
-    border-radius: 3px;
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #2d4f73 0%, #3182ce 100%);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .modal-header {
-        padding: 20px 24px;
-    }
-
-    .header-title {
-        font-size: 18px;
-    }
-
-    .modal-body {
-        padding: 24px 20px;
-    }
-
-    .form-section {
-        padding: 20px 16px;
-        margin-bottom: 24px;
-    }
-
-    .modal-actions {
-        padding: 20px 24px;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .modal-actions .d-flex {
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: 12px;
-    }
-
-    .form-status {
-        justify-content: center;
-    }
-}
-
-/* Animation Classes */
-.v-dialog {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.form-section {
-    transition: all 0.2s ease;
-}
-
-.form-section:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e0;
-}
-
-/* Focus States */
-.modern-field:focus-within {
-    transform: translateY(-1px);
-}
-
-/* Error States */
-.v-messages {
-    margin-top: 4px !important;
-}
-
-.v-messages__message {
-    color: #e53e3e !important;
-    font-size: 12px !important;
-}
 </style>

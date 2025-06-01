@@ -4,6 +4,8 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './routes/router'; // Import the router
 import mitt from 'mitt';
+import '@mdi/font/css/materialdesignicons.css'
+
 
 const app = createApp(App)
 

@@ -33,3 +33,54 @@
 .v-pagination__next .v-btn.v-btn--variant-text, .v-pagination__last .v-btn.v-btn--variant-text, .v-pagination__prev .v-btn.v-btn--variant-text, .v-pagination__first .v-btn.v-btn--variant-text{
 	opacity: 0.7;
 }
+
+.pagination-controls .v-pagination__item--is-active .v-btn.text-primary {
+	color: white!important;
+}
+
+/* Modern Fields */
+.modern-field {
+    border-radius: 8px;
+}
+
+.modern-field .v-field {
+    border-radius: 8px !important;
+    background: white !important;
+}
+
+.modern-field .v-field__outline {
+    border-color: #e2e8f0 !important;
+    border-width: 1px !important;
+}
+
+.modern-field .v-field--focused .v-field__outline {
+    border-color: #366091 !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 3px rgba(54, 96, 145, 0.1);
+}
+
+.modern-field .v-field--error .v-field__outline {
+    border-color: #e53e3e !important;
+}
+
+/* Focus States */
+.modern-field:focus-within {
+    transform: translateY(-1px);
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    color: #4a5568;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.required {
+    color: #e53e3e;
+}

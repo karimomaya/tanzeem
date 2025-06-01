@@ -3,6 +3,7 @@ package com.tanzeem.product.service.impl;
 import com.tanzeem.product.dto.CategoryRequest;
 import com.tanzeem.product.dto.CategoryResponse;
 import com.tanzeem.product.entity.Category;
+import com.tanzeem.product.mapper.CategoryMapper;
 import com.tanzeem.product.repository.CategoryRepository;
 import com.tanzeem.product.service.CategoryService;
 import com.tanzeem.security.common.AuthContextHolder;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
@@ -35,16 +37,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<CategoryResponse> getAllCategories(String search, Pageable pageable) {
-        Page<Category> categories;
-        System.out.println(AuthContextHolder.getTenantId());
-        if (search != null && !search.isEmpty()) {
-            categories = categoryRepository.findByTenantIdAndNameContainingIgnoreCase(
-                    AuthContextHolder.getTenantId(), search, pageable);
-        } else {
-            categories = categoryRepository.findByTenantId(AuthContextHolder.getTenantId(), pageable);
-        }
-        return categories.map(this::mapToResponse);
+    public Page<CategoryResponse> getAllCategories(String search, boolean isActive, Pageable pageable) {
+        search = search == null ? "" : search.trim();
+        Page<Object[]> categories = categoryRepository.findByTenantIdAndIsActiveAndNameContainingIgnoreCase(
+                    AuthContextHolder.getTenantId(), search, isActive, pageable);
+        return categories.map(result -> {
+            Category category = (Category) result[0];
+            int activity = ((Number) result[1]).intValue();
+            long productCount = ((Number) result[2]).longValue();
+            return categoryMapper.mapToResponse(category).toBuilder()
+                    .activity(activity)
+                    .productCount(productCount)
+                    .build();
+        });
     }
 
     @Override
@@ -67,9 +72,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryResponse mapToResponse(Category category) {
         Long productCount = categoryRepository.countProductsByCategoryId(category.getId());
-        return new CategoryResponse(category.getId(), category.getName(),  category.getIcon(), category.getDescription(), category.isActive(), category.getCreatedAt(), category.getUpdatedAt(),
-                category.getCreatedBy(),
-                category.getUpdatedBy(),
-                productCount, category.getColor());
+        return categoryMapper.mapToResponse(category);
     }
+
+
 }

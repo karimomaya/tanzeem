@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class CategoryResponse {
     private Long id;
     private String name;
@@ -26,4 +26,5 @@ public class CategoryResponse {
     private String updatedBy;
     private Long productCount;
     private String color;
+    private int activity;
 }

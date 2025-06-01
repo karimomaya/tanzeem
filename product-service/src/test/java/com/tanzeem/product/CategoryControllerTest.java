@@ -54,14 +54,8 @@ public class CategoryControllerTest {
         request.setDescription("Category for electronic items");
         request.setActive(true);
 
-        CategoryResponse response = new CategoryResponse(
-                1L,
-                "Electronics",
-                "mdi-laptop",
-                "Category for electronic items",
-                true,
-                null, null, "test", null, 0L
-        );
+        CategoryResponse response = CategoryResponse.builder().id(1L).name("Electronics").icon("mdi-laptop").description("Description 1").isActive(true).color("#000").createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).createdBy("test").updatedBy("test").productCount(0L).build();
+
 
         when(categoryService.createCategory(any())).thenReturn(response);
 
@@ -85,12 +79,13 @@ public class CategoryControllerTest {
 
     @Test
     void testGetAllCategories() throws Exception {
-        CategoryResponse response1 = new CategoryResponse(1L, "Electronics", "mdi-laptop", "Description 1", true, null, null, "Test", null, 0L);
-        CategoryResponse response2 = new CategoryResponse(2L, "Groceries", "mdi-cart", "Description 2", true, null, null, "test", null, 0L);
+        CategoryResponse response1 = CategoryResponse.builder().id(1L).name("Electronics").icon("mdi-laptop").description("Description 1").isActive(true).color("#000").createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).createdBy("test").updatedBy("test").productCount(0L).build();
+
+        CategoryResponse response2 = CategoryResponse.builder().id(2L).name("Groceries").icon("mdi-cart").description("Description 2").isActive(true).color("#fff").createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).createdBy("test").updatedBy("test").productCount(0L).build();
 
         Page<CategoryResponse> page = new PageImpl<>(List.of(response1, response2));
 
-        when(categoryService.getAllCategories("", any(Pageable.class))).thenReturn(page);
+        when(categoryService.getAllCategories("", true,any(Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/api/categories")
                         .param("page", "0")
@@ -111,14 +106,8 @@ public class CategoryControllerTest {
         request.setDescription("Updated description");
         request.setActive(true);
 
-        CategoryResponse response = new CategoryResponse(
-                1L,
-                "Updated",
-                "mdi-update",
-                "Updated description",
-                true,
-                null, null, "test", null, 0L
-        );
+        CategoryResponse response = CategoryResponse.builder().id(1L).name("Updated").icon("mdi-update").description("Updated description").isActive(true).color("#000").createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).createdBy("test").updatedBy("test").productCount(0L).build();
+
         when(categoryService.updateCategory(eq(1L), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/categories/1")

@@ -1,5 +1,6 @@
 package com.tanzeem.product.entity;
 
+import com.tanzeem.product.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,4 +57,8 @@ public class Product {
 
     @LastModifiedBy
     private String updatedBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ProductStatus status;
 }

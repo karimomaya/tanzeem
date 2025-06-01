@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CategoryService {
     CategoryResponse createCategory(CategoryRequest request);
-    Page<CategoryResponse> getAllCategories(String search, Pageable pageable);
+    Page<CategoryResponse> getAllCategories(String search, boolean isActive, Pageable pageable);
     CategoryResponse updateCategory(Long id, CategoryRequest request);
     void deleteCategory(Long id);
 }

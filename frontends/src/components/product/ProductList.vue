@@ -1,5 +1,5 @@
 <template>
-    <div class="product-list-container">
+    <div class="table-container">
         <!-- Table Header Controls -->
         <div class="table-controls">
             <div class="d-flex align-center justify-space-between">
@@ -13,7 +13,8 @@
                     <div class="items-per-page">
                         <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
                         <v-select
-                            v-model="itemsPerPage"
+                        :model-value="itemsPerPage"
+                            @update:model-value="$emit('update:items-per-page', $event)"
                             :items="[10, 25, 50, 100]"
                             variant="outlined"
                             density="compact"
@@ -39,64 +40,72 @@
 
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
-            <v-data-table
+            <v-data-table-server
                 :headers="headers"
                 :items="products"
                 :items-per-page="itemsPerPage"
+                :page="page" 
+                :items-length="totalItems" 
+                :loading="loading"
                 :sort-by="sortBy"
+                loading-text="جاري التحميل... يرجى الانتظار"
+                no-data-text="لا توجد تصنيفات للعرض" 
+                @update:options="updateOptions"
                 class="modern-table"
                 hover
                 show-current-page
+
             >
                 <!-- Enhanced Product Column -->
-                <template v-slot:item.product="{ item }">
-                    <div class="product-cell">
-                        <div class="product-image">
+                <template v-slot:item.name="{ item }">
+                    <div class="product-list-cell">
+                        <div class="product-list-image">
                             <v-img 
                                 v-if="item.imageUrl" 
                                 :src="item.imageUrl" 
                                 :alt="item.name"
                                 cover
-                                class="product-img"
+                                class="product-image"
                             >
                                 <template v-slot:error>
-                                    <div class="image-fallback">
+                                    <div class="product-image-fallback">
                                         <v-icon color="grey-lighten-1" size="20">mdi-package-variant</v-icon>
                                     </div>
                                 </template>
                             </v-img>
-                            <div v-else class="image-fallback">
+                            <div v-else class="product-image-fallback">
                                 <v-icon color="grey-lighten-1" size="20">mdi-package-variant</v-icon>
                             </div>
                         </div>
-                        <div class="product-info">
-                            <div class="product-name">{{ item.name }}</div>
+                        <div class="product-list-info">
+                            <div class="product-list-name">{{ item.name }}</div>
                             <div class="product-sku">
                                 <v-icon size="12" class="me-1">mdi-barcode</v-icon>
                                 {{ item.sku }}
                             </div>
-                            <div v-if="item.description" class="product-description">
+                            <div v-if="item.description" class="product-list-description">
                                 {{ truncateText(item.description, 50) }}
                             </div>
+                               
                         </div>
                     </div>
                 </template>
 
                 <!-- Enhanced Category Column -->
-                <template v-slot:item.category="{ item }">
-                    <div class="category-cell">
-                        <v-avatar size="24" :color="getCategoryColor(item.categoryId)" class="me-2">
-                            <v-icon color="white" size="12">{{ getCategoryIcon(item.categoryId) }}</v-icon>
+                <template v-slot:item.categoryName="{ item }">
+                    <div class="product-category-cell">
+                        <v-avatar size="24" :color="item.category?.color || 'grey'" class="me-2">
+                            <v-icon color="white" size="12">{{ item.category?.icon || 'mdi-tag' }}</v-icon>
                         </v-avatar>
-                        <span class="category-name">{{ getCategoryName(item.categoryId) }}</span>
+                        <span class="product-category-name">{{ item.category?.name || item.categoryName || 'غير محدد' }}</span>
                     </div>
                 </template>
 
                 <!-- Enhanced Price Column -->
                 <template v-slot:item.price="{ item }">
-                    <div class="price-cell">
-                        <div class="price-main">{{ formatPrice(item.price) }} ر.س</div>
-                        <div class="price-badge">
+                    <div class="product-price-cell">
+                        <div class="product-price-main product-price-main-list">{{ formatPrice(item.price) }} ر.س</div>
+                        <div class="product-price-badge">
                             <v-icon size="12" class="me-1">mdi-currency-usd</v-icon>
                             السعر
                         </div>
@@ -105,29 +114,30 @@
 
                 <!-- Enhanced Stock Column -->
                 <template v-slot:item.stock="{ item }">
-                    <div class="stock-cell">
+                    <div class="product-stock-cell">
                         <v-chip
                             :color="getStockColor(item.stock, item.minimumStock)"
                             :variant="item.stock === 0 ? 'elevated' : 'tonal'"
                             size="small"
-                            class="stock-chip"
+                            class="product-stock-chip"
                         >
                             <v-icon start size="14">{{ getStockIcon(item.stock, item.minimumStock) }}</v-icon>
                             {{ item.stock }}
                         </v-chip>
-                        <div class="stock-status">{{ getStockStatus(item.stock, item.minimumStock) }}</div>
+                        <div class="product-stock-status">{{ getStockStatus(item.stock, item.minimumStock) }}</div>
                     </div>
                 </template>
 
-                <!-- Enhanced Status Column -->
+                <!-- Enhanced Status Column
                 <template v-slot:item.status="{ item }">
                     <div class="status-cell">
-                        <div class="status-indicator" :class="`status-${item.status}`">
-                            <div class="status-dot"></div>
-                            <span class="status-text">{{ getStockText(item.stock, item.minimumStock) }}</span>
+
+                        <div class="product-status-indicator" :class="`product-status-${item.status}`">
+                            <div class="product-status-dot"></div>
+                            <span class="status-text">{{ item.status.trim() }}</span>
                         </div>
                     </div>
-                </template>
+                </template> -->
 
                 <!-- Enhanced Actions Column -->
                 <template v-slot:item.actions="{ item }">
@@ -166,7 +176,7 @@
                                 
                                 <v-divider></v-divider>
                                 
-                                <v-list-item @click="$emit('delete', item)" class="action-item danger">
+                                <v-list-item @click="$emit('delete', item)" class="action-item action-danger">
                                     <template v-slot:prepend>
                                         <v-icon color="error">mdi-delete</v-icon>
                                     </template>
@@ -232,7 +242,7 @@
                 <template v-slot:no-data>
                     <div class="no-data-state">
                         <div class="no-data-content">
-                            <div class="no-data-icon">
+                            <div class="empty-icon">
                                 <v-icon size="60" color="grey-lighten-2">mdi-package-variant-closed</v-icon>
                             </div>
                             <h4 class="no-data-title">لا توجد منتجات</h4>
@@ -255,628 +265,201 @@
                     <div class="table-footer">
                         <div class="footer-info">
                             <span class="text-body-2 text-medium-emphasis">
-                                عرض {{ Math.min(products.length, itemsPerPage) }} من أصل {{ products.length }} منتج
+                                عرض {{ (page - 1) * itemsPerPage + 1 }} - {{ Math.min(page * itemsPerPage, totalItems) }} من أصل {{ totalItems }} تصنيف
                             </span>
                         </div>
                         <v-pagination 
-                            v-if="Math.ceil(products.length / itemsPerPage) > 1"
-                            v-model="currentPage"
-                            :length="Math.ceil(products.length / itemsPerPage)"
+                            v-if="Math.ceil(totalItems / itemsPerPage) > 1"
+                            :model-value="page" 
+                            :length="Math.ceil(totalItems / itemsPerPage)" 
                             :total-visible="5"
-                            color="primary"
+                            @update:model-value="$emit('update:page', $event)" 
+                            color="primary" 
                             size="small"
                             class="table-pagination"
                         ></v-pagination>
+                        <v-select 
+                            :model-value="itemsPerPage" 
+                            :items="itemsPerPageOptions" 
+                            label="عدد العناصر" 
+                            variant="outlined"
+                            density="compact" 
+                            hide-details 
+                            style="max-width: 120px;"
+                            class="items-per-page-select"
+                            @update:model-value="$emit('update:items-per-page', $event)"
+                        ></v-select>
                     </div>
                 </template>
-            </v-data-table>
+                
+            </v-data-table-server>
         </v-card>
     </div>
 </template>
 
 <script>
-import { getStockStatus, getStockIcon, getStockText, getStockColor, getStockLevel, getStockPercentage } from '@/utils/product-util';
+import { 
+    getStockStatus, 
+    getStockIcon, 
+    getStockText, 
+    getStockColor, 
+    getStockLevel, 
+    formatPrice,
+    truncateText,
+    createDuplicateProduct,
+    exportProductsToCSV,
+    formatDateText
+} from '@/utils/product-util';
+
 export default {
     name: 'ProductList',
     props: {
         products: {
             type: Array,
             default: () => []
+        },
+        loading: {
+            type: Boolean,
+            default: false
+        },
+        totalItems: {
+            type: Number,
+            default: 0
+        },
+        page: {
+            type: Number,
+            default: 1
+        },
+        itemsPerPage: {
+            type: Number,
+            default: 10
+        },
+        sortBy: {
+            type: Array,
+            default: () => []
         }
     },
-    emits: ['view', 'edit', 'delete', 'duplicate', 'refresh'],
+    mounted() {
+        // Debug logging
+        console.log('ProductList mounted:', {
+            products: this.products,
+            totalItems: this.totalItems,
+            loading: this.loading,
+            itemsPerPage: this.itemsPerPage,
+            headers: this.headers
+        });
+    },
+    watch: {
+        products: {
+            handler(newProducts) {
+                console.log('ProductList products changed:', {
+                    length: newProducts?.length,
+                    firstProduct: newProducts?.[0],
+                    data: newProducts
+                });
+            },
+            immediate: true
+        },
+        totalItems(newTotal) {
+            console.log('ProductList totalItems changed:', newTotal);
+        },
+        loading(newLoading) {
+            console.log('ProductList loading changed:', newLoading);
+        }
+    
+        
+    },
+    emits: ['view', 'edit', 'delete', 'duplicate', 'refresh', 'update:options'],
     data() {
         return {
-            itemsPerPage: 10,
-            currentPage: 1,
-            sortBy: [{ key: 'name', order: 'asc' }],
+            itemsPerPageOptions: [10, 25, 50, 100],
             headers: [
                 { 
                     title: 'المنتج', 
-                    key: 'product', 
+                    key: 'name', 
                     sortable: true, 
                     width: '35%',
                     align: 'start'
                 },
                 { 
                     title: 'التصنيف', 
-                    key: 'category', 
+                    key: 'categoryName', 
                     sortable: true, 
-                    width: '15%',
-                    align: 'center'
+                    width: '17%',
+                    align: 'start'
                 },
                 { 
                     title: 'السعر', 
                     key: 'price', 
                     sortable: true, 
                     width: '15%',
-                    align: 'center'
+                    align: 'start'
                 },
                 { 
                     title: 'المخزون', 
                     key: 'stock', 
                     sortable: true, 
                     width: '15%',
-                    align: 'center'
+                    align: 'start'
                 },
-                { 
-                    title: 'الحالة', 
-                    key: 'status', 
-                    sortable: true, 
-                    width: '12%',
-                    align: 'center'
-                },
+                // { 
+                //     title: 'الحالة', 
+                //     key: 'status', 
+                //     sortable: true, 
+                //     width: '10%',
+                //     align: 'center'
+                // },
                 { 
                     title: 'الإجراءات', 
                     key: 'actions', 
                     sortable: false, 
                     width: '8%',
-                    align: 'center'
+                    align: 'start'
                 }
-            ],
-            categoryMap: {
-                1: { name: 'أجهزة كمبيوتر', icon: 'mdi-laptop', color: 'blue' },
-                2: { name: 'هواتف ذكية', icon: 'mdi-cellphone', color: 'green' },
-                3: { name: 'أجهزة لوحية', icon: 'mdi-tablet', color: 'purple' },
-                4: { name: 'إكسسوارات', icon: 'mdi-headphones', color: 'orange' }
-            }
+            ]
         };
     },
     methods: {
+        // Import utility functions
         getStockText,
         getStockColor,
         getStockIcon,
         getStockStatus,
-
-        // Category methods
-        getCategoryName(categoryId) {
-            return this.categoryMap[categoryId]?.name || 'غير محدد';
-        },
-
-        getCategoryIcon(categoryId) {
-            return this.categoryMap[categoryId]?.icon || 'mdi-folder';
-        },
-
-        getCategoryColor(categoryId) {
-            return this.categoryMap[categoryId]?.color || 'grey';
-        },
-
-        // Utility methods
-        formatPrice(price) {
-            return new Intl.NumberFormat('ar-SA', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(price);
-        },
-
-        truncateText(text, maxLength) {
-            if (!text) return '';
-            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-        },
-
+        getStockLevel,
+        formatPrice,
+        truncateText,
+        formatDateText,
         // Action methods
         duplicateProduct(item) {
-            const duplicatedProduct = { 
-                ...item, 
-                id: null, 
-                name: `${item.name} - نسخة`,
-                sku: `${item.sku}-COPY`
-            };
+            const duplicatedProduct = createDuplicateProduct(item);
             this.$emit('duplicate', duplicatedProduct);
         },
 
         exportData() {
-            // Create CSV content
-            const headers = ['الاسم', 'SKU', 'التصنيف', 'السعر', 'المخزون', 'الحالة'];
-            const csvContent = [
-                headers.join(','),
-                ...this.products.map(product => [
-                    product.name,
-                    product.sku,
-                    this.getCategoryName(product.categoryId),
-                    product.price,
-                    product.stock,
-                    this.getStockText(product.stock, product.minimumStock)
-                ].join(','))
-            ].join('\n');
-
-            // Download CSV
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `products_${new Date().getTime()}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            exportProductsToCSV(this.products);
         },
 
         refreshData() {
             this.$emit('refresh');
+        },
+
+        // Server-side data table options handler
+        updateOptions(options) {
+            this.$emit('update:options', options);
+        },
+
+        // Handle items per page change
+        updateItemsPerPage(newItemsPerPage) {
+            this.$emit('update:options', {
+                page: 1, // Reset to first page
+                itemsPerPage: newItemsPerPage,
+                sortBy: this.sortBy
+            });
         }
     }
 };
 </script>
 
 <style scoped>
-/* Container Styling */
-.product-list-container {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e2e8f0;
-}
-
-/* Table Controls */
-.table-controls {
-    padding: 24px 32px 16px;
-    border-bottom: 1px solid #e2e8f0;
-    background: #f8fafc;
-}
-
-.table-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2d3748;
-    margin: 0;
-}
-
-.table-subtitle {
-    font-size: 14px;
-    color: #718096;
-    margin: 4px 0 0 0;
-}
-
-.items-per-page {
-    display: flex;
-    align-items: center;
-}
-
-.items-select {
-    border-radius: 8px;
-}
-
-.items-select .v-field {
-    border-radius: 8px !important;
-}
-
-.export-btn {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
-}
-
-/* Table Card */
-.table-card {
-    border-radius: 0 !important;
-    box-shadow: none !important;
-}
-
-/* Modern Table */
-.modern-table {
-    background: white;
-}
-
-/* Header Styling */
-.table-header {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-bottom: 2px solid #cbd5e0;
-}
-
-.header-cell {
-    padding: 16px 12px !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
-    color: #2d3748 !important;
-    border-bottom: none !important;
-    position: relative;
-}
-
-.header-cell.sortable {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.header-cell.sortable:hover {
-    background: rgba(54, 96, 145, 0.05);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.header-title {
-    font-weight: 600;
-    color: #2d3748;
-}
-
-.sort-icon {
-    transition: all 0.2s ease;
-}
-
-/* Cell Styling */
-.product-cell {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
-}
-
-.product-image {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
-}
-
-.product-img {
-    width: 100%;
-    height: 100%;
-}
-
-.image-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f7fafc;
-}
-
-.product-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.product-name {
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 14px;
-    margin-bottom: 2px;
-}
-
-.product-sku {
-    display: flex;
-    align-items: center;
-    color: #718096;
-    font-size: 12px;
-    margin-bottom: 2px;
-}
-
-.product-description {
-    color: #a0aec0;
-    font-size: 11px;
-    line-height: 1.3;
-}
-
-/* Category Cell */
-.category-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.category-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: #4a5568;
-}
-
-/* Price Cell */
-.price-cell {
-    text-align: center;
-}
-
-.price-main {
-    font-weight: 700;
-    color: #2d3748;
-    font-size: 16px;
-    margin-bottom: 2px;
-}
-
-.price-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #718096;
-    font-size: 11px;
-}
-
-/* Stock Cell */
-.stock-cell {
-    text-align: center;
-}
-
-.stock-chip {
-    margin-bottom: 4px;
-    font-weight: 600 !important;
-}
-
-.stock-status {
-    font-size: 11px;
-    color: #718096;
-}
-
-/* Status Cell */
-.status-cell {
-    display: flex;
-    justify-content: center;
-}
-
-.status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-}
-
-.status-active {
-    background: rgba(72, 187, 120, 0.1);
-    color: #2f855a;
-}
-
-.status-active .status-dot {
-    background: #48bb78;
-}
-
-.status-low-stock {
-    background: rgba(237, 137, 54, 0.1);
-    color: #c05621;
-}
-
-.status-low-stock .status-dot {
-    background: #ed8936;
-}
-
-.status-out-of-stock {
-    background: rgba(229, 62, 62, 0.1);
-    color: #c53030;
-}
-
-.status-out-of-stock .status-dot {
-    background: #e53e3e;
-}
-
-.status-inactive {
-    background: rgba(160, 174, 192, 0.1);
-    color: #718096;
-}
-
-.status-inactive .status-dot {
-    background: #a0aec0;
-}
-
-/* Actions Cell */
-
-.actions-trigger {
-    color: #718096 !important;
-}
-
-.actions-trigger:hover {
-    color: #366091 !important;
-    background: rgba(54, 96, 145, 0.1) !important;
-}
-
-.quick-actions {
-    display: none;
-    gap: 4px;
-}
-
-.quick-action-btn {
-    border-radius: 6px !important;
-}
-
-/* Actions Menu */
-.actions-menu {
-    border-radius: 12px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-.action-item {
-    border-radius: 8px !important;
-    margin: 4px !important;
-}
-
-.action-item:hover {
-    background: rgba(54, 96, 145, 0.05) !important;
-}
-
-.action-item.danger:hover {
-    background: rgba(229, 62, 62, 0.05) !important;
-}
-
-/* Row Hover Effect */
-.modern-table :deep(.v-data-table__tr:hover) {
-    background: rgba(54, 96, 145, 0.02) !important;
-}
-
-/* Loading State */
-.loading-state {
-    padding: 60px 20px;
-    text-align: center;
-}
-
-.loading-content {
-    max-width: 300px;
-    margin: 0 auto;
-}
-
-.loading-title {
-    color: #2d3748;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.loading-subtitle {
-    color: #718096;
-    font-size: 14px;
-    margin: 0;
-}
-
-/* No Data State */
-.no-data-state {
-    padding: 60px 20px;
-    text-align: center;
-}
-
-.no-data-content {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.no-data-icon {
-    margin-bottom: 24px;
-}
-
-.no-data-title {
-    color: #2d3748;
-    font-weight: 600;
-    margin-bottom: 8px;
-    font-size: 18px;
-}
-
-.no-data-subtitle {
-    color: #718096;
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Table Footer */
-.table-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-}
-
-.footer-info {
-    color: #718096;
-}
-
-.table-pagination {
-    margin: 0;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .table-controls {
-        padding: 16px 20px 12px;
-    }
-    
-    .table-controls .d-flex {
-        flex-direction: column;
-        gap: 16px;
-        align-items: flex-start !important;
-    }
-    
-    .items-per-page {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .product-cell {
-        gap: 8px;
-    }
-    
-    .product-image {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .product-name {
-        font-size: 13px;
-    }
-
-    .table-footer {
-        flex-direction: column;
-        gap: 12px;
-        padding: 16px 20px;
-    }
-}
-
-@media (max-width: 600px) {
-    .header-cell {
-        padding: 12px 8px !important;
-        font-size: 12px !important;
-    }
-    
-    .product-cell {
-        gap: 6px;
-    }
-    
-    .product-image {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .category-name {
-        font-size: 12px;
-    }
-    
-    .price-main {
-        font-size: 14px;
-    }
-}
-
-.v-data-table :deep(.v-data-table__tr) {
-    transition: background-color 0.2s ease;
-}
-
-.status-indicator {
-    transition: all 0.2s ease;
-}
-
-/* Print Styles */
-@media print {
-    .table-controls,
-    .table-footer {
-        display: none !important;
-    }
-    
-    .table-card {
-        box-shadow: none !important;
-        border: 1px solid #000 !important;
-    }
-}
+@import '@/styles/product.css';
 </style>

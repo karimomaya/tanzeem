@@ -60,13 +60,13 @@ public class ProductCategoryServiceTest {
 
         Page<Category> page = new PageImpl<>(List.of(cat1, cat2));
 
-        when(repository.findByTenantId(eq("tenant123"), any(Pageable.class))).thenReturn(page);
+        when(repository.findByTenantIdAndIsActive(eq("tenant123"), true, any(Pageable.class))).thenReturn(page);
 
-        Page<CategoryResponse> responses = service.getAllCategories("",Pageable.unpaged());
+        Page<CategoryResponse> responses = service.getAllCategories("", true, Pageable.unpaged());
 
         assertEquals(2, responses.getContent().size());
         assertEquals("A", responses.getContent().get(0).getName());
         assertEquals("B", responses.getContent().get(1).getName());
-        verify(repository, times(1)).findByTenantId(eq("tenant123"), any(Pageable.class));
+        verify(repository, times(1)).findByTenantIdAndIsActive(eq("tenant123"), true, any(Pageable.class));
     }
 }

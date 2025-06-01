@@ -189,14 +189,6 @@
             <!-- Content Section -->
             <div class="content-section">
                 <v-container fluid class="px-6">
-                    <!-- Content Header -->
-                    <!-- <div class="content-header">
-                        <h2 class="content-title">
-                            جميع {{ activeTab === 'products' ? 'المنتجات' : 'التصنيفات' }} 
-                            ({{ activeTab === 'products' ? filteredProducts.length : categories.length }})
-                        </h2>
-                    </div> -->
-
                     <!-- Content Body -->
                     <v-card class="content-card" elevation="0">
                         <v-window v-model="activeTab">
@@ -216,14 +208,17 @@
 
                                 <div v-else>
                                     <ProductGrid v-if="viewMode === 'grid'" :products="products" :loading="loading"
-                                        :page="page" :items-per-page="itemsPerPage" :sort-by="sortBy"
-                                        :search-term="searchTerm" :status-filter="statusFilter" :total-items="totalProducts"
+                                        :page="productPagination.page" :items-per-page="productPagination.itemsPerPage"
+                                        :sort-by="productPagination.sortBy" :search-term="searchTerm"
+                                        :status-filter="statusFilter" :total-items="productPagination.totalItems"
                                         @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:sort-by="updateSorting" @refresh="loadProducts"
-                                        @toggle-status="updateCategoryStatus" />
-                                    <ProductList v-else :products="products" @edit="editProduct"
-                                        @delete="confirmDeleteProduct" @view="viewProduct" />
+                                        @update:sort-by="updateSorting" @refresh="loadProducts" />
+                                    <ProductList v-else :products="products" :loading="loading"
+                                        :total-items="productPagination.totalItems" :page="productPagination.page"
+                                        :items-per-page="productPagination.itemsPerPage" :sort-by="productPagination.sortBy"
+                                        @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
+                                        @update:options="updateTableOptions" />
                                 </div>
                             </v-window-item>
 
@@ -243,21 +238,22 @@
 
                                 <div v-else>
                                     <CategoryGrid v-if="categoryViewMode === 'grid'" :categories="categories"
-                                        :loading="loading" :page="page" :items-per-page="itemsPerPage"
-                                        :total-items="totalCategories" :sort-by="sortBy" :search-term="searchTerm"
-                                        :status-filter="statusFilter" @edit="editCategory" @delete="confirmDeleteCategory"
+                                        :loading="loading" :page="categoryPagination.page"
+                                        :items-per-page="categoryPagination.itemsPerPage"
+                                        :total-items="categoryPagination.totalItems" :sort-by="categoryPagination.sortBy"
+                                        :search-term="searchTerm" :status-filter="statusFilter" @edit="editCategory"
+                                        @delete="confirmDeleteCategory" @update:page="updatePage"
+                                        @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
+                                        @refresh="loadCategories" @toggle-status="updateCategoryStatus" />
+                                    <CategoryList v-else :categories="categories" :loading="loading"
+                                        :page="categoryPagination.page" :items-per-page="categoryPagination.itemsPerPage"
+                                        :total-items="categoryPagination.totalItems" :search-term="searchTerm"
+                                        :status-filter="statusFilter" @add-category="openAddDialog"
+                                        @edit-category="editCategory" @delete-confirmation="confirmDeleteCategory"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:sort-by="updateSorting" @refresh="loadCategories"
-                                        @toggle-status="updateCategoryStatus" />
-                                    <CategoryList v-else :categories="categories" :loading="loading" :page="page"
-                                        :items-per-page="itemsPerPage" :total-items="totalCategories"
-                                        :search-term="searchTerm" :status-filter="statusFilter"
-                                        @add-category="openAddDialog" @edit-category="editCategory"
-                                        @delete-confirmation="confirmDeleteCategory" @update:page="updatePage"
-                                        @update:items-per-page="updateItemsPerPage" @update:search-term="updateSearchTerm"
-                                        @update:status-filter="updateStatusFilter" @update:sort-option="updateSortOption"
-                                        @refresh="loadCategories" @update:options="updateTableOptions"
-                                        @toggle-status="updateCategoryStatus" />
+                                        @update:search-term="updateSearchTerm" @update:status-filter="updateStatusFilter"
+                                        @update:sort-option="updateSortOption" @refresh="loadCategories"
+                                        @update:options="updateTableOptions" @toggle-status="updateCategoryStatus" />
                                 </div>
                             </v-window-item>
                         </v-window>
@@ -289,7 +285,7 @@ import StatsCard from '@/components/common/StatsCard.vue';
 import { getCategories, deleteCategory, getProducts } from '@/utils/product-util';
 import { success, error } from '@/utils/system-util';
 import CategoryList from '@/components/product/CategoryList.vue';
-import { updateCateogry } from '@/utils/product-util';
+import { updateCategory } from '@/utils/product-util';
 
 export default {
     name: 'ProductsPage',
@@ -308,7 +304,7 @@ export default {
         return {
             activeTab: 'products',
             searchTerm: '',
-            statusFilter: 'all',
+            statusFilter: 'active',
             viewMode: 'grid',
             categoryViewMode: 'grid',
 
@@ -319,24 +315,32 @@ export default {
             selectedCategory: null,
 
             statusOptions: [
-                { title: 'جميع الحالات', value: 'all' },
                 { title: 'نشط', value: 'active' },
-                { title: 'غير نشط', value: 'inactive' },
-                { title: 'مخزون منخفض', value: 'low-stock' },
-                { title: 'نفد المخزون', value: 'out-of-stock' }
+                { title: 'غير نشط', value: 'inactive' }
             ],
 
+            productPagination: {
+                page: 1,
+                itemsPerPage: 10,
+                totalItems: 0,
+                sortBy: [],
+                sortDesc: []
+            },
+            categoryPagination: {
+                page: 1,
+                itemsPerPage: 10,
+                totalItems: 0,
+                sortBy: [],
+                sortDesc: []
+            },
             // Sample data
             products: [],
 
             categories: [],
             loading: false,
-            page: 1,
-            itemsPerPage: 12,
+
             totalCategories: 0,
-            totalProducts: 0,
-            sortBy: [],
-            sortDesc: []
+            totalProducts: 0
         };
     },
 
@@ -360,7 +364,11 @@ export default {
                 active: this.categories.filter(c => c.active).length,
                 inactive: this.categories.filter(c => !c.active).length
             };
+        },
+        currentPagination() {
+            return this.activeTab === 'products' ? this.productPagination : this.categoryPagination;
         }
+
     },
 
     created() {
@@ -373,7 +381,7 @@ export default {
         activeTab(newTab) {
             if (newTab === 'categories') {
                 this.loadCategories();
-            }else if (newTab === 'products') {
+            } else if (newTab === 'products') {
                 this.loadProducts();
             }
         },
@@ -382,16 +390,22 @@ export default {
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(() => {
                 if (this.activeTab === 'categories') {
-                    this.page = 1;
+                    this.categoryPagination.page = 1;
                     this.loadCategories();
+                } else if (this.activeTab === 'products') {
+                    this.productPagination.page = 1;
+                    this.loadProducts();
                 }
             }, 500);
         },
 
         statusFilter() {
             if (this.activeTab === 'categories') {
-                this.page = 1;
+                this.categoryPagination.page = 1;
                 this.loadCategories();
+            } else if (this.activeTab === 'products') {
+                this.productPagination.page = 1;
+                this.loadProducts();
             }
         }
     },
@@ -400,7 +414,7 @@ export default {
 
         async updateCategoryStatus(categoryData) {
             // Updating existing category
-            let response = await updateCateogry(categoryData);
+            let response = await updateCategory(categoryData);
             if (response != null && response.id != null) {
                 success('تم تحديث التصنيف بنجاح');
                 this.handleCategorySave()
@@ -411,28 +425,39 @@ export default {
         },
 
         updateTableOptions(options) {
-            this.page = options.page || 1;
-            this.itemsPerPage = options.itemsPerPage || 10;
-            this.sortBy = options.sortBy || [];
-            this.loadCategories();
+            console.log('Table options updated:', options); // Debug log
+
+            if (this.activeTab === 'products') {
+                this.productPagination.page = options.page || 1;
+                this.productPagination.itemsPerPage = options.itemsPerPage || 12;
+                this.productPagination.sortBy = options.sortBy || [];
+                this.loadProducts();
+            } else {
+                this.categoryPagination.page = options.page || 1;
+                this.categoryPagination.itemsPerPage = options.itemsPerPage || 10;
+                this.categoryPagination.sortBy = options.sortBy || [];
+                this.loadCategories();
+            }
         },
 
         async loadProducts() {
             try {
                 this.loading = true;
-                let params = this.buildSearchParameter();
+                let params = this.buildSearchParameter('products');
                 const response = await getProducts(params);
                 if (response && response.content) {
                     this.products = response.content;
-
-                    this.totalProducts = response.totalElements;
+                    this.productPagination.totalItems = response.totalElements;
+                    this.totalProducts = response.totalElements; // Backward compatibility
                 } else {
                     console.warn('No data received from getProducts');
                     this.products = [];
+                    this.productPagination.totalItems = 0;
                     this.totalProducts = 0;
                 }
             } catch (err) {
                 console.error('Error fetching products:', err);
+                this.productPagination.totalItems = 0;
                 this.totalProducts = 0;
                 error('فشل تحميل المنتجات');
                 this.products = [];
@@ -441,10 +466,12 @@ export default {
             }
         },
 
-        buildSearchParameter() {
+        buildSearchParameter(type = null) {
+            const pagination = type === 'products' ? this.productPagination : this.categoryPagination;
+
             const params = new URLSearchParams({
-                page: this.page - 1, // Convert to 0-based index
-                size: this.itemsPerPage
+                page: pagination.page - 1, // Convert to 0-based index
+                size: pagination.itemsPerPage
             });
 
             // Add search filter
@@ -455,17 +482,17 @@ export default {
             // Add status filter
             if (this.statusFilter !== 'all') {
                 const isActive = this.statusFilter === 'active';
-                params.append('active', isActive);
+                params.append('isActive', isActive);
             }
 
             // Add sorting if available
-            if (this.sortBy && this.sortBy.length > 0) {
-                this.sortBy.forEach((sortItem) => {
+            if (pagination.sortBy && pagination.sortBy.length > 0) {
+                pagination.sortBy.forEach((sortItem) => {
                     let key, order;
 
                     if (typeof sortItem === 'string') {
                         key = sortItem;
-                        order = this.sortDesc && this.sortDesc[this.sortBy.indexOf(sortItem)] ? 'desc' : 'asc';
+                        order = pagination.sortDesc && pagination.sortDesc[pagination.sortBy.indexOf(sortItem)] ? 'desc' : 'asc';
                     } else if (typeof sortItem === 'object' && sortItem.key) {
                         key = sortItem.key;
                         order = sortItem.order === 'desc' ? 'desc' : 'asc';
@@ -473,15 +500,8 @@ export default {
                         return;
                     }
 
-                    // Map frontend field names to backend field names
-                    const fieldMapping = {
-                        'name': 'name',
-                        'active': 'active',
-                        'productCount': 'name' // Fallback to name since productCount might not be sortable
-                    };
-
-                    const backendField = fieldMapping[key] || key;
-                    params.append('sort', `${backendField},${order}`);
+                    
+                    params.append('sort', `${key},${order}`);
                 });
             }
             return params;
@@ -492,21 +512,23 @@ export default {
                 this.loading = true;
 
                 // Construct query parameters
-                let params = this.buildSearchParameter();
+                let params = this.buildSearchParameter('categories');
                 const response = await getCategories(params);
-
                 if (response && response.content) {
                     this.categories = response.content;
-                    this.totalCategories = response.totalElements;
+                    this.categoryPagination.totalItems = response.totalElements;
+                    this.totalCategories = response.totalElements; // Backward compatibility
                 } else {
                     console.warn('No data received from getCategories');
                     this.categories = [];
+                    this.categoryPagination.totalItems = 0;
                     this.totalCategories = 0;
                 }
             } catch (err) {
                 console.error('Error fetching categories:', err);
                 error('فشل تحميل التصنيفات');
                 this.categories = [];
+                this.categoryPagination.totalItems = 0;
                 this.totalCategories = 0;
             } finally {
                 this.loading = false;
@@ -514,25 +536,39 @@ export default {
         },
 
         updatePage(newPage) {
-            this.page = newPage;
             if (this.activeTab === 'products') {
+                this.productPagination.page = newPage;
                 this.loadProducts();
             } else {
+                this.categoryPagination.page = newPage;
                 this.loadCategories();
             }
         },
 
         updateItemsPerPage(newItemsPerPage) {
-            this.itemsPerPage = newItemsPerPage;
-            this.page = 1; // Reset to first page
-            this.loadCategories();
+            if (this.activeTab === 'products') {
+                this.productPagination.itemsPerPage = newItemsPerPage;
+                this.productPagination.page = 1; // Reset to first page
+                this.loadProducts();
+            } else {
+                this.categoryPagination.itemsPerPage = newItemsPerPage;
+                this.categoryPagination.page = 1; // Reset to first page
+                this.loadCategories();
+            }
         },
 
         updateSorting(sortBy) {
-            this.sortBy = sortBy;
-            this.page = 1; // Reset to first page when sorting changes
-            this.loadCategories();
+            if (this.activeTab === 'products') {
+                this.productPagination.sortBy = sortBy;
+                this.productPagination.page = 1; // Reset to first page when sorting changes
+                this.loadProducts();
+            } else {
+                this.categoryPagination.sortBy = sortBy;
+                this.categoryPagination.page = 1; // Reset to first page when sorting changes
+                this.loadCategories();
+            }
         },
+
         openAddDialog() {
             if (this.activeTab === 'products') {
                 this.selectedProduct = null;
@@ -611,442 +647,20 @@ export default {
         updateSortOption(sortOption) {
             // Convert sort option to sortBy format
             const [field, direction] = sortOption.split('-');
-            this.sortBy = [{ key: field, order: direction }];
-            this.page = 1;
-            this.loadCategories();
+            if (this.activeTab === 'products') {
+                this.productPagination.sortBy = [{ key: field, order: direction }];
+                this.productPagination.page = 1;
+                this.loadProducts();
+            } else {
+                this.categoryPagination.sortBy = [{ key: field, order: direction }];
+                this.categoryPagination.page = 1;
+                this.loadCategories();
+            }
         },
     }
 };
 </script>
 
 <style scoped>
-/* Main Layout */
-.modern-main {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
-}
-
-/* Header Section */
-.modern-header {
-    background: white;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-}
-
-.modern-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 8px;
-}
-
-.modern-subtitle {
-    color: #718096;
-    font-size: 16px;
-    margin: 0;
-}
-
-.modern-add-btn {
-    background: #366091; /*linear-gradient(135deg, #366091 0%, #4299e1 100%);*/
-    color: white;
-    font-weight: 600;
-    text-transform: none;
-    box-shadow: 0 4px 15px rgba(54, 96, 145, 0.3);
-    transition: all 0.3s ease;
-}
-
-.modern-add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(54, 96, 145, 0.4);
-}
-
-/* Stats Section */
-.stats-section {
-    background: white;
-    padding: 24px 0;
-}
-
-.stat-card {
-    background: white;
-    padding: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.stat-card-blue {
-    border-left-color: #4299e1;
-}
-
-.stat-card-green {
-    border-left-color: #48bb78;
-}
-
-.stat-card-purple {
-    border-left-color: #9f7aea;
-}
-
-.stat-card-yellow {
-    border-left-color: #ed8936;
-}
-
-.stat-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-card-blue .stat-icon {
-     background: #4299e1; /*linear-gradient(135deg, #4299e1 0%, #3182ce 100%); */
-}
-
-.stat-card-green .stat-icon {
-     background: #48bb78; /*linear-gradient(135deg, #48bb78 0%, #38a169 100%); */
-}
-
-.stat-card-purple .stat-icon {
-    background: #9f7aea /*linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);*/
-}
-
-.stat-card-yellow .stat-icon {
-    background: #ed8936; /*linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);*/
-}
-
-.stat-content {
-    flex: 1;
-}
-
-.stat-label {
-    color: #718096;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 4px;
-}
-
-.stat-value {
-    color: #2d3748;
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1;
-}
-
-/* Controls Section */
-.controls-section {
-    background: white;
-    padding: 20px 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.modern-toggle {
-    background: #f7fafc;
-    padding: 4px;
-    border: 1px solid #e2e8f0;
-}
-
-.toggle-btn {
-    padding: 12px 24px !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
-    color: #718096 !important;
-    background: transparent !important;
-    transition: all 0.2s ease !important;
-}
-
-.toggle-btn.v-btn--active {
-    background: white !important;
-    color: #366091 !important;
-    box-shadow: 0 2px 8px rgba(54, 96, 145, 0.15) !important;
-}
-
-.modern-search {
-}
-
-.modern-search .v-field {
-}
-
-.modern-search .v-field__outline {
-    border-color: #e2e8f0 !important;
-}
-
-.modern-search .v-field--focused .v-field__outline {
-    border-color: #366091 !important;
-    border-width: 2px !important;
-}
-
-.modern-filter {
-}
-
-.modern-filter .v-field {
-}
-
-.modern-filter .v-field__outline {
-    border-color: #e2e8f0 !important;
-}
-
-.modern-filter .v-field--focused .v-field__outline {
-    border-color: #366091 !important;
-    border-width: 2px !important;
-}
-
-.view-toggle {
-    background: #f7fafc;
-    padding: 4px;
-    border: 1px solid #e2e8f0;
-}
-
-.view-toggle .v-btn {
-    color: #718096 !important;
-    background: transparent !important;
-}
-
-.view-toggle .v-btn.v-btn--active {
-    background: white !important;
-    color: #366091 !important;
-    box-shadow: 0 2px 8px rgba(54, 96, 145, 0.15) !important;
-}
-
-.export-btn {
-    border-color: #e2e8f0 !important;
-    color: #718096 !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
-    transition: all 0.2s ease !important;
-}
-
-.export-btn:hover {
-    border-color: #366091 !important;
-    color: #366091 !important;
-    background: rgba(54, 96, 145, 0.05) !important;
-}
-
-/* Content Section */
-.content-section {
-    padding: 32px 0;
-    background-color: white;
-}
-
-.content-header {
-    margin-bottom: 24px;
-}
-
-.content-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #2d3748;
-    margin: 0;
-}
-
-.content-card {
-    background: white !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-    border: 1px solid #e2e8f0 !important;
-    overflow: hidden;
-}
-
-/* Empty State */
-.empty-state {
-    padding: 80px 40px;
-    text-align: center;
-    background: white;
-}
-
-.empty-content {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.empty-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #2d3748;
-    margin: 24px 0 12px 0;
-}
-
-.empty-subtitle {
-    color: #718096;
-    font-size: 16px;
-    margin-bottom: 32px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .modern-title {
-        font-size: 24px;
-    }
-
-    .modern-subtitle {
-        font-size: 14px;
-    }
-
-    .stat-card {
-        padding: 16px;
-        gap: 12px;
-    }
-
-    .stat-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .stat-value {
-        font-size: 24px;
-    }
-
-    .controls-section .v-row {
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .modern-search {
-        max-width: 100% !important;
-    }
-
-    .modern-filter {
-        min-width: 100% !important;
-    }
-
-    .content-section {
-        padding: 16px 0;
-    }
-
-    .empty-state {
-        padding: 40px 20px;
-    }
-}
-
-@media (max-width: 600px) {
-    .modern-header .d-flex {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 16px;
-    }
-
-    .modern-header .modern-add-btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .stat-card {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .toggle-btn {
-        padding: 8px 16px !important;
-        font-size: 14px;
-    }
-}
-
-/* Focus States for Accessibility */
-.v-btn:focus-visible {
-    outline: 2px solid rgba(54, 96, 145, 0.5);
-    outline-offset: 2px;
-}
-
-.v-text-field:focus-within,
-.v-select:focus-within {
-    outline: 2px solid rgba(54, 96, 145, 0.3);
-    outline-offset: 2px;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #366091 0%, #4299e1 100%);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #2d4f73 0%, #3182ce 100%);
-}
-
-/* Loading States */
-.v-progress-circular {
-    color: #366091 !important;
-}
-
-/* Table Enhancements (if using tables) */
-.v-data-table {
-}
-
-.v-data-table .v-data-table__tr:hover {
-    background: rgba(54, 96, 145, 0.02) !important;
-}
-
-.v-data-table th {
-    background: #f8fafc !important;
-    font-weight: 600 !important;
-    color: #2d3748 !important;
-    border-bottom: 2px solid #e2e8f0 !important;
-}
-
-/* Pagination Styling */
-.v-pagination .v-pagination__item--is-active {
-    background: linear-gradient(135deg, #366091 0%, #4299e1 100%) !important;
-    color: white !important;
-}
-
-.v-pagination .v-pagination__item {
-    color: #718096 !important;
-}
-
-.v-pagination .v-pagination__item:hover {
-    background: rgba(54, 96, 145, 0.1) !important;
-}
-
-/* Chip Styling */
-.v-chip {
-    font-weight: 500 !important;
-}
-
-/* Card Hover Effects */
-.v-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.v-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
-}
-
-/* Text Selection */
-::selection {
-    background: rgba(54, 96, 145, 0.2);
-    color: #2d3748;
-}
-
-/* Print Styles */
-@media print {
-
-    .modern-header,
-    .controls-section {
-        break-inside: avoid;
-    }
-
-    .stat-card {
-        break-inside: avoid;
-        margin-bottom: 16px;
-    }
-
-    .content-card {
-        box-shadow: none !important;
-        border: 1px solid #e2e8f0 !important;
-    }
-}
+@import '@/styles/product.css';
 </style>

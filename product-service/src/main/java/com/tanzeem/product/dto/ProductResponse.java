@@ -20,9 +20,11 @@ public class ProductResponse {
     private String unit;
     private BigDecimal price;
     private Integer stock;
+    private String status; // Add this field
     private Integer minimumStock;
     private String imageUrl;
     private Long categoryId;
+    private CategoryResponse category; // Use CategoryResponse for category details
     private String categoryName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
