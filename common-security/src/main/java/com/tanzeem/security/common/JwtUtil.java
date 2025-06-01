@@ -22,17 +22,21 @@ public class JwtUtil {
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
     // Generate JWT Token
-    public String generateToken(String email, List<String> roles, String tenantId) {
-        return this.generateToken(email, roles, tenantId, EXPIRATION_TIME);
+    public String generateToken(String email, List<String> roles, String tenantId, String businessType, String defaultCurrency, String defaultLanguage, String timezone) {
+        return this.generateToken(email, roles, tenantId, businessType, defaultCurrency, defaultLanguage, timezone, EXPIRATION_TIME);
     }
 
-    public String generateToken(String email, List<String> roles, String tenantId,  Long expirationTime) {
+    public String generateToken(String email, List<String> roles, String tenantId, String businessType, String defaultCurrency, String defaultLanguage, String timezone,  Long expirationTime) {
         if (expirationTime == null) expirationTime = EXPIRATION_TIME;
 
         return Jwts.builder()
                 .setSubject(email)
                 .claim("roles", roles)
                 .claim("tenantId", tenantId)
+                .claim("businessType", businessType)
+                .claim("defaultCurrency", defaultCurrency)
+                .claim("defaultLanguage", defaultLanguage)
+                .claim("timezone", timezone)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key, SignatureAlgorithm.HS256)

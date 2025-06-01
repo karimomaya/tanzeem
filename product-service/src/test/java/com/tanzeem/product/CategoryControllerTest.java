@@ -85,7 +85,7 @@ public class CategoryControllerTest {
 
         Page<CategoryResponse> page = new PageImpl<>(List.of(response1, response2));
 
-        when(categoryService.getAllCategories("", true,any(Pageable.class))).thenReturn(page);
+        when(categoryService.getAllCategories("", "true",any(Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/api/categories")
                         .param("page", "0")

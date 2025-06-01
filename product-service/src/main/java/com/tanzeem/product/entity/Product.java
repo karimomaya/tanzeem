@@ -42,7 +42,11 @@ public class Product {
     @ManyToOne
     private Category category;
 
+    private boolean isActive;
+
     private String tenantId;
+
+
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -60,5 +64,5 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private ProductStatus status;
+    private ProductStatus status = ProductStatus.ACTIVE;
 }

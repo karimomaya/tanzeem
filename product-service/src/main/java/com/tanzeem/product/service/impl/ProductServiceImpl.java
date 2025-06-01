@@ -1,5 +1,6 @@
 package com.tanzeem.product.service.impl;
 
+import com.tanzeem.product.dto.CategoryProductCountResponse;
 import com.tanzeem.product.dto.CategoryResponse;
 import com.tanzeem.product.dto.ProductDto;
 import com.tanzeem.product.dto.ProductResponse;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,21 +43,22 @@ public class ProductServiceImpl implements ProductService {
         product.setMinimumStock(dto.getMinimumStock());
         product.setImageUrl(dto.getImageUrl());
         product.setTenantId(AuthContextHolder.getTenantId());
-        product.setStatus(calculateProductStatus(dto.getStock(), dto.getMinimumStock()));
 
         Category category = categoryRepo.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         product.setCategory(category);
+
+        product.setStatus(calculateProductStatus(product));
 
         product=  productRepo.save(product);
         return mapToResponse(product);
     }
     @Transactional
     @Override
-    public Page<ProductResponse> getAll(String search, Pageable pageable) {
+    public Page<ProductResponse> getAll(String search, String isActive, String productStatus, Pageable pageable) {
         if (search == null) search = "";
-        Page<Product> products = productRepo.findByTenantIdAndNameContainingIgnoreCase(
-                    AuthContextHolder.getTenantId(), search, pageable);
+        Page<Product> products = productRepo.findByTenantIdAndNameContainingIgnoreCaseAndActiveAndProductStatus(
+                AuthContextHolder.getTenantId(), search, isActive, productStatus,  pageable);
         return products.map(this::mapToResponse);
     }
 
@@ -70,12 +74,13 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(dto.getStock());
         product.setMinimumStock(dto.getMinimumStock());
         product.setImageUrl(dto.getImageUrl());
-        // Recalculate status when updating stock
-        product.setStatus(calculateProductStatus(dto.getStock(), dto.getMinimumStock()));
+        product.setActive(dto.isActive());
 
         Category category = categoryRepo.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         product.setCategory(category);
+        // Recalculate status when updating stock
+        product.setStatus(calculateProductStatus(product));
 
         return productRepo.save(product);
     }
@@ -86,11 +91,47 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Long getTotalProductsCount() {
+        return productRepo.countByTenantId(AuthContextHolder.getTenantId());
+    }
+
+    @Override
+    public Long getActiveProductsCount() {
+        return productRepo.countActiveProducts(AuthContextHolder.getTenantId());
+    }
+
+    @Override
+    public Long getLowStockProductsCount() {
+        return productRepo.countLowStockProducts(AuthContextHolder.getTenantId());
+    }
+
+    @Override
+    public Long getOutOfStockProductsCount() {
+        return productRepo.countOutOfStockProducts(AuthContextHolder.getTenantId());
+    }
+
+    @Override
     public List<Product> getLowStockProducts() {
         return productRepo.findByTenantIdAndStockLessThan(
                 AuthContextHolder.getTenantId(),
                 productRepo.getMinimumStockThreshold(AuthContextHolder.getTenantId())
         );
+    }
+
+    @Override
+    public List<CategoryProductCountResponse> getProductCountByCategory() {
+        List<Map<String, Object>> results = productRepo.countProductsByCategory(AuthContextHolder.getTenantId());
+        return results.stream()
+                .map(result -> CategoryProductCountResponse.builder()
+                        .categoryName((String) result.get("categoryName"))
+                        .productCount((Long) result.get("productCount"))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getProductsWithoutMinimumStockCount() {
+        return productRepo.countProductsWithoutMinimumStock(AuthContextHolder.getTenantId());
     }
 
     private ProductResponse mapToResponse(Product product) {
@@ -100,18 +141,23 @@ public class ProductServiceImpl implements ProductService {
                 .categoryId(product.getCategory().getId()).id(product.getId()).createdAt(product.getCreatedAt())
                 .categoryName(product.getCategory().getName())
                 .category(categoryMapper.mapToResponse(category))
-                .status(product.getStatus().name())
+                .status(product.getStatus() != null ? product.getStatus().name() : "UNKNOWN") // Handle null
+                .isActive(product.isActive())
                 .updatedAt(product.getUpdatedAt()).createdBy(product.getCreatedBy()).updatedBy(product.getUpdatedBy())
                 .imageUrl(product.getImageUrl())
                 .build();
 
     }
 
-    private ProductStatus calculateProductStatus(Integer stock, Integer minimumStock) {
+    private ProductStatus calculateProductStatus(Product product) {
+        Integer stock = product.getStock();
+        Integer minimumStock = product.getMinimumStock();
         if (stock == null) stock = 0;
         if (minimumStock == null) minimumStock = 0;
 
-        if (stock == 0) {
+        if (!product.isActive() || !product.getCategory().isActive()) {
+            return ProductStatus.DISABLED;
+        } else if (stock == 0) {
             return ProductStatus.OUT_OF_STOCK;
         } else if (stock <= minimumStock) {
             return ProductStatus.LOW_STOCK;

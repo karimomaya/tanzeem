@@ -66,6 +66,14 @@ export async function deleteProduct(id) {
     return await makeRequest(`${url}/products/${id}`, options);
 }
 
+export async function getProductsStats(){
+    return await makeRequest(`${url}/products/stats`, { method: 'GET' });
+}
+
+export async function getCategoriesStats(){
+    return await makeRequest(`${url}/categories/stats`, { method: 'GET' });
+}
+
 // ===========================================
 // Stock Utility Functions
 // ===========================================
@@ -417,59 +425,51 @@ export function isUpdatedRecently(createdAt, updatedAt) {
 }
 
 
-export function formatPrice(price) {
-    return new Intl.NumberFormat('ar-SA', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(price);
-}
+// export function formatPrice(price) {
+//     return new Intl.NumberFormat('ar-SA', {
+//         minimumFractionDigits: 2,
+//         maximumFractionDigits: 2
+//     }).format(price);
+// }
 
 export function truncateText(text, maxLength) {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 }
 
-export function formatDateText(dateString, type) {
-    if (!dateString) return '';
+export function getProductStatus(stock, minimumStock, isActive, categoryActive) {
+    if (!isActive || !categoryActive) return 'DISABLED';
+    if (stock === 0) return 'OUT_OF_STOCK';
+    if (stock <= minimumStock) return 'LOW_STOCK';
+    return 'ACTIVE';
+}
 
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now - date;
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    const diffInMonths = Math.floor(diffInDays / 30);
-    const diffInYears = Math.floor(diffInDays / 365);
+export function getProductStatusText(status) {
+    const statusMap = {
+        'ACTIVE': 'نشط',
+        'LOW_STOCK': 'مخزون منخفض',
+        'OUT_OF_STOCK': 'نفد المخزون',
+        'DISABLED': 'معطل'
+    };
+    return statusMap[status] || 'غير محدد';
+}
 
-    const prefix = type === 'created' ? 'تم الإنشاء' : 'تم التحديث';
+export function getProductStatusColor(status) {
+    const colorMap = {
+        'ACTIVE': 'success',
+        'LOW_STOCK': 'warning',
+        'OUT_OF_STOCK': 'error',
+        'DISABLED': 'grey'
+    };
+    return colorMap[status] || 'grey';
+}
 
-    // Less than a minute
-    if (diffInMinutes < 1) {
-        return `${prefix} الآن`;
-    }
-    // Less than an hour
-    else if (diffInMinutes < 60) {
-        return `${prefix} منذ ${diffInMinutes} دقيقة`;
-    }
-    // Less than a day
-    else if (diffInHours < 24) {
-        return `${prefix} منذ ${diffInHours} ساعة`;
-    }
-    // Less than a week
-    else if (diffInDays < 7) {
-        return `${prefix} منذ ${diffInDays} يوم`;
-    }
-    // Less than a month
-    else if (diffInWeeks < 4) {
-        return `${prefix} منذ ${diffInWeeks} أسبوع`;
-    }
-    // Less than a year
-    else if (diffInMonths < 12) {
-        return `${prefix} منذ ${diffInMonths} شهر`;
-    }
-    // More than a year
-    else {
-        return `${prefix} منذ ${diffInYears} سنة`;
-    }
+export function getProductStatusIcon(status) {
+    const iconMap = {
+        'ACTIVE': 'mdi-check-circle',
+        'LOW_STOCK': 'mdi-alert-circle',
+        'OUT_OF_STOCK': 'mdi-close-circle',
+        'DISABLED': 'mdi-minus-circle'
+    };
+    return iconMap[status] || 'mdi-help-circle';
 }

@@ -1,9 +1,11 @@
 package com.tanzeem.iam.controller;
 import com.tanzeem.iam.dto.*;
 import com.tanzeem.iam.entity.RefreshToken;
+import com.tanzeem.iam.entity.TenantSettings;
 import com.tanzeem.iam.repository.RefreshTokenRepository;
 import com.tanzeem.iam.service.AuthService;
 import com.tanzeem.iam.service.RefreshTokenService;
+import com.tanzeem.iam.service.TenantService;
 import com.tanzeem.security.common.JwtUtil;
 import com.tanzeem.security.exception.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,6 +24,7 @@ public class AuthController {
     private final RefreshTokenRepository refreshTokenRepository;
     private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
+    private final TenantService tenantService;
 
     @PostMapping("/login")
     public @ResponseBody  ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
@@ -42,10 +46,11 @@ public class AuthController {
                         refreshTokenRepository.delete(rt);
                         throw new TokenExpiredException("Refresh token expired");
                     }
+                    TenantSettings tenantSettings = tenantService.findByTenantId(rt.getUser().getTenantId());
 
                     String newAccessToken = jwtUtil.generateToken(rt.getUser().getEmail(), rt.getUser().getRoles().stream()
                             .map(role -> role.getName())
-                            .toList(), rt.getUser().getTenantId());
+                            .toList(), rt.getUser().getTenantId(), tenantSettings.getBusinessType().name(), tenantSettings.getDefaultCurrency(), tenantSettings.getDefaultLanguage(), tenantSettings.getTimezone());
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(rt.getUser());
                     return ResponseEntity.ok(AuthResponse.builder()
                             .accessToken(newAccessToken)

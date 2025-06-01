@@ -1,0 +1,37 @@
+spring:
+  web:
+    init:
+      platform: h2
+      mode: always
+  datasource:
+    initialization-mode: always
+    url: jdbc:h2:mem:purchasedb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+    platform: h2
+    data: classpath:data.sql
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: crawler
+  main:
+    allow-bean-definition-overriding: true
+logging:
+  file:
+    name: logs/erp-purchase.log
+  level:
+    root: INFO
+    org.springframework: INFO
+    com.hub.marketinganalysis: DEBUG
+server:
+  port: 8081

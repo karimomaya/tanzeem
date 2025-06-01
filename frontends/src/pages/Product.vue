@@ -1,127 +1,101 @@
 <template>
     <v-app>
         <v-main class="modern-main">
-            <!-- Clean Header Section -->
-            <div class="modern-header">
-                <v-container fluid class="px-6 py-6">
-                    <div class="d-flex align-center justify-space-between">
-                        <div>
-                            <h1 class="modern-title">
-                                {{ activeTab === 'products' ? 'إدارة المنتجات' : 'إدارة التصنيفات' }}
-                            </h1>
-                            <p class="modern-subtitle">
-                                {{ activeTab === 'products'
-                                    ? 'مراقبة وإدارة جميع المنتجات في النظام'
-                                    : 'تنظيم وإدارة تصنيفات المنتجات'
-                                }}
-                            </p>
-                        </div>
 
-                        <v-btn color="primary" size="large" class="modern-add-btn" prepend-icon="mdi-plus"
-                            @click="openAddDialog">
-                            {{ addButtonLabel }}
-                        </v-btn>
-                    </div>
-                </v-container>
+            <!-- Clean Header Section -->
+            <div v-if="businessType === 'PRODUCT'">
+                <div class="modern-header">
+                    <v-container fluid class="px-6 py-6">
+                        <div class="d-flex align-center justify-space-between">
+                            <div>
+                                <h1 class="modern-title">
+                                    {{ activeTab === 'products' ? 'إدارة المنتجات' : 'إدارة التصنيفات' }}
+                                </h1>
+                                <p class="modern-subtitle">
+                                    {{ activeTab === 'products'
+                                        ? 'مراقبة وإدارة جميع المنتجات في النظام'
+                                        : 'تنظيم وإدارة تصنيفات المنتجات'
+                                    }}
+                                </p>
+                            </div>
+
+                            <v-btn color="primary" size="large" class="modern-add-btn" prepend-icon="mdi-plus"
+                                @click="openAddDialog">
+                                {{ addButtonLabel }}
+                            </v-btn>
+                        </div>
+                    </v-container>
+                </div>
+            </div>
+            <div v-else-if="businessType === 'SERVICE'">
+                <div class="service-placeholder">
+                    <v-container fluid class="px-6 py-12">
+                        <div class="text-center">
+                            <v-icon size="120" color="primary" class="mb-6">mdi-briefcase-outline</v-icon>
+                            <h1 class="text-h3 mb-4">إدارة الخدمات</h1>
+                            <p class="text-h6 text-medium-emphasis mb-8">
+                                قريباً - ستتمكن من إدارة خدماتك بسهولة وكفاءة
+                            </p>
+
+                            <!-- Service Stats Cards -->
+                            <v-row justify="center" class="mb-8">
+                                <v-col cols="12" sm="6" md="3">
+                                    <v-card class="service-stat-card" elevation="2">
+                                        <v-card-text class="text-center pa-6">
+                                            <v-icon size="48" color="primary" class="mb-3">mdi-account-group</v-icon>
+                                            <div class="text-h4 font-weight-bold">{{ serviceStats.totalClients }}</div>
+                                            <div class="text-body-1">إجمالي العملاء</div>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+
+                                <v-col cols="12" sm="6" md="3">
+                                    <v-card class="service-stat-card" elevation="2">
+                                        <v-card-text class="text-center pa-6">
+                                            <v-icon size="48" color="success" class="mb-3">mdi-calendar-check</v-icon>
+                                            <div class="text-h4 font-weight-bold">{{ serviceStats.activeProjects }}</div>
+                                            <div class="text-body-1">المشاريع النشطة</div>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+
+                                <v-col cols="12" sm="6" md="3">
+                                    <v-card class="service-stat-card" elevation="2">
+                                        <v-card-text class="text-center pa-6">
+                                            <v-icon size="48" color="warning" class="mb-3">mdi-clock-outline</v-icon>
+                                            <div class="text-h4 font-weight-bold">{{ serviceStats.pendingTasks }}</div>
+                                            <div class="text-body-1">المهام المعلقة</div>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+
+                                <v-col cols="12" sm="6" md="3">
+                                    <v-card class="service-stat-card" elevation="2">
+                                        <v-card-text class="text-center pa-6">
+                                            <v-icon size="48" color="info" class="mb-3">mdi-currency-usd</v-icon>
+                                            <div class="text-h4 font-weight-bold">{{
+                                                formatCurrency(serviceStats.monthlyRevenue) }}</div>
+                                            <div class="text-body-1">الإيرادات الشهرية</div>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+
+                            <v-btn color="primary" size="large" prepend-icon="mdi-bell" @click="notifyWhenReady">
+                                أشعرني عند الإطلاق
+                            </v-btn>
+                        </div>
+                    </v-container>
+                </div>
             </div>
 
+
             <!-- Stats Cards Section -->
-            <div class="stats-section">
+            <div v-if="businessType === 'PRODUCT'" class="stats-section">
                 <v-container fluid class="px-6">
-                    <v-row class="mb-8">
-                        <template v-if="activeTab === 'products'">
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-blue">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-chart-line</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">إجمالي المنتجات</div>
-                                        <div class="stat-value">{{ productStats.total }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-green">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-map-marker</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">المنتجات النشطة</div>
-                                        <div class="stat-value">{{ productStats.active }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-purple">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-account-multiple</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">مخزون منخفض</div>
-                                        <div class="stat-value">{{ productStats.lowStock }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-yellow">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-currency-usd</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">نفد المخزون</div>
-                                        <div class="stat-value">{{ productStats.outOfStock }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                        </template>
-                        <template v-else>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-blue">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-chart-line</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">إجمالي التصنيفات</div>
-                                        <div class="stat-value">{{ categoryStats.total }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-green">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-map-marker</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">التصنيفات النشطة</div>
-                                        <div class="stat-value">{{ categoryStats.active }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-purple">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-account-multiple</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">غير نشطة</div>
-                                        <div class="stat-value">{{ categoryStats.inactive }}</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="12" sm="6" lg="3">
-                                <div class="stat-card stat-card-yellow">
-                                    <div class="stat-icon">
-                                        <v-icon color="white" size="24">mdi-currency-usd</v-icon>
-                                    </div>
-                                    <div class="stat-content">
-                                        <div class="stat-label">متوسط المنتجات</div>
-                                        <div class="stat-value">12</div>
-                                    </div>
-                                </div>
-                            </v-col>
-                        </template>
-                    </v-row>
+                    <ProductStats v-if="activeTab === 'products'" :refresh="refreshStats"
+                        @stats-refreshed="refreshStats = false" />
+                    <CategoryStats v-else :refresh="refreshStats" @stats-refreshed="refreshStats = false" />
                 </v-container>
             </div>
 
@@ -281,11 +255,13 @@ import CategoryGrid from '@/components/product/CategoryGrid.vue';
 import ProductModal from '@/components/product/ProductModal.vue';
 import CategoryModal from '@/components/product/CategoryModal.vue';
 import DeleteModal from '@/components/layouts/DeleteModal.vue';
-import StatsCard from '@/components/common/StatsCard.vue';
 import { getCategories, deleteCategory, getProducts } from '@/utils/product-util';
-import { success, error } from '@/utils/system-util';
+import { success, error, formatCurrency } from '@/utils/system-util';
 import CategoryList from '@/components/product/CategoryList.vue';
 import { updateCategory } from '@/utils/product-util';
+import { getBusinessType, getTenantInfo } from '@/utils/auth-util';
+import ProductStats from '@/components/product/ProductStats.vue';
+import CategoryStats from '@/components/product/CategoryStats.vue';
 
 export default {
     name: 'ProductsPage',
@@ -297,16 +273,25 @@ export default {
         ProductModal,
         CategoryModal,
         DeleteModal,
-        StatsCard,
-
+        ProductStats,
+        CategoryStats,
     },
     data() {
         return {
+            refreshStats: false,
             activeTab: 'products',
             searchTerm: '',
-            statusFilter: 'active',
-            viewMode: 'grid',
-            categoryViewMode: 'grid',
+            statusFilter: 'all',
+            viewMode: 'list',
+            categoryViewMode: 'list',
+            businessType: null,
+            tenantInfo: {},
+            serviceStats: {
+                totalClients: 42,
+                activeProjects: 8,
+                pendingTasks: 15,
+                monthlyRevenue: 125000
+            },
 
             productDialog: false,
             categoryDialog: false,
@@ -314,9 +299,17 @@ export default {
             selectedProduct: null,
             selectedCategory: null,
 
-            statusOptions: [
-                { title: 'نشط', value: 'active' },
-                { title: 'غير نشط', value: 'inactive' }
+            categoryStatusOptions: [
+                { title: 'الكل', value: 'all' },
+                { title: 'نشط', value: 'true' },
+                { title: 'غير نشط', value: 'false' }
+            ],
+            productStatusOptions: [
+                { title: 'الكل', value: 'all' },
+                { title: 'نشط', value: 'ACTIVE' },
+                { title: 'مخزون منخفض', value: 'LOW_STOCK' },
+                { title: 'نفد المخزون', value: 'OUT_OF_STOCK' },
+                { title: 'معطل', value: 'DISABLED' }
             ],
 
             productPagination: {
@@ -345,25 +338,12 @@ export default {
     },
 
     computed: {
+
         addButtonLabel() {
             return this.activeTab === 'products' ? 'إضافة منتج' : 'إضافة تصنيف';
         },
-
-        productStats() {
-            return {
-                total: this.totalProducts,
-                active: this.products.filter(p => p.status === 'active').length,
-                lowStock: this.products.filter(p => p.status === 'low-stock').length,
-                outOfStock: this.products.filter(p => p.status === 'out-of-stock').length
-            };
-        },
-
-        categoryStats() {
-            return {
-                total: this.totalCategories,
-                active: this.categories.filter(c => c.active).length,
-                inactive: this.categories.filter(c => !c.active).length
-            };
+        statusOptions() {
+            return this.activeTab === 'products' ? this.productStatusOptions : this.categoryStatusOptions;
         },
         currentPagination() {
             return this.activeTab === 'products' ? this.productPagination : this.categoryPagination;
@@ -372,13 +352,18 @@ export default {
     },
 
     created() {
+        this.businessType = getBusinessType();
+        this.tenantInfo = getTenantInfo();
         // Load categories when component is created
-        this.loadCategories();
-        this.loadProducts();
+        if (this.businessType === 'PRODUCT') {
+            this.loadCategories();
+            this.loadProducts();
+        }
     },
 
     watch: {
         activeTab(newTab) {
+            this.statusFilter = 'all';
             if (newTab === 'categories') {
                 this.loadCategories();
             } else if (newTab === 'products') {
@@ -411,7 +396,10 @@ export default {
     },
 
     methods: {
-
+        formatCurrency,
+        notifyWhenReady() {
+            success('سيتم إشعارك عند إطلاق ميزات إدارة الخدمات');
+        },
         async updateCategoryStatus(categoryData) {
             // Updating existing category
             let response = await updateCategory(categoryData);
@@ -479,11 +467,25 @@ export default {
                 params.append('search', this.searchTerm);
             }
 
-            // Add status filter
-            if (this.statusFilter !== 'all') {
-                const isActive = this.statusFilter === 'active';
-                params.append('isActive', isActive);
+            // Add different status filters based on tab
+            // Use the single statusFilter for both
+            if (type === 'products') {
+                if (this.statusFilter && this.statusFilter !== 'all') {
+                    if (['ACTIVE', 'LOW_STOCK', 'OUT_OF_STOCK', 'DISABLED'].includes(this.statusFilter)) {
+                        params.append('productStatus', this.statusFilter);
+                        params.append('isActive', 'all');
+                    } else {
+                        params.append('isActive', this.statusFilter);
+                        params.append('productStatus', 'all');
+                    }
+                } else {
+                    params.append('isActive', 'all');
+                    params.append('productStatus', 'all');
+                }
+            } else {
+                params.append('isActive', this.statusFilter);
             }
+
 
             // Add sorting if available
             if (pagination.sortBy && pagination.sortBy.length > 0) {
@@ -500,7 +502,6 @@ export default {
                         return;
                     }
 
-                    
                     params.append('sort', `${key},${order}`);
                 });
             }
@@ -636,12 +637,14 @@ export default {
 
         handleProductSave() {
             this.loadProducts();
+            this.refreshStats = true; // Trigger stats refresh
             this.productDialog = false;
         },
 
         handleCategorySave() {
             // Refresh categories list after save
             this.loadCategories();
+            this.refreshStats = true; // Trigger stats refresh
             this.categoryDialog = false;
         },
         updateSortOption(sortOption) {
@@ -663,4 +666,24 @@ export default {
 
 <style scoped>
 @import '@/styles/product.css';
+
+.service-placeholder {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.service-stat-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.service-stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.error-state {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
 </style>

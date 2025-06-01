@@ -115,14 +115,14 @@
                         <div class="meta-section">
                             <div class="meta-item">
                                 <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
-                                <span class="meta-text">{{ formatDateText(category.createdAt, 'created') }}</span>
+                                <span class="meta-text">{{ formatDate(category.createdAt, 'created') }}</span>
                                 <span v-if="category.createdBy" class="meta-by"> بواسطة {{ category.createdBy.name ||
                                     category.createdBy }}</span>
                             </div>
                             <div v-if="category.updatedAt && isUpdatedRecently(category.createdAt, category.updatedAt)"
                                 class="meta-item">
                                 <v-icon size="12" class="me-1">mdi-calendar-edit</v-icon>
-                                <span class="meta-text">{{ formatDateText(category.updatedAt, 'updated') }}</span>
+                                <span class="meta-text">{{ formatDate(category.updatedAt, 'updated') }}</span>
                                 <span v-if="category.updatedBy" class="meta-by"> بواسطة {{ category.updatedBy.name ||
                                     category.updatedBy }}</span>
                             </div>
@@ -297,19 +297,11 @@
 <script>
 import { 
     isUpdatedRecently,
-    formatDateText,
     getPaginationVisible,
-    truncateText,
-    getStockStatus, 
-    getStockText, 
-    getStockColor, 
-    getStockIcon, 
-    getStockLevel, 
-    getStockPercentage,
-    formatPrice,
-    createDuplicateProduct,
-    calculatePaginationInfo
+    truncateText
 } from '@/utils/product-util';
+import {formatDate} from '@/utils/system-util'
+
 export default {
     name: 'CategoryGrid',
     props: {
@@ -397,7 +389,7 @@ export default {
     },
     methods: {
         isUpdatedRecently,
-        formatDateText,
+        formatDate,
         getPaginationVisible,
         truncateText,
 

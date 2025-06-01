@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../pages/Login.vue'
 import Registration from '../pages/Registration.vue'
 import Product from '../pages/Product.vue'
+import PurchaseOrder from '../pages/PurchaseOrder.vue'
 import { isTokenValid } from '@/utils/auth-util'; // Adjust the import path as necessary
 
 const routes = [
@@ -27,6 +28,11 @@ const routes = [
       path: '/product',
       name: 'product',
       component: Product,
+    },
+    {
+      path: '/purchase',
+      name: 'purchase',
+      component: PurchaseOrder,
     },
   ];
   

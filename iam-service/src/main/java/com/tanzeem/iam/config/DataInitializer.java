@@ -16,6 +16,7 @@ public class DataInitializer implements CommandLineRunner {
     private final RoleRepository roleRepo;
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final TenantSettingsRepository tenantSettingsRepo;
 
     @Override
     public void run(String... args) {
@@ -66,6 +67,17 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepo.save(adminUser);
             System.out.println("✅ Admin user created: admin@erp.com / admin123");
+        }
+
+        if (!tenantSettingsRepo.existsByTenantId(TENANT_ID)) {
+            TenantSettings tenantSettings = new TenantSettings();
+            tenantSettings.setTenantId(TENANT_ID);
+            tenantSettings.setBusinessType(TenantSettings.BusinessType.PRODUCT);
+            tenantSettings.setDefaultCurrency("EGP");
+            tenantSettings.setDefaultLanguage("ar");
+            tenantSettings.setTimezone("EET");
+            tenantSettingsRepo.save(tenantSettings);
+            System.out.println("✅ Tenant settings created for tenant: " + TENANT_ID);
         }
     }
 }

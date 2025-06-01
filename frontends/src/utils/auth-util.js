@@ -58,3 +58,35 @@ export async function login(data) {
         error('خطأ أثناء تسجيل الدخول' + e.message);
     }
 }
+
+export function getBusinessType() {
+    const token = localStorage.getItem('accessToken'); // or however you store your JWT
+    if (!token) return null;
+    
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.businessType;
+    } catch (error) {
+        console.error('Error decoding JWT:', error);
+        return null;
+    }
+}
+
+export function getTenantInfo() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return {};
+    
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return {
+            businessType: payload.businessType,
+            tenantId: payload.tenantId,
+            defaultCurrency: payload.defaultCurrency,
+            defaultLanguage: payload.defaultLanguage,
+            timezone: payload.timezone
+        };
+    } catch (error) {
+        console.error('Error decoding JWT:', error);
+        return {};
+    }
+}

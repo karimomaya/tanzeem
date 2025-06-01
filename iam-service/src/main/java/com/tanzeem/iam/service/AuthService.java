@@ -21,6 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
+    private final TenantService tenantService;
 
     public AuthResponse login(LoginRequest request) {
         try {
@@ -30,9 +31,11 @@ public class AuthService {
 
             User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
             Long expirationTime = request.getRememberMe() ? 604800000L : null;
+
+            TenantSettings tenantSettings = tenantService.findByTenantId(user.getTenantId());
             String accessToken = jwtUtil.generateToken(user.getEmail(), user.getRoles().stream()
                     .map(Role::getName)
-                    .toList(), user.getTenantId(), expirationTime);
+                    .toList(), user.getTenantId(),tenantSettings.getBusinessType().name(), tenantSettings.getDefaultCurrency(), tenantSettings.getDefaultLanguage(), tenantSettings.getTimezone(), expirationTime);
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
 

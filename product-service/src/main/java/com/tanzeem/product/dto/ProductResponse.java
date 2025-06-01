@@ -25,6 +25,7 @@ public class ProductResponse {
     private String imageUrl;
     private Long categoryId;
     private CategoryResponse category; // Use CategoryResponse for category details
+    private boolean isActive;
     private String categoryName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -137,6 +137,21 @@
                                     </v-autocomplete>
                                 </div>
                             </v-col>
+                            <!-- Status Switch -->
+                            <v-col cols="12" md="6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        حالة المنتج 
+                                    </label>
+                                    <div class="d-flex align-center mt-2">
+                                        <v-switch v-model="editedProduct.active" color="primary" hide-details
+                                            class="me-3"></v-switch>
+                                        <span class="text-body-1">
+                                            {{ editedProduct.active ? 'نشط' : 'غير نشط' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </v-col>
                         </v-row>
                     </div>
 
@@ -152,11 +167,11 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">
-                                        السعر (ر.س) <span class="required">*</span>
+                                        السعر <span class="required">*</span>
                                     </label>
                                     <v-text-field v-model.number="editedProduct.price"
                                         :rules="[rules.required, rules.positive]" type="number" variant="outlined"
-                                        density="comfortable" placeholder="0.00" prefix="ر.س" hide-details="auto"
+                                        density="comfortable" placeholder="0.00" prefix="ج.م." hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="success" size="20">mdi-currency-usd</v-icon>
@@ -320,6 +335,7 @@
                                 </div>
                             </v-col>
                         </v-row>
+                        
                     </div>
                 </v-form>
             </div>
@@ -417,6 +433,7 @@ export default {
                 minimumStock: 0,
                 unit: 'piece',
                 description: '',
+                active: true,
                 imageUrl: '' // Changed from 'image' to 'imageUrl' to match backend
             },
             searchableCategories: [],
@@ -555,6 +572,7 @@ export default {
                 minimumStock: 0,
                 unit: 'piece',
                 description: '',
+                active: true ,
                 imageUrl: ''
             };
             this.imageUploadType = 'url';
@@ -912,9 +930,4 @@ export default {
     right: -8px;
     z-index: 2;
 }
-
-
-
-
-
 </style>

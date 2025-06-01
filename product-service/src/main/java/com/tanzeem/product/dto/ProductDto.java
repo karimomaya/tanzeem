@@ -21,4 +21,5 @@ public class ProductDto {
     private Integer minimumStock;
     private String imageUrl;
     private Long categoryId;
+    private boolean isActive;
 }

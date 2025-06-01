@@ -58,14 +58,14 @@
                         <div class="meta-data">
                             <div class="meta-item">
                                 <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
-                                <span class="meta-text">{{ formatDateText(item.createdAt, 'created') }}</span>
+                                <span class="meta-text">{{ formatDate(item.createdAt, 'created') }}</span>
                                 <span v-if="item.createdBy" class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy
                                 }}</span>
                             </div>
                             <div v-if="item.updatedAt && isUpdatedRecently(item.createdAt, item.updatedAt)"
                                 class="meta-item">
                                 <v-icon size="12" class="me-1">mdi-calendar-edit</v-icon>
-                                <span class="meta-text">{{ formatDateText(item.updatedAt, 'updated') }}</span>
+                                <span class="meta-text">{{ formatDate(item.updatedAt, 'updated') }}</span>
                                 <span v-if="item.updatedBy" class="meta-by"> بواسطة {{ item.updatedBy.name || item.updatedBy
                                 }}</span>
                             </div>
@@ -259,18 +259,8 @@
 import { 
     isUpdatedRecently,
     truncateText,
-    formatDateText,
-    getStockStatus, 
-    getStockText, 
-    getStockColor, 
-    getStockIcon, 
-    getStockLevel, 
-    getStockPercentage,
-    formatPrice,
-    createDuplicateProduct,
-    calculatePaginationInfo,
-    getPaginationVisible
 } from '@/utils/product-util';
+import { formatDate } from '@/utils/system-util';
 export default {
     name: 'CategoryList',
     props: {
@@ -351,7 +341,7 @@ export default {
 
         truncateText,
         isUpdatedRecently,
-        formatDateText,
+        formatDate,
         updateTableOptions(options) {
             // Handle table updates (pagination, sorting, etc.)
             this.$emit('update:options', options);
