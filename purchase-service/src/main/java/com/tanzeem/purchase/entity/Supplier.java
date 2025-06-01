@@ -25,12 +25,39 @@ public class Supplier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Basic Info
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false, unique = true)
+    private String code;
+
     private String contactPerson;
+    @Column(nullable = false)
     private String phone;
     private String email;
-    private String address;
     private Boolean isActive = true;
+
+    // Address Info
+    private String address;
+    private String city;
+    private String postalCode;
+    private String country;
+
+    // Business Info
+    private String businessType;
+    private String taxNumber;
+    private String registrationNumber;
+    private String paymentTerms; // e.g. "net_30"
+    private Double creditLimit;
+
+    // Visual Info
+    private String icon; // e.g. mdi-truck
+    private String color; // hex: #366091
+
+    @Lob
+    private String notes;
+
+
     private String tenantId;
 
 

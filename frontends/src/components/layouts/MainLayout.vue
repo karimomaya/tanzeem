@@ -494,8 +494,8 @@ export default {
 	data() {
 		return {
 			drawer: true,
-			pageTitle: 'لوحة التحكم',
-			pageSubtitle: 'نظرة عامة على النشاطات',
+			pageTitle: '',
+			pageSubtitle: '',
 			hasNotifications: true,
 			isLoading: false,
 			isDark: false,

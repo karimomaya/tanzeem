@@ -19,10 +19,25 @@ export function warn(message) {
 export function formatCurrency(amount) {
     const tenantInfo = getTenantInfo()
     const currency = tenantInfo.defaultCurrency || 'EGP';
+    if (currency === 'AED' || currency === 'SAR' || currency === 'OMR') {
+        return new Intl.NumberFormat('ar-AE', {
+            style: 'currency',
+            currency: currency
+        }).format(amount);
+    }
     return new Intl.NumberFormat('ar-EG', {
         style: 'currency',
         currency: currency
     }).format(amount);
+}
+
+export function formatNumber(number) {
+    const tenantInfo = getTenantInfo()
+    const currency = tenantInfo.defaultCurrency || 'EGP';
+    if (currency === 'AED' || currency === 'SAR' || currency === 'OMR') {
+        return new Intl.NumberFormat('ar-AE').format(number);
+    }
+    return new Intl.NumberFormat('ar-EG').format(number);
 }
 
 export function formatDate(dateString, type) {
