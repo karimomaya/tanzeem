@@ -1,0 +1,750 @@
+<template>
+    <div class="table-container">
+        <!-- Table Header Controls -->
+        <div class="table-controls">
+            <div class="d-flex align-center justify-space-between">
+                <div class="table-info">
+                    <h3 class="table-title">قائمة الموردين</h3>
+                    <p class="table-subtitle">{{ totalItems }} مورد متاح</p>
+                </div>
+
+                <div class="d-flex align-center ga-3">
+                    <!-- Items per page -->
+                    <div class="items-per-page">
+                        <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
+                            density="compact" hide-details style="width: 80px;" class="items-select"
+                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
+                    </div>
+
+                    <!-- Export button -->
+                    <v-btn variant="outlined" color="primary" prepend-icon="mdi-download" class="export-btn"
+                        @click="exportData">
+                        تصدير
+                    </v-btn>
+
+                    <!-- Add Supplier button -->
+                    <v-btn color="primary" prepend-icon="mdi-plus" class="modern-add-btn" @click="$emit('add-supplier')">
+                        إضافة مورد
+                    </v-btn>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Data Table -->
+        <v-card class="table-card" elevation="0">
+            <v-data-table-server :headers="supplierHeaders" :items="suppliers" :items-per-page="itemsPerPage" :page="page"
+                :items-length="totalItems" :loading="loading" loading-text="جاري التحميل... يرجى الانتظار"
+                no-data-text="لا توجد موردين للعرض" @update:options="updateTableOptions" class="modern-table" hover
+                show-current-page>
+                
+                <!-- Enhanced Icon Display -->
+                <template v-slot:item.icon="{ item }">
+                    <div class="icon-cell">
+                        <div class="supplier-icon-wrapper">
+                            <v-avatar size="48" :style="{ background: item.color || '#366091' }" class="supplier-avatar">
+                                <v-icon color="white" size="20">{{ item.icon || 'mdi-truck' }}</v-icon>
+                            </v-avatar>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced Name Display -->
+                <template v-slot:item.name="{ item }">
+                    <div class="name-cell">
+                        <div class="supplier-name">{{ item.name }}</div>
+                        <div v-if="item.code" class="supplier-code">
+                            كود المورد: {{ item.code }}
+                        </div>
+                        <div class="meta-data">
+                            <div class="meta-item">
+                                <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
+                                <span class="meta-text">{{ formatDate(item.createdAt, 'created') }}</span>
+                                <span v-if="item.createdBy" class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy }}</span>
+                            </div>
+                            <div v-if="item.updatedAt && isUpdatedRecently(item.createdAt, item.updatedAt)"
+                                class="meta-item">
+                                <v-icon size="12" class="me-1">mdi-calendar-edit</v-icon>
+                                <span class="meta-text">{{ formatDate(item.updatedAt, 'updated') }}</span>
+                                <span v-if="item.updatedBy" class="meta-by"> بواسطة {{ item.updatedBy.name || item.updatedBy }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Contact Information Display -->
+                <template v-slot:item.contact="{ item }">
+                    <div class="contact-cell">
+                        <div v-if="item.contactPerson" class="contact-item">
+                            <v-icon size="14" color="primary" class="me-1">mdi-account</v-icon>
+                            <span class="contact-text">{{ item.contactPerson }}</span>
+                        </div>
+                        <div v-if="item.phone" class="contact-item">
+                            <v-icon size="14" color="success" class="me-1">mdi-phone</v-icon>
+                            <span class="contact-text">{{ item.phone }}</span>
+                        </div>
+                        <div v-if="item.email" class="contact-item">
+                            <v-icon size="14" color="info" class="me-1">mdi-email</v-icon>
+                            <span class="contact-text">{{ truncateText(item.email, 25) }}</span>
+                        </div>
+                        <div v-if="item.address" class="contact-item">
+                            <v-icon size="14" color="orange" class="me-1">mdi-map-marker</v-icon>
+                            <span class="contact-text">{{ truncateText(item.address, 30) }}</span>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced Statistics Display -->
+                <template v-slot:item.statistics="{ item }">
+                    <div class="statistics-cell">
+                        <div class="stat-row">
+                            <v-chip :color="getOrderCountColor(item.totalOrders)" variant="tonal" size="small"
+                                class="stat-chip">
+                                <v-icon start size="14">mdi-clipboard-list</v-icon>
+                                {{ item.totalOrders || 0 }} أوامر
+                            </v-chip>
+                        </div>
+                        <div class="stat-row">
+                            <v-chip color="success" variant="tonal" size="small" class="stat-chip">
+                                <v-icon start size="14">mdi-currency-usd</v-icon>
+                                {{ formatCurrency(item.totalAmount || 0) }}
+                            </v-chip>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced Rating Display -->
+                <template v-slot:item.rating="{ item }">
+                    <div class="rating-cell">
+                        <div class="rating-progress-container">
+                            <div class="rating-info">
+                                <span class="rating-percentage">{{ item.rating || 85 }}%</span>
+                                <span class="rating-label">تقييم المورد</span>
+                            </div>
+                            <v-progress-linear :model-value="item.rating || 85" :color="getSupplierRatingColor(item.rating || 85)"
+                                height="6" rounded class="rating-progress-bar"></v-progress-linear>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced Status Display -->
+                <template v-slot:item.isActive="{ item }">
+                    <div class="status-cell">
+                        <div class="status-indicator" :class="`status-${item.isActive ? 'active' : 'inactive'}`">
+                            <div class="status-dot"></div>
+                            <span class="status-text">{{ item.isActive ? 'نشط' : 'غير نشط' }}</span>
+                        </div>
+                        <div class="status-badge">
+                            <v-chip :color="item.isActive ? 'success' : 'error'" variant="tonal" size="x-small"
+                                class="mini-status-chip">
+                                {{ item.isActive ? 'مفعل' : 'معطل' }}
+                            </v-chip>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced Actions -->
+                <template v-slot:item.actions="{ item }">
+                    <div>
+                        <v-menu>
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small"
+                                    class="actions-trigger"></v-btn>
+                            </template>
+                            <v-list density="compact" class="actions-menu">
+                                <v-list-item @click="viewSupplier(item)" class="action-item">
+                                    <template v-slot:prepend>
+                                        <v-icon color="info">mdi-eye</v-icon>
+                                    </template>
+                                    <v-list-item-title>عرض التفاصيل</v-list-item-title>
+                                </v-list-item>
+
+                                <v-list-item @click="$emit('edit-supplier', item)" class="action-item">
+                                    <template v-slot:prepend>
+                                        <v-icon color="primary">mdi-pencil</v-icon>
+                                    </template>
+                                    <v-list-item-title>تعديل المورد</v-list-item-title>
+                                </v-list-item>
+
+                                <v-list-item @click="duplicateSupplier(item)" class="action-item">
+                                    <template v-slot:prepend>
+                                        <v-icon color="success">mdi-content-copy</v-icon>
+                                    </template>
+                                    <v-list-item-title>نسخ المورد</v-list-item-title>
+                                </v-list-item>
+
+                                <v-list-item @click="toggleSupplierStatus(item)" class="action-item">
+                                    <template v-slot:prepend>
+                                        <v-icon :color="item.isActive ? 'warning' : 'success'">
+                                            {{ item.isActive ? 'mdi-pause' : 'mdi-play' }}
+                                        </v-icon>
+                                    </template>
+                                    <v-list-item-title>
+                                        {{ item.isActive ? 'إلغاء تفعيل' : 'تفعيل' }}
+                                    </v-list-item-title>
+                                </v-list-item>
+
+                                <v-divider></v-divider>
+
+                                <v-list-item @click="$emit('delete-confirmation', item)" class="action-item action-danger">
+                                    <template v-slot:prepend>
+                                        <v-icon color="error">mdi-delete</v-icon>
+                                    </template>
+                                    <v-list-item-title class="text-error">حذف المورد</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
+                </template>
+
+                <!-- Enhanced Headers -->
+                <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
+                    <tr class="table-header">
+                        <template v-for="column in columns" :key="column.key">
+                            <th :class="[
+                                'header-cell',
+                                column.align ? `text-${column.align}` : '',
+                                column.sortable ? 'sortable' : ''
+                            ]" :style="{ width: column.width }" @click="column.sortable ? toggleSort(column) : null">
+                                <div class="header-content">
+                                    <span class="header-title">{{ column.title }}</span>
+                                    <v-icon v-if="column.sortable && isSorted(column)" :icon="getSortIcon(column)"
+                                        color="primary" size="16" class="sort-icon"></v-icon>
+                                    <v-icon v-else-if="column.sortable" icon="mdi-sort" color="grey-lighten-1" size="16"
+                                        class="sort-icon"></v-icon>
+                                </div>
+                            </th>
+                        </template>
+                    </tr>
+                </template>
+
+                <!-- Enhanced Loading -->
+                <template v-slot:loading>
+                    <div class="loading-state">
+                        <div class="loading-content">
+                            <v-progress-circular indeterminate color="primary" size="40" class="mb-4"></v-progress-circular>
+                            <h4 class="loading-title">جاري تحميل الموردين...</h4>
+                            <p class="loading-subtitle">يرجى الانتظار قليلاً</p>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced No Data -->
+                <template v-slot:no-data>
+                    <div class="no-data-state">
+                        <div class="no-data-content">
+                            <div class="no-data-icon">
+                                <v-icon size="60" color="grey-lighten-2">mdi-truck</v-icon>
+                            </div>
+                            <h4 class="no-data-title">لا توجد موردين</h4>
+                            <p class="no-data-subtitle">لم يتم العثور على موردين مطابقين لمعايير البحث الحالية</p>
+                            <v-btn color="primary" variant="tonal" prepend-icon="mdi-plus" class="mt-4"
+                                @click="$emit('add-supplier')">
+                                إضافة مورد جديد
+                            </v-btn>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Enhanced Footer -->
+                <template v-slot:bottom>
+                    <div class="table-footer">
+                        <div class="footer-info">
+                            <span class="text-body-2 text-medium-emphasis">
+                                عرض {{ (page - 1) * itemsPerPage + 1 }} - {{ Math.min(page * itemsPerPage, totalItems) }} من
+                                أصل {{ totalItems }} مورد
+                            </span>
+                        </div>
+                        <v-pagination v-if="Math.ceil(totalItems / itemsPerPage) > 1" :model-value="page"
+                            :length="Math.ceil(totalItems / itemsPerPage)" :total-visible="5"
+                            @update:model-value="$emit('update:page', $event)" color="primary" size="small"
+                            class="table-pagination"></v-pagination>
+                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
+                            variant="outlined" density="compact" hide-details style="max-width: 120px;"
+                            class="items-per-page-select"
+                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
+                    </div>
+                </template>
+            </v-data-table-server>
+        </v-card>
+    </div>
+</template>
+
+<script>
+import { formatCurrency, formatDate } from '@/utils/system-util';
+import { 
+    isUpdatedRecently,
+    truncateText,
+    getPaginationVisible
+} from '@/utils/product-util';
+
+export default {
+    name: 'SupplierList',
+    props: {
+        suppliers: {
+            type: Array,
+            default: () => []
+        },
+        loading: {
+            type: Boolean,
+            default: false
+        },
+        page: {
+            type: Number,
+            default: 1
+        },
+        itemsPerPage: {
+            type: Number,
+            default: 10
+        },
+        totalItems: {
+            type: Number,
+            default: 0
+        },
+        searchTerm: {
+            type: String,
+            default: ''
+        },
+        statusFilter: {
+            type: String,
+            default: 'all'
+        },
+        sortOption: {
+            type: String,
+            default: 'name-asc'
+        }
+    },
+    emits: [
+        'add-supplier',
+        'edit-supplier',
+        'delete-confirmation',
+        'update:page',
+        'update:items-per-page',
+        'update:search-term',
+        'update:status-filter',
+        'update:sort-option',
+        'refresh',
+        'update:options',
+        'view',
+        'duplicate',
+        'toggle-status'
+    ],
+    data() {
+        return {
+            supplierHeaders: [
+                { title: 'الأيقونة', key: 'icon', sortable: false, align: 'start', width: '8%' },
+                { title: 'الاسم', key: 'name', sortable: true, width: '22%' },
+                { title: 'معلومات الاتصال', key: 'contact', sortable: false, width: '25%' },
+                { title: 'الإحصائيات', key: 'statistics', sortable: true, align: 'start', width: '18%' },
+                { title: 'التقييم', key: 'rating', sortable: true, align: 'start', width: '15%' },
+                { title: 'الحالة', key: 'isActive', sortable: true, align: 'start', width: '10%' },
+                { title: 'الإجراءات', key: 'actions', sortable: false, align: 'start', width: '8%' }
+            ],
+            statusOptions: [
+                { title: 'جميع الحالات', value: 'all' },
+                { title: 'نشط', value: 'active' },
+                { title: 'غير نشط', value: 'inactive' }
+            ],
+            sortOptions: [
+                { title: 'الاسم (أ-ي)', value: 'name-asc' },
+                { title: 'الاسم (ي-أ)', value: 'name-desc' },
+                { title: 'التقييم (الأعلى أولاً)', value: 'rating-desc' },
+                { title: 'التقييم (الأقل أولاً)', value: 'rating-asc' },
+                { title: 'الحالة (نشط أولاً)', value: 'active-desc' },
+                { title: 'الحالة (غير نشط أولاً)', value: 'active-asc' }
+            ],
+            itemsPerPageOptions: [10, 25, 50, 100]
+        };
+    },
+    methods: {
+        formatCurrency,
+        truncateText,
+        isUpdatedRecently,
+        formatDate,
+        getPaginationVisible,
+
+        updateTableOptions(options) {
+            // Handle table updates (pagination, sorting, etc.)
+            this.$emit('update:options', options);
+        },
+
+        getOrderCountColor(count) {
+            if (count === 0) return 'grey';
+            if (count < 5) return 'warning';
+            if (count < 15) return 'info';
+            return 'success';
+        },
+
+        getSupplierRatingColor(rating) {
+            if (rating >= 90) return 'success';
+            if (rating >= 75) return 'info';
+            if (rating >= 60) return 'warning';
+            return 'error';
+        },
+
+        viewSupplier(supplier) {
+            this.$emit('view', supplier);
+        },
+
+        duplicateSupplier(supplier) {
+            const duplicatedSupplier = {
+                ...supplier,
+                id: null,
+                name: `${supplier.name} - نسخة`,
+                isActive: false
+            };
+            this.$emit('duplicate', duplicatedSupplier);
+        },
+
+        toggleSupplierStatus(supplier) {
+            this.$emit('toggle-status', { ...supplier, isActive: !supplier.isActive });
+        },
+
+        exportData() {
+            // Create CSV content
+            const headers = [
+                'الاسم', 
+                'كود المورد', 
+                'جهة الاتصال', 
+                'الهاتف', 
+                'البريد الإلكتروني', 
+                'العنوان',
+                'إجمالي الأوامر',
+                'إجمالي المبلغ',
+                'التقييم',
+                'الحالة', 
+                'تاريخ الإنشاء'
+            ];
+            
+            const csvContent = [
+                headers.join(','),
+                ...this.suppliers.map(supplier => [
+                    supplier.name || '',
+                    supplier.code || '',
+                    supplier.contactPerson || '',
+                    supplier.phone || '',
+                    supplier.email || '',
+                    supplier.address || '',
+                    supplier.totalOrders || 0,
+                    supplier.totalAmount || 0,
+                    supplier.rating || 0,
+                    supplier.isActive ? 'نشط' : 'غير نشط',
+                    supplier.createdAt ? new Date(supplier.createdAt).toLocaleDateString('ar-EG') : ''
+                ].map(field => `"${field}"`).join(','))
+            ].join('\n');
+
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `suppliers_${new Date().getTime()}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+};
+</script>
+
+<style scoped>
+@import '@/styles/product.css';
+
+/* Table Controls */
+.items-per-page {
+    display: flex;
+    align-items: center;
+}
+
+/* Cell Styling */
+.icon-cell {
+    display: flex;
+    padding: 8px 0;
+}
+
+.supplier-icon-wrapper {
+    display: flex;
+}
+
+.supplier-avatar {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: 2px solid white !important;
+}
+
+.name-cell {
+    padding: 12px 0;
+}
+
+.supplier-name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.supplier-code {
+    color: #718096;
+    font-size: 12px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.meta-text {
+    font-weight: 500;
+}
+
+/* Contact Information Styling */
+.contact-cell {
+    padding: 8px 0;
+    max-width: 250px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.contact-item:last-child {
+    margin-bottom: 0;
+}
+
+.contact-text {
+    font-size: 12px;
+    color: #4a5568;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+/* Statistics Styling */
+.statistics-cell {
+    padding: 8px 0;
+}
+
+.stat-row {
+    margin-bottom: 6px;
+}
+
+.stat-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-chip {
+    font-weight: 600 !important;
+    font-size: 11px !important;
+}
+
+/* Rating Styling */
+.rating-cell {
+    padding: 8px 0;
+}
+
+.rating-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 100px;
+}
+
+.rating-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.rating-percentage {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.rating-label {
+    font-size: 10px;
+    color: #718096;
+    font-weight: 500;
+}
+
+.rating-progress-bar {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Status Styling */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.status-active .status-dot {
+    background: #48bb78;
+}
+
+.status-active .status-text {
+    color: #2f855a;
+}
+
+.status-inactive .status-dot {
+    background: #e53e3e;
+}
+
+.status-inactive .status-text {
+    color: #c53030;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-status-chip {
+    font-size: 10px !important;
+    height: 18px !important;
+    font-weight: 600 !important;
+}
+
+/* Row Hover Effect */
+.modern-table :deep(.v-data-table__tr:hover) {
+    background: rgba(54, 96, 145, 0.02) !important;
+}
+
+.modern-table :deep(.v-data-table__tr) {
+    transition: background-color 0.2s ease;
+}
+
+/* Table Footer */
+.items-per-page-select .v-field {
+    border-radius: 8px !important;
+}
+
+/* Hover Effects */
+.stat-chip {
+    transition: all 0.2s ease;
+}
+
+.stat-chip:hover {
+    transform: scale(1.05);
+}
+
+.status-indicator:hover .status-dot {
+    transform: scale(1.3);
+}
+
+.supplier-avatar {
+    transition: all 0.3s ease;
+}
+
+.supplier-avatar:hover {
+    transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .items-per-page {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .name-cell {
+        padding: 8px 0;
+    }
+
+    .supplier-name {
+        font-size: 14px;
+    }
+
+    .supplier-code {
+        font-size: 11px;
+    }
+
+    .contact-cell {
+        max-width: 200px;
+    }
+
+    .contact-text {
+        font-size: 11px;
+    }
+
+    .supplier-avatar {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .rating-info {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .rating-percentage {
+        font-size: 12px;
+    }
+    
+    .rating-label {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 600px) {
+    .supplier-name {
+        font-size: 13px;
+    }
+
+    .contact-text {
+        font-size: 10px;
+    }
+
+    .stat-chip {
+        font-size: 10px !important;
+    }
+
+    .status-indicator {
+        font-size: 11px;
+    }
+
+    .supplier-avatar {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .rating-progress-container {
+        min-width: 80px;
+    }
+    
+    .rating-percentage {
+        font-size: 11px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .actions-cell,
+    .table-card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+
+    .supplier-avatar {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+    }
+}
+
+/* Text Selection */
+::selection {
+    background: rgba(54, 96, 145, 0.2);
+    color: #2d3748;
+}
+</style>

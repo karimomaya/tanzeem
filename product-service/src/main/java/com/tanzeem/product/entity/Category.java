@@ -28,7 +28,6 @@ public class Category extends AuditableBaseEntity {
     private String name;
     private String icon;
     private String description;
-    private boolean isActive;
     private String color;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)

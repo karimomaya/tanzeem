@@ -41,8 +41,6 @@ public class Product  extends AuditableBaseEntity {
     @ManyToOne
     private Category category;
 
-    private boolean isActive;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ProductStatus status = ProductStatus.ACTIVE;
