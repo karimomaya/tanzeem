@@ -4,6 +4,7 @@ import com.tanzeem.purchase.dto.lookup.PaymentTermResponse;
 import com.tanzeem.purchase.entity.lookup.PaymentTerm;
 import com.tanzeem.purchase.repository.lookup.PaymentTermRepository;
 import com.tanzeem.purchase.service.lookup.PaymentTermService;
+import com.tanzeem.security.common.AuthContextHolder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,8 +20,8 @@ public class PaymentTermServiceImpl implements PaymentTermService {
 
     @Override
     @Cacheable(value = "paymentTerm", key = "T(com.tanzeem.security.common.AuthContextHolder).getTenantId()")
-    public List<PaymentTermResponse> getByTenant(String tenantId) {
-        return repository.findByTenantIdOrderByNameAsc(tenantId).stream().map(this::mapToResponse).toList();
+    public List<PaymentTermResponse> getAll() {
+        return repository.findByTenantIdOrderByNameAsc(AuthContextHolder.getTenantId()).stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -45,13 +46,11 @@ public class PaymentTermServiceImpl implements PaymentTermService {
     }
 
     private PaymentTermResponse mapToResponse(PaymentTerm paymentTerm) {
-        return new PaymentTermResponse(
-                paymentTerm.getId(),
-                paymentTerm.getCode(),
-                paymentTerm.getName(),
-                paymentTerm.getDescription(),
-                paymentTerm.isActive(),
-                paymentTerm.isDeleted()
-        );
+        return PaymentTermResponse.builder().id(paymentTerm.getId())
+                .code(paymentTerm.getCode())
+                .name(paymentTerm.getName())
+                .description(paymentTerm.getDescription())
+                .active(paymentTerm.isActive())
+                .deleted(paymentTerm.isDeleted()).build();
     }
 }

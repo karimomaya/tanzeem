@@ -224,6 +224,8 @@
                                 <div class="form-group">
                                     <label class="form-label">شروط الدفع</label>
                                     <v-select v-model="editedSupplier.paymentTerms" :items="paymentTermsOptions"
+                                        item-value="code"
+                                        item-title="name"
                                         variant="outlined" density="comfortable" placeholder="اختر شروط الدفع"
                                         hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
@@ -383,7 +385,7 @@
 
 <script>
 import { success, error } from '@/utils/system-util';
-import { getBusinessType } from '@/utils/purchase-util';
+import { getBusinessType, getPaymentTerms } from '@/utils/purchase-util';
 
 export default {
     name: 'SupplierModal',
@@ -471,15 +473,7 @@ export default {
                 'السودان'
             ],
             businessTypeOptions: [],
-            paymentTermsOptions: [
-                { title: 'نقداً عند الاستلام', value: 'cod' },
-                { title: 'دفع فوري', value: 'immediate' },
-                { title: '15 يوم', value: 'net_15' },
-                { title: '30 يوم', value: 'net_30' },
-                { title: '45 يوم', value: 'net_45' },
-                { title: '60 يوم', value: 'net_60' },
-                { title: '90 يوم', value: 'net_90' }
-            ],
+            paymentTermsOptions: [],
             iconOptions: [
                 { title: 'شاحنة', value: 'mdi-truck' },
                 { title: 'مصنع', value: 'mdi-factory' },
@@ -537,6 +531,7 @@ export default {
 
     async mounted() {
         this.businessTypeOptions = await getBusinessType();
+        this.paymentTermsOptions = await getPaymentTerms();
     },
     computed: {
         dialogVisible: {

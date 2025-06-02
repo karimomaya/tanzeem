@@ -6,6 +6,10 @@ export async function getBusinessType() {
     return await makeRequest(`${PURCHASE_BASE_URL}/business-types`, { method: 'GET' });
 }
 
+export async function getPaymentTerms() {
+    return await makeRequest(`${PURCHASE_BASE_URL}/payment-terms`, { method: 'GET' });
+}
+
 // Purchase Order API functions
 export async function getPurchaseOrders(params = null) {
     try {

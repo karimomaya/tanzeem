@@ -6,7 +6,7 @@ import com.tanzeem.purchase.entity.lookup.PaymentTerm;
 import java.util.List;
 
 public interface PaymentTermService {
-    List<PaymentTermResponse> getByTenant(String tenantId);
+    List<PaymentTermResponse> getAll();
     PaymentTermResponse create(PaymentTerm paymentTerm);
     PaymentTermResponse update(Long id, PaymentTerm paymentTerm);
     void delete(Long id);

@@ -15,8 +15,8 @@ public class PaymentTermController {
     private final PaymentTermService service;
 
     @GetMapping
-    public List<PaymentTermResponse> getByTenant(@RequestParam String tenantId) {
-        return service.getByTenant(tenantId);
+    public List<PaymentTermResponse> getAll() {
+        return service.getAll();
     }
 
     @PostMapping
