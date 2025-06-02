@@ -1,4 +1,4 @@
-package com.tanzeem.purchase.controller;
+package com.tanzeem.purchase.controller.lookup;
 
 import com.tanzeem.purchase.dto.lookup.BusinessTypeResponse;
 import com.tanzeem.purchase.entity.lookup.BusinessType;
