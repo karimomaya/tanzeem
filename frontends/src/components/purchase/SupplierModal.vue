@@ -194,6 +194,8 @@
                                 <div class="form-group">
                                     <label class="form-label">نوع النشاط التجاري</label>
                                     <v-select v-model="editedSupplier.businessType" :items="businessTypeOptions"
+                                        item-value="code"
+                                        item-title="name"
                                         variant="outlined" density="comfortable" placeholder="اختر نوع النشاط"
                                         hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
@@ -381,6 +383,7 @@
 
 <script>
 import { success, error } from '@/utils/system-util';
+import { getBusinessType } from '@/utils/purchase-util';
 
 export default {
     name: 'SupplierModal',
@@ -467,16 +470,7 @@ export default {
                 'ليبيا',
                 'السودان'
             ],
-            businessTypeOptions: [
-                { title: 'تاجر تجزئة', value: 'retailer' },
-                { title: 'موزع', value: 'distributor' },
-                { title: 'مصنع', value: 'manufacturer' },
-                { title: 'مستورد', value: 'importer' },
-                { title: 'مُصدر', value: 'exporter' },
-                { title: 'وكيل', value: 'agent' },
-                { title: 'مقاول', value: 'contractor' },
-                { title: 'خدمات', value: 'services' }
-            ],
+            businessTypeOptions: [],
             paymentTermsOptions: [
                 { title: 'نقداً عند الاستلام', value: 'cod' },
                 { title: 'دفع فوري', value: 'immediate' },
@@ -539,6 +533,10 @@ export default {
                 }
             }
         };
+    },
+
+    async mounted() {
+        this.businessTypeOptions = await getBusinessType();
     },
     computed: {
         dialogVisible: {

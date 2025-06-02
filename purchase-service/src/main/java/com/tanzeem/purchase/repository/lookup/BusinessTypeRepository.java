@@ -1,4 +1,4 @@
-package com.tanzeem.purchase.repository;
+package com.tanzeem.purchase.repository.lookup;
 
 import com.tanzeem.purchase.entity.lookup.BusinessType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface BusinessTypeRepository extends JpaRepository<BusinessType, Long> {
-    List<BusinessType> findByTenantIdByOrderByNameAsc(String tenantId);
+    List<BusinessType> findByTenantIdOrderByNameAsc(String tenantId);
     Optional<BusinessType> findByIdAndTenantId(Long id, String tenantId);
     Optional<BusinessType> findByCode(String code);
 }

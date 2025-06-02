@@ -1,8 +1,10 @@
-// import { httpService } from './http-util';
 import { makeRequest } from '@/utils/request-util';
-const url = `${import.meta.env.VITE_APP_API_PURCHASE_URL}/api`;
+const PURCHASE_BASE_URL = `${import.meta.env.VITE_APP_API_PURCHASE_URL}/api`;
 
-const PURCHASE_BASE_URL = '/api/v1/purchase';
+
+export async function getBusinessType() {
+    return await makeRequest(`${PURCHASE_BASE_URL}/business-types`, { method: 'GET' });
+}
 
 // Purchase Order API functions
 export async function getPurchaseOrders(params = null) {

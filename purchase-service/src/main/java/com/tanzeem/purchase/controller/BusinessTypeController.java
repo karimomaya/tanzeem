@@ -1,7 +1,8 @@
 package com.tanzeem.purchase.controller;
 
+import com.tanzeem.purchase.dto.lookup.BusinessTypeResponse;
 import com.tanzeem.purchase.entity.lookup.BusinessType;
-import com.tanzeem.purchase.service.BusinessTypeService;
+import com.tanzeem.purchase.service.lookup.BusinessTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class BusinessTypeController {
     private final BusinessTypeService service;
 
     @GetMapping
-    public List<BusinessType> getAll() {
+    public List<BusinessTypeResponse> getAll() {
         return service.getAll();
     }
 

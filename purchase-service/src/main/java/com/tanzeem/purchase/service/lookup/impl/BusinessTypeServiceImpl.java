@@ -1,8 +1,9 @@
-package com.tanzeem.purchase.service.impl;
+package com.tanzeem.purchase.service.lookup.impl;
 
+import com.tanzeem.purchase.dto.lookup.BusinessTypeResponse;
 import com.tanzeem.purchase.entity.lookup.BusinessType;
-import com.tanzeem.purchase.repository.BusinessTypeRepository;
-import com.tanzeem.purchase.service.BusinessTypeService;
+import com.tanzeem.purchase.repository.lookup.BusinessTypeRepository;
+import com.tanzeem.purchase.service.lookup.BusinessTypeService;
 import com.tanzeem.security.common.AuthContextHolder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,11 @@ public class BusinessTypeServiceImpl implements BusinessTypeService {
 
     @Override
     @Cacheable(value = "businessType", key = "T(com.tanzeem.security.common.AuthContextHolder).getTenantId()")
-    public List<BusinessType> getAll() {
-        return repository.findByTenantIdByOrderByNameAsc(AuthContextHolder.getTenantId());
+    public List<BusinessTypeResponse> getAll() {
+        List<BusinessType> businessTypes =  repository.findByTenantIdOrderByNameAsc(AuthContextHolder.getTenantId());
+        return businessTypes.stream()
+                .map(b -> new BusinessTypeResponse(b.getId(), b.getCode(), b.getName(), b.getDescription(), b.isActive(), b.isDeleted()))
+                .toList();
     }
 
     @Override
@@ -53,4 +57,5 @@ public class BusinessTypeServiceImpl implements BusinessTypeService {
         BusinessType existing = getById(id);
         repository.delete(existing);
     }
+
 }
