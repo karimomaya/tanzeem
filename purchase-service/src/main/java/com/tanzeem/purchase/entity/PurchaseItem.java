@@ -44,6 +44,8 @@ public class PurchaseItem {
     private Purchase purchase;
 
 
+    private boolean isDeleted = false;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

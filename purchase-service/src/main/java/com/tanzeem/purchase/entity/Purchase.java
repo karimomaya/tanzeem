@@ -42,7 +42,7 @@ public class Purchase {
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PurchaseItem> items = new ArrayList<>();
-
+    @Lob
     private String notes;
     private String tenantId;
 
@@ -50,6 +50,7 @@ public class Purchase {
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status;
 
+    private boolean isDeleted = false;
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

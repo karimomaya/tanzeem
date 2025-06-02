@@ -6,6 +6,7 @@ import com.tanzeem.lookup.repository.CountryRepository;
 import com.tanzeem.lookup.service.CountryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class CountryServiceImpl implements CountryService {
     private final CountryRepository countryRepository;
 
     @Override
+    @Cacheable("countries")
     public List<CountryResponse> getAllCountries() {
         return countryRepository.findAll().stream()
                 .map(this::mapToResponse)

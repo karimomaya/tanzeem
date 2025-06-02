@@ -6,6 +6,7 @@ import com.tanzeem.lookup.repository.GovernorateRepository;
 import com.tanzeem.lookup.service.GovernorateService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class GovernorateServiceImpl implements GovernorateService {
     private final GovernorateRepository governorateRepository;
 
     @Override
+    @Cacheable("governorates")
     public List<GovernorateResponse> getGovernorates(Long countryId) {
         List<Governorate> governorates;
 
