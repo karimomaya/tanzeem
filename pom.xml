@@ -12,6 +12,7 @@
     <module>common-security</module>
       <module>image-service</module>
       <module>lookup-service</module>
+      <module>common-core</module>
   </modules>
   <packaging>pom</packaging>
   <parent>

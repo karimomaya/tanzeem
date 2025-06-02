@@ -1,5 +1,6 @@
 package com.tanzeem.product.entity;
 
+import com.tanzeem.common.entity.AuditableBaseEntity;
 import com.tanzeem.product.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EntityListeners(AuditingEntityListener.class)
-public class Product {
+public class Product  extends AuditableBaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -38,29 +38,10 @@ public class Product {
     private Integer minimumStock;
     private String imageUrl;
 
-
     @ManyToOne
     private Category category;
 
     private boolean isActive;
-
-    private String tenantId;
-
-
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
-
-    @LastModifiedBy
-    private String updatedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

@@ -1,5 +1,6 @@
 package com.tanzeem.product.entity;
 
+import com.tanzeem.common.entity.AuditableBaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,13 +21,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EntityListeners(AuditingEntityListener.class)
-public class Category {
+public class Category extends AuditableBaseEntity {
     @Id
     @GeneratedValue
     private Long id;
     private String name;
-    private String tenantId;
     private String icon;
     private String description;
     private boolean isActive;
@@ -35,18 +34,5 @@ public class Category {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Product> products;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
-
-    @LastModifiedBy
-    private String updatedBy;
 
 }

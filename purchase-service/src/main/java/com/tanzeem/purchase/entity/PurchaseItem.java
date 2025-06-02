@@ -1,5 +1,6 @@
 package com.tanzeem.purchase.entity;
 
+import com.tanzeem.common.entity.AuditableBaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class PurchaseItem {
+public class PurchaseItem  extends AuditableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,18 +43,4 @@ public class PurchaseItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_id")
     private Purchase purchase;
-
-
-    private boolean isDeleted = false;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-    @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
-    @LastModifiedBy
-    private String updatedBy;
 }

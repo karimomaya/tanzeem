@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
-@SpringBootApplication(scanBasePackages = {"com.tanzeem.product", "com.tanzeem.security.common"})
+@SpringBootApplication(scanBasePackages = {"com.tanzeem.product", "com.tanzeem.security.common", "com.tanzeem.common"})
 @EnableJpaAuditing
 public class ProductApplication {
     public static void main(String[] args) {

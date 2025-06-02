@@ -1,5 +1,6 @@
 package com.tanzeem.purchase.entity;
 
+import com.tanzeem.common.entity.AuditableBaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class Supplier {
+public class Supplier extends AuditableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -58,18 +59,4 @@ public class Supplier {
     @Lob
     private String notes;
 
-    private boolean isDeleted = false;
-    private String tenantId;
-
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-    @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
-    @LastModifiedBy
-    private String updatedBy;
 }

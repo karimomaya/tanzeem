@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
-@SpringBootApplication(scanBasePackages = {"com.tanzeem.lookup", "com.tanzeem.security.common"})
+@SpringBootApplication(scanBasePackages = {"com.tanzeem.lookup", "com.tanzeem.security.common", "com.tanzeem.common"})
 @EnableJpaAuditing
 @EnableCaching
 public class LookupApplication {

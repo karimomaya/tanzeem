@@ -1,5 +1,6 @@
 package com.tanzeem.purchase.entity;
 
+import com.tanzeem.common.entity.AuditableBaseEntity;
 import com.tanzeem.purchase.enums.PurchaseStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class Purchase {
+public class Purchase  extends AuditableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,21 +45,8 @@ public class Purchase {
     private List<PurchaseItem> items = new ArrayList<>();
     @Lob
     private String notes;
-    private String tenantId;
-
 
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status;
 
-    private boolean isDeleted = false;
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-    @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
-    @LastModifiedBy
-    private String updatedBy;
 }
