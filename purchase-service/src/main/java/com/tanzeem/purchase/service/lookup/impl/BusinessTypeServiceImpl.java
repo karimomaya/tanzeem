@@ -31,7 +31,6 @@ public class BusinessTypeServiceImpl implements BusinessTypeService {
     public BusinessType getById(Long id) {
         return repository.findByIdAndTenantId(id, AuthContextHolder.getTenantId())
                 .orElseThrow(() -> new EntityNotFoundException("BusinessType not found"));
-
     }
 
     @Override

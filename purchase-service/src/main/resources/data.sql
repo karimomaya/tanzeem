@@ -60,3 +60,9 @@ VALUES
   ('تصنيع', 'MANUFACTURING', 'tanzeem', true, false),
   ('استيراد وتصدير', 'IMPORT_EXPORT', 'tanzeem', true, false),
   ('أخرى', 'OTHER', 'tanzeem', true, false);
+
+
+INSERT INTO payment_terms (id, name, code, tenant_id, is_active, is_deleted)
+VALUES   (1, 'نقداً', 'CASH', 'tanzeem', true, false),
+(2, 'أجل 30 يوم', 'NET_30', 'tanzeem', true, false),
+(3, 'أجل 60 يوم', 'NET_60', 'tanzeem', true, false);
