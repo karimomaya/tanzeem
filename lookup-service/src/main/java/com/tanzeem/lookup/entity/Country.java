@@ -1,6 +1,7 @@
 package com.tanzeem.lookup.entity;
 
 import com.tanzeem.common.entity.AuditableEntity;
+import com.tanzeem.common.entity.BaseLookupEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,16 +13,9 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor
 @Entity
 @Table(name = "countries")
-public class Country extends AuditableEntity {
+public class Country extends BaseLookupEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
-    private String name;
-    private String code; // Optional: eg. EG, SA
     private String flagIcon; // Optional
-    @ColumnDefault("false")
-    private boolean isDeleted = false;
-    @ColumnDefault("true")
-    private boolean isActive = true;
 }

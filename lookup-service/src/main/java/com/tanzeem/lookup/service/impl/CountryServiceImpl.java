@@ -27,6 +27,13 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Cacheable(value = "countries", key = "#code")
+    public CountryResponse getCountryByCode(String code) {
+        Country country = countryRepository.findByCode(code).orElseThrow(()->new EntityNotFoundException("Country not found"));
+        return mapToResponse(country);
+    }
+
+    @Override
     public com.tanzeem.lookup.dto.CountryResponse getCountryById(Long id) {
         Country country = countryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Country not found"));
@@ -39,7 +46,7 @@ public class CountryServiceImpl implements CountryService {
         response.setName(country.getName());
         response.setCode(country.getCode());
         response.setFlagIcon(country.getFlagIcon());
-        response.setIsActive(country.getIsActive());
+        response.setIsActive(country.isActive());
         return response;
     }
 }

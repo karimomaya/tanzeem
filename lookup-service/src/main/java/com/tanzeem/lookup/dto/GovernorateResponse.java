@@ -12,5 +12,6 @@ public class GovernorateResponse {
     private String name;
     private Long countryId;
     private String countryName;
+    private String code;
     private Boolean isActive;
 }

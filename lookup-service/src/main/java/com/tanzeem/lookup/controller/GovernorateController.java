@@ -18,7 +18,7 @@ public class GovernorateController {
     private final GovernorateService governorateService;
 
     @GetMapping
-    public List<GovernorateResponse> getAll(@RequestParam(required = false) Long countryId) {
-        return governorateService.getGovernorates(countryId);
+    public List<GovernorateResponse> getAll(@RequestParam(required = false) String countryCode) {
+        return governorateService.getGovernorateByCountryCode(countryCode);
     }
 }

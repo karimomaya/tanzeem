@@ -141,6 +141,8 @@
                                 <div class="form-group">
                                     <label class="form-label">البلد</label>
                                     <v-select v-model="editedSupplier.country" :items="countryOptions" variant="outlined"
+                                        item-value="code"
+                                        item-title="name"
                                         density="comfortable" placeholder="اختر البلد" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
@@ -154,6 +156,8 @@
                                 <div class="form-group">
                                     <label class="form-label">المدينة</label>
                                     <v-select v-model="editedSupplier.city" :items="cityOptions" variant="outlined"
+                                        item-value="code"
+                                        item-title="name"
                                         density="comfortable" placeholder="اختر المدينة" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
@@ -386,6 +390,7 @@
 <script>
 import { success, error } from '@/utils/system-util';
 import { getBusinessType, getPaymentTerms } from '@/utils/purchase-util';
+import { getCountries, getGovernorates } from '@/utils/lookup-core-util';
 
 export default {
     name: 'SupplierModal',
@@ -427,51 +432,8 @@ export default {
                 totalOrders: 0,
                 totalAmount: 0
             },
-            cityOptions: [
-                'القاهرة',
-                'الإسكندرية',
-                'الجيزة',
-                'شبرا الخيمة',
-                'بورسعيد',
-                'السويس',
-                'الأقصر',
-                'المنصورة',
-                'المحلة الكبرى',
-                'طنطا',
-                'أسيوط',
-                'الإسماعيلية',
-                'الفيوم',
-                'الزقازيق',
-                'دمياط',
-                'أسوان',
-                'المنيا',
-                'دمنهور',
-                'بني سويف',
-                'قنا',
-                'سوهاج',
-                'شرم الشيخ',
-                'الغردقة',
-                'العريش',
-                'مطروح'
-            ],
-            countryOptions: [
-                'مصر',
-                'السعودية',
-                'الإمارات',
-                'الكويت',
-                'قطر',
-                'البحرين',
-                'عمان',
-                'الأردن',
-                'لبنان',
-                'سوريا',
-                'العراق',
-                'المغرب',
-                'الجزائر',
-                'تونس',
-                'ليبيا',
-                'السودان'
-            ],
+            cityOptions: [],
+            countryOptions: [],
             businessTypeOptions: [],
             paymentTermsOptions: [],
             iconOptions: [
@@ -532,6 +494,7 @@ export default {
     async mounted() {
         this.businessTypeOptions = await getBusinessType();
         this.paymentTermsOptions = await getPaymentTerms();
+        this.countryOptions = await getCountries();
     },
     computed: {
         dialogVisible: {
@@ -544,6 +507,12 @@ export default {
         }
     },
     watch: {
+        'editedSupplier.country'(newCountryCode) {
+            var x = this.getGovernorates(newCountryCode);
+            console.log(x);
+        this.cityOptions = this.allCityOptions[newCountryCode] || [];
+        this.editedSupplier.city = null; // reset city when country changes
+        },
         supplier: {
             immediate: true,
             handler(newSupplier) {
@@ -562,6 +531,7 @@ export default {
         }
     },
     methods: {
+        getGovernorates,
         resetForm() {
             this.editedSupplierId = null;
             this.editedSupplier = {
