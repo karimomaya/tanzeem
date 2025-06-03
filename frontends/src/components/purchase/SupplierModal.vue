@@ -419,10 +419,10 @@ export default {
                 address: '',
                 city: '',
                 postalCode: '',
-                country: 'مصر',
+                country: '',
                 businessType: '',
                 taxNumber: '',
-                paymentTerms: 'NET_30',
+                paymentTerms: '',
                 creditLimit: 0,
                 icon: 'mdi-truck',
                 color: '#366091',
@@ -507,11 +507,11 @@ export default {
         }
     },
     watch: {
-        'editedSupplier.country'(newCountryCode) {
-            var x = this.getGovernorates(newCountryCode);
-            console.log(x);
-        this.cityOptions = this.allCityOptions[newCountryCode] || [];
-        this.editedSupplier.city = null; // reset city when country changes
+        async 'editedSupplier.country'(newCountryCode)  {
+            if(!newCountryCode) return
+            this.cityOptions = await this.getGovernorates(newCountryCode);
+            this.cityOptions = this.cityOptions || []
+            this.editedSupplier.city = null; // reset city when country changes
         },
         supplier: {
             immediate: true,
@@ -543,10 +543,10 @@ export default {
                 address: '',
                 city: '',
                 postalCode: '',
-                country: 'مصر',
+                country: '',
                 businessType: '',
                 taxNumber: '',
-                paymentTerms: 'NET_30',
+                paymentTerms: '',
                 creditLimit: 0,
                 icon: 'mdi-truck',
                 color: '#366091',
