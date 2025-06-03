@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +20,8 @@ public class Country extends AuditableEntity {
     private String name;
     private String code; // Optional: eg. EG, SA
     private String flagIcon; // Optional
-    private Boolean isActive = true;
+    @ColumnDefault("false")
+    private boolean isDeleted = false;
+    @ColumnDefault("true")
+    private boolean isActive = true;
 }

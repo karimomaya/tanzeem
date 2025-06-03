@@ -136,7 +136,19 @@
                                     </v-textarea>
                                 </div>
                             </v-col>
-
+                            <!-- Country -->
+                            <v-col cols="12" md="4">
+                                <div class="form-group">
+                                    <label class="form-label">البلد</label>
+                                    <v-select v-model="editedSupplier.country" :items="countryOptions" variant="outlined"
+                                        density="comfortable" placeholder="اختر البلد" hide-details="auto"
+                                        class="modern-field">
+                                        <template v-slot:prepend-inner>
+                                            <v-icon color="orange" size="20">mdi-earth</v-icon>
+                                        </template>
+                                    </v-select>
+                                </div>
+                            </v-col>
                             <!-- City -->
                             <v-col cols="12" md="4">
                                 <div class="form-group">
@@ -165,19 +177,7 @@
                                 </div>
                             </v-col>
 
-                            <!-- Country -->
-                            <v-col cols="12" md="4">
-                                <div class="form-group">
-                                    <label class="form-label">البلد</label>
-                                    <v-select v-model="editedSupplier.country" :items="countryOptions" variant="outlined"
-                                        density="comfortable" placeholder="اختر البلد" hide-details="auto"
-                                        class="modern-field">
-                                        <template v-slot:prepend-inner>
-                                            <v-icon color="orange" size="20">mdi-earth</v-icon>
-                                        </template>
-                                    </v-select>
-                                </div>
-                            </v-col>
+                            
                         </v-row>
                     </div>
 
@@ -417,7 +417,7 @@ export default {
                 country: 'مصر',
                 businessType: '',
                 taxNumber: '',
-                paymentTerms: 'net_30',
+                paymentTerms: 'NET_30',
                 creditLimit: 0,
                 icon: 'mdi-truck',
                 color: '#366091',
@@ -576,7 +576,7 @@ export default {
                 country: 'مصر',
                 businessType: '',
                 taxNumber: '',
-                paymentTerms: 'net_30',
+                paymentTerms: 'NET_30',
                 creditLimit: 0,
                 icon: 'mdi-truck',
                 color: '#366091',
