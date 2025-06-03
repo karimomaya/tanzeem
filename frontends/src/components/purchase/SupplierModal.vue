@@ -245,10 +245,11 @@
                                     <label class="form-label">الحد الائتماني</label>
                                     <v-text-field v-model.number="editedSupplier.creditLimit"
                                         :rules="[rules.nonNegative]" type="number" variant="outlined"
-                                        density="comfortable" placeholder="0.00" prefix="ج.م." hide-details="auto"
+                                        density="comfortable" placeholder="0.00" :prefix="getCurrencySymbol()" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="success" size="20">mdi-currency-usd</v-icon>
+                                            <v-icon color="success" size="20">{{ getCurrencyIcon() }}</v-icon>
+                                            
                                         </template>
                                     </v-text-field>
                                 </div>
@@ -268,7 +269,7 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">أيقونة المورد</label>
-                                    <v-select v-model="editedSupplier.icon" :items="iconOptions" variant="outlined"
+                                    <v-select v-model="editedSupplier.icon" :items="ICON_OPTIONS" variant="outlined"
                                         density="comfortable" placeholder="اختر الأيقونة" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:item="{ props, item }">
@@ -296,7 +297,7 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">لون المورد</label>
-                                    <v-select v-model="editedSupplier.color" :items="colorOptions" variant="outlined"
+                                    <v-select v-model="editedSupplier.color" :items="COLOR_OPTIONS" variant="outlined"
                                         density="comfortable" placeholder="اختر اللون" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:item="{ props, item }">
@@ -389,8 +390,12 @@
 
 <script>
 import { success, error } from '@/utils/system-util';
+import { getCurrencyIcon, getCurrencySymbol } from '@/utils/currency-util';
 import { getBusinessType, getPaymentTerms } from '@/utils/purchase-util';
 import { getCountries, getGovernorates } from '@/utils/lookup-core-util';
+
+import {  ICON_OPTIONS } from '@/constants/icons.js';
+import {  COLOR_OPTIONS } from '@/constants/colors.js';
 
 export default {
     name: 'SupplierModal',
@@ -407,6 +412,7 @@ export default {
     emits: ['update:modelValue', 'save'],
     data() {
         return {
+            ICON_OPTIONS, COLOR_OPTIONS,
             formValid: false,
             loading: false,
             editedSupplierId: null,
@@ -436,30 +442,7 @@ export default {
             countryOptions: [],
             businessTypeOptions: [],
             paymentTermsOptions: [],
-            iconOptions: [
-                { title: 'شاحنة', value: 'mdi-truck' },
-                { title: 'مصنع', value: 'mdi-factory' },
-                { title: 'متجر', value: 'mdi-store' },
-                { title: 'مكتب', value: 'mdi-office-building' },
-                { title: 'شركة', value: 'mdi-domain' },
-                { title: 'مستودع', value: 'mdi-warehouse' },
-                { title: 'طائرة', value: 'mdi-airplane' },
-                { title: 'سفينة', value: 'mdi-ship-wheel' },
-                { title: 'حقيبة عمل', value: 'mdi-briefcase' },
-                { title: 'أدوات', value: 'mdi-tools' }
-            ],
-            colorOptions: [
-                { title: 'أزرق', value: '#366091' },
-                { title: 'أخضر', value: '#4CAF50' },
-                { title: 'برتقالي', value: '#FF9800' },
-                { title: 'أحمر', value: '#F44336' },
-                { title: 'بنفسجي', value: '#9C27B0' },
-                { title: 'سماوي', value: '#00BCD4' },
-                { title: 'وردي', value: '#E91E63' },
-                { title: 'أصفر', value: '#FFC107' },
-                { title: 'رمادي', value: '#607D8B' },
-                { title: 'بني', value: '#795548' }
-            ],
+            
             rules: {
                 required: value => !!value || 'هذا الحقل مطلوب',
                 nonNegative: value => value >= 0 || 'يجب أن يكون صفر أو أكبر',
@@ -531,6 +514,8 @@ export default {
         }
     },
     methods: {
+        getCurrencySymbol,
+        getCurrencyIcon,
         getGovernorates,
         resetForm() {
             this.editedSupplierId = null;

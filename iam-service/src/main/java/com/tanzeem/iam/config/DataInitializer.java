@@ -73,7 +73,7 @@ public class DataInitializer implements CommandLineRunner {
             TenantSettings tenantSettings = new TenantSettings();
             tenantSettings.setTenantId(TENANT_ID);
             tenantSettings.setBusinessType(TenantSettings.BusinessType.PRODUCT);
-            tenantSettings.setDefaultCurrency("EGP");
+                tenantSettings.setDefaultCurrency("EGP");
             tenantSettings.setDefaultLanguage("ar");
             tenantSettings.setTimezone("EET");
             tenantSettingsRepo.save(tenantSettings);
