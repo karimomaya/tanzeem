@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: lookup-service
   cache:
     cache-names: businessType,countries,governorates
     caffeine:

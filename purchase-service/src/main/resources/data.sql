@@ -1,25 +1,26 @@
-INSERT INTO suppliers (id, name, code, contact_person, phone, email, address, is_active, tenant_id, created_at, updated_at, created_by, updated_by)
+
+INSERT INTO suppliers (id, name, code, contact_person, phone, email, address, is_active, tenant_id, country_code, created_at, updated_at, created_by, updated_by)
 VALUES
-(1, 'شركة الأمل','SUP001', 'أحمد علي', '01000000001', 'supplier1@example.com', 'شارع النصر', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(2, 'شركة الفجر','SUP002', 'سعيد حسن', '01000000002', 'supplier2@example.com', 'شارع التحرير', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(3, 'شركة النور','SUP003', 'علي إبراهيم', '01000000003', 'supplier3@example.com', 'شارع الأزهر', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(4, 'شركة الرضا','SUP004', 'محمد جاد', '01000000004', 'supplier4@example.com', 'شارع الهرم', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(5, 'شركة الرحمة','SUP005', 'كريم ناصر', '01000000005', 'supplier5@example.com', 'شارع فيصل', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(6, 'شركة التوحيد','SUP006', 'خالد مصطفى', '01000000006', 'supplier6@example.com', 'شارع عباس العقاد', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(7, 'شركة الرخاء','SUP007', 'ياسر فهمي', '01000000007', 'supplier7@example.com', 'شارع النيل', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(8, 'شركة السلام','SUP008', 'محمود عزت', '01000000008', 'supplier8@example.com', 'شارع الجامعة', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(9, 'شركة البركة','SUP009', 'سامي فؤاد', '01000000009', 'supplier9@example.com', 'شارع القصر', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(10, 'شركة الأمانة','SUP010', 'رامي يحيى', '01000000010', 'supplier10@example.com', 'شارع الجمهورية', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(11, 'شركة الإخلاص','SUP0011', 'وليد عبد الرحمن', '01000000011', 'supplier11@example.com', 'شارع البحر الأعظم', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(12, 'شركة الصفا','SUP0012', 'عادل حمزة', '01000000012', 'supplier12@example.com', 'شارع الجيش', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(13, 'شركة الطيب','SUP0013', 'فتحي عمر', '01000000013', 'supplier13@example.com', 'شارع رمسيس', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(14, 'شركة اليسر','SUP0014', 'شريف سامي', '01000000014', 'supplier14@example.com', 'شارع قصر النيل', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(15, 'شركة الأمان','SUP0015', 'طارق سليم', '01000000015', 'supplier15@example.com', 'شارع السودان', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(16, 'شركة البرنس','SUP0016', 'أيمن لطفي', '01000000016', 'supplier16@example.com', 'شارع النصر', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(17, 'شركة المدينة','SUP0017', 'حسن نجم', '01000000017', 'supplier17@example.com', 'شارع التحرير', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(18, 'شركة الجود','SUP0018', 'منير صبحي', '01000000018', 'supplier18@example.com', 'شارع الجيش', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(19, 'شركة العرب','SUP0019', 'باسم سمير', '01000000019', 'supplier19@example.com', 'شارع العروبة', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-(20, 'شركة التميز','SUP0020', 'نادر مراد', '01000000020', 'supplier20@example.com', 'شارع المقطم', true, 'tanzeem', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
+(1, 'شركة الأمل','SUP001', 'أحمد علي', '01000000001', 'supplier1@example.com', 'شارع النصر', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(2, 'شركة الفجر','SUP002', 'سعيد حسن', '01000000002', 'supplier2@example.com', 'شارع التحرير', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(3, 'شركة النور','SUP003', 'علي إبراهيم', '01000000003', 'supplier3@example.com', 'شارع الأزهر', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(4, 'شركة الرضا','SUP004', 'محمد جاد', '01000000004', 'supplier4@example.com', 'شارع الهرم', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(5, 'شركة الرحمة','SUP005', 'كريم ناصر', '01000000005', 'supplier5@example.com', 'شارع فيصل', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(6, 'شركة التوحيد','SUP006', 'خالد مصطفى', '01000000006', 'supplier6@example.com', 'شارع عباس العقاد', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(7, 'شركة الرخاء','SUP007', 'ياسر فهمي', '01000000007', 'supplier7@example.com', 'شارع النيل', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(8, 'شركة السلام','SUP008', 'محمود عزت', '01000000008', 'supplier8@example.com', 'شارع الجامعة', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(9, 'شركة البركة','SUP009', 'سامي فؤاد', '01000000009', 'supplier9@example.com', 'شارع القصر', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(10, 'شركة الأمانة','SUP010', 'رامي يحيى', '01000000010', 'supplier10@example.com', 'شارع الجمهورية', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(11, 'شركة الإخلاص','SUP0011', 'وليد عبد الرحمن', '01000000011', 'supplier11@example.com', 'شارع البحر الأعظم', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(12, 'شركة الصفا','SUP0012', 'عادل حمزة', '01000000012', 'supplier12@example.com', 'شارع الجيش', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(13, 'شركة الطيب','SUP0013', 'فتحي عمر', '01000000013', 'supplier13@example.com', 'شارع رمسيس', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(14, 'شركة اليسر','SUP0014', 'شريف سامي', '01000000014', 'supplier14@example.com', 'شارع قصر النيل', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(15, 'شركة الأمان','SUP0015', 'طارق سليم', '01000000015', 'supplier15@example.com', 'شارع السودان', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(16, 'شركة البرنس','SUP0016', 'أيمن لطفي', '01000000016', 'supplier16@example.com', 'شارع النصر', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(17, 'شركة المدينة','SUP0017', 'حسن نجم', '01000000017', 'supplier17@example.com', 'شارع التحرير', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(18, 'شركة الجود','SUP0018', 'منير صبحي', '01000000018', 'supplier18@example.com', 'شارع الجيش', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(19, 'شركة العرب','SUP0019', 'باسم سمير', '01000000019', 'supplier19@example.com', 'شارع العروبة', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+(20, 'شركة التميز','SUP0020', 'نادر مراد', '01000000020', 'supplier20@example.com', 'شارع المقطم', true, 'tanzeem', 'EG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
 INSERT INTO purchases (id, purchase_date, supplier_id, invoice_number, total_amount, notes, tenant_id, status, created_at, updated_at, created_by, updated_by)
 VALUES
 (1, '2024-01-01', 1, 'INV-001', 1000.00, 'شراء فاتورة أولى', 'tanzeem', 'COMPLETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),

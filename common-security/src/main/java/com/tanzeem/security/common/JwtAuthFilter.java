@@ -37,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 if (email != null){
 
-                    AuthContextHolder.setCurrentUser(email, roles, tenantId);
+                    AuthContextHolder.setCurrentUser(email, roles, tenantId, token);
 
                     List<GrantedAuthority> authorities = roles.stream()
                             .map(SimpleGrantedAuthority::new)

@@ -2,12 +2,12 @@ package com.tanzeem.purchase.entity;
 
 import com.tanzeem.common.entity.AuditableBaseEntity;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "suppliers")
+@SQLDelete(sql = "UPDATE suppliers SET deleted = true WHERE id=?")
+@SQLRestriction("is_deleted=false")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,10 +42,9 @@ public class Supplier extends AuditableBaseEntity {
 
     // Address Info
     private String address;
-    private String city;
     private String postalCode;
-    private Long country;
-    private Long governorate;
+    private String countryCode;
+    private String governorateCode;
 
     // Business Info
     private String businessType;

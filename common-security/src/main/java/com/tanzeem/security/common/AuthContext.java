@@ -11,4 +11,5 @@ public class AuthContext {
     private String username;
     private List<String> roles;
     private String tenantId;
+    private String token;
 }

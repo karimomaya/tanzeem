@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ProductService {
     ProductResponse create(ProductDto dto);
-    public Page<ProductResponse> getAll(String search, String isActive, String productStatus, Pageable pageable);
+    Page<ProductResponse> getAll(String search, String isActive, String productStatus, Pageable pageable);
     Product update(Long id, ProductDto dto);
     void delete(Long id);
     List<Product> getLowStockProducts();

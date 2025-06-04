@@ -80,16 +80,9 @@ export async function cancelPurchaseOrder(id) {
 
 // Supplier API functions
 export async function getSuppliers(params = null) {
-    try {
-        let url = `${PURCHASE_BASE_URL}/suppliers`;
-        if (params) {
-            url += `?${params.toString()}`;
-        }
-        // return await httpService.get(url);
-    } catch (error) {
-        console.error('Error fetching suppliers:', error);
-        throw error;
-    }
+    let url = `${PURCHASE_BASE_URL}/suppliers`;
+    if (params) url += `?${params.toString()}`;
+    return await makeRequest(`${url}`, { method: 'GET' });
 }
 
 export async function getSupplierById(id) {

@@ -1,6 +1,6 @@
 package com.tanzeem.lookup.service.impl;
 
-import com.tanzeem.lookup.dto.CountryResponse;
+import com.tanzeem.common.dto.CountryResponse;
 import com.tanzeem.lookup.entity.Country;
 import com.tanzeem.lookup.repository.CountryRepository;
 import com.tanzeem.lookup.service.CountryService;
@@ -34,7 +34,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public com.tanzeem.lookup.dto.CountryResponse getCountryById(Long id) {
+    public CountryResponse getCountryById(Long id) {
         Country country = countryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Country not found"));
         return mapToResponse(country);
@@ -46,7 +46,7 @@ public class CountryServiceImpl implements CountryService {
         response.setName(country.getName());
         response.setCode(country.getCode());
         response.setFlagIcon(country.getFlagIcon());
-        response.setIsActive(country.isActive());
+        response.setActive(country.isActive());
         return response;
     }
 }

@@ -1,6 +1,6 @@
 package com.tanzeem.lookup.service.impl;
 
-import com.tanzeem.lookup.dto.CountryResponse;
+import com.tanzeem.common.dto.CountryResponse;
 import com.tanzeem.lookup.dto.GovernorateResponse;
 import com.tanzeem.lookup.entity.Governorate;
 import com.tanzeem.lookup.repository.GovernorateRepository;

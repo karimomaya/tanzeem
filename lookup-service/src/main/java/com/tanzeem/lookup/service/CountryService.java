@@ -1,6 +1,6 @@
 package com.tanzeem.lookup.service;
 
-import com.tanzeem.lookup.dto.CountryResponse;
+import com.tanzeem.common.dto.CountryResponse;
 
 import java.util.List;
 
