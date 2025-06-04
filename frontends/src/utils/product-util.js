@@ -1,128 +1,26 @@
-import { makeRequest } from '@/utils/request-util';
+const stockMeta = {
+    empty: { text: 'نفد المخزون', color: 'error', icon: 'mdi-close-circle' },
+    low: { text: 'مخزون منخفض', color: 'warning', icon: 'mdi-alert-circle' },
+    medium: { text: 'مخزون متوسط', color: 'info', icon: 'mdi-minus-circle' },
+    high: { text: 'متوفر', color: 'success', icon: 'mdi-check-circle' }
+};
 
-const url = `${import.meta.env.VITE_APP_API_PRODUCT_URL}/api`;
-
-// ===========================================
-// API Functions
-// ===========================================
-
-export async function saveCategory(data) {
-    const options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    };
-    return await makeRequest(`${url}/categories`, options);
+export function getStockMeta(stock, minimumStock) {
+    const level = getStockLevel(stock, minimumStock);
+    return stockMeta[level] || { text: 'غير محدد', color: 'grey', icon: 'mdi-help-circle' };
 }
-
-export async function saveProduct(data) {
-    const options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    };
-    return await makeRequest(`${url}/products`, options);
-}
-
-export async function updateProduct(data) {
-    const options = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    };
-    return await makeRequest(`${url}/products/${data.id}`, options);
-}
-
-export async function updateCategory(data) {
-    const options = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    };
-    return await makeRequest(`${url}/categories/${data.id}`, options);
-}
-
-export async function getProducts(params) {
-    return await makeRequest(`${url}/products?${params.toString()}`, { method: 'GET' });
-}
-
-export async function getCategories(params) {
-    return await makeRequest(`${url}/categories?${params.toString()}`, { method: 'GET' });
-}
-
-export async function deleteCategory(id) {
-    const options = {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-    };
-    return await makeRequest(`${url}/categories/${id}`, options);
-}
-
-export async function deleteProduct(id) {
-    const options = {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-    };
-    return await makeRequest(`${url}/products/${id}`, options);
-}
-
-export async function getProductsStats(){
-    return await makeRequest(`${url}/products/stats`, { method: 'GET' });
-}
-
-export async function getCategoriesStats(){
-    return await makeRequest(`${url}/categories/stats`, { method: 'GET' });
-}
-
 // ===========================================
 // Stock Utility Functions
 // ===========================================
 
-export function getStockLevel(stock, minimumStock) {
+export function getStockLevel(stock, minimumStock, thresholds = { low: 1, medium: 2 }) {
     const currentStock = stock || 0;
     const minStock = minimumStock || 0;
-    
-    if (currentStock === 0) return 'empty';
-    if (currentStock <= minStock) return 'low';
-    if (currentStock <= minStock * 2) return 'medium';
+
+    if (minStock === 0) return currentStock > 0 ? 'high' : 'empty';
+    if (currentStock <= minStock * thresholds.low) return 'low';
+    if (currentStock <= minStock * thresholds.medium) return 'medium';
     return 'high';
-}
-
-export function getStockText(stock, minimumStock) {
-    const level = getStockLevel(stock, minimumStock);
-    const texts = {
-        'empty': 'نفد المخزون',
-        'low': 'مخزون منخفض', 
-        'medium': 'مخزون متوسط',
-        'high': 'متوفر'
-    };
-    return texts[level] || 'غير محدد';
-}
-
-export function getStockColor(stock, minimumStock) {
-    const level = getStockLevel(stock, minimumStock);
-    const colors = {
-        'empty': 'error',
-        'low': 'warning',
-        'medium': 'info', 
-        'high': 'success'
-    };
-    return colors[level] || 'grey';
-}
-
-export function getStockIcon(stock, minimumStock) {
-    const level = getStockLevel(stock, minimumStock);
-    const icons = {
-        'empty': 'mdi-close-circle',
-        'low': 'mdi-alert-circle',
-        'medium': 'mdi-minus-circle',
-        'high': 'mdi-check-circle'
-    };
-    return icons[level] || 'mdi-help-circle';
-}
-
-export function getStockStatus(stock, minimumStock) {
-    return getStockText(stock, minimumStock);
 }
 
 export function getStockPercentage(stock, minimumStock) {
@@ -162,7 +60,7 @@ export function exportProductsToCSV(products, filename = null) {
             `"${product.category?.name || ''}"`,
             product.price || 0,
             product.stock || 0,
-            `"${getStockText(product.stock, product.minimumStock)}"`
+            `"${getStockMeta(product.stock, product.minimumStock).text}"`
         ].join(','))
     ].join('\n');
 
@@ -211,131 +109,9 @@ export function getPaginationVisible(screenSize) {
     };
     return breakpoints[screenSize] || 7;
 }
-
-// ===========================================
-// Validation Functions
-// ===========================================
-
-export function validateProductData(product) {
-    const errors = [];
-    
-    if (!product.name || product.name.trim() === '') {
-        errors.push('اسم المنتج مطلوب');
-    }
-    
-    if (!product.sku || product.sku.trim() === '') {
-        errors.push('رمز المنتج (SKU) مطلوب');
-    }
-    
-    if (!product.price || product.price <= 0) {
-        errors.push('سعر المنتج يجب أن يكون أكبر من صفر');
-    }
-    
-    if (product.stock < 0) {
-        errors.push('كمية المخزون لا يمكن أن تكون سالبة');
-    }
-    
-    if (!product.category || !product.category.id) {
-        errors.push('تصنيف المنتج مطلوب');
-    }
-    
-    return {
-        isValid: errors.length === 0,
-        errors
-    };
-}
-
-// ===========================================
-// Search and Filter Functions
-// ===========================================
-
-export function filterProducts(products, filters) {
-    let filtered = [...products];
-    
-    // Search by name, SKU, or description
-    if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase();
-        filtered = filtered.filter(product => 
-            product.name.toLowerCase().includes(term) ||
-            product.sku.toLowerCase().includes(term) ||
-            (product.description && product.description.toLowerCase().includes(term))
-        );
-    }
-    
-    // Filter by status
-    if (filters.statusFilter && filters.statusFilter !== 'all') {
-        filtered = filtered.filter(product => {
-            const level = getStockLevel(product.stock, product.minimumStock);
-            return level === filters.statusFilter;
-        });
-    }
-    
-    // Filter by category
-    if (filters.categoryFilter && filters.categoryFilter !== 'all') {
-        filtered = filtered.filter(product => 
-            product.category && product.category.id === filters.categoryFilter
-        );
-    }
-    
-    // Filter by price range
-    if (filters.priceRange) {
-        const { min, max } = filters.priceRange;
-        if (min !== null && min !== undefined) {
-            filtered = filtered.filter(product => product.price >= min);
-        }
-        if (max !== null && max !== undefined) {
-            filtered = filtered.filter(product => product.price <= max);
-        }
-    }
-    
-    return filtered;
-}
-
-export function sortProducts(products, sortBy) {
-    if (!sortBy || sortBy.length === 0) return products;
-    
-    return [...products].sort((a, b) => {
-        for (const sort of sortBy) {
-            const { key, order } = sort;
-            let aValue = a[key];
-            let bValue = b[key];
-            
-            // Handle nested properties (like category.name)
-            if (key.includes('.')) {
-                const keys = key.split('.');
-                aValue = keys.reduce((obj, k) => obj?.[k], a);
-                bValue = keys.reduce((obj, k) => obj?.[k], b);
-            }
-            
-            // Handle different data types
-            if (typeof aValue === 'string' && typeof bValue === 'string') {
-                aValue = aValue.toLowerCase();
-                bValue = bValue.toLowerCase();
-            }
-            
-            if (aValue < bValue) return order === 'asc' ? -1 : 1;
-            if (aValue > bValue) return order === 'asc' ? 1 : -1;
-        }
-        return 0;
-    });
-}
-
 // ===========================================
 // Image Utility Functions
 // ===========================================
-
-export function getImageUrl(product, size = 'medium') {
-    if (!product.imageUrl) return null;
-    
-    // If using a CDN or image service, you can modify URLs for different sizes
-    const sizeParams = {
-        small: '?w=150&h=150',
-        medium: '?w=300&h=300',
-        large: '?w=600&h=600'
-    };
-    
-    return product.imageUrl + (sizeParams[size] || '');
-}
 
 export function validateImageFile(file) {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -358,58 +134,6 @@ export function validateImageFile(file) {
 }
 
 // ===========================================
-// Analytics Functions
-// ===========================================
-
-export function calculateStockAnalytics(products) {
-    const analytics = {
-        total: products.length,
-        inStock: 0,
-        lowStock: 0,
-        outOfStock: 0,
-        totalValue: 0,
-        averagePrice: 0,
-        categories: {}
-    };
-    
-    products.forEach(product => {
-        const level = getStockLevel(product.stock, product.minimumStock);
-        
-        switch (level) {
-            case 'empty':
-                analytics.outOfStock++;
-                break;
-            case 'low':
-                analytics.lowStock++;
-                break;
-            default:
-                analytics.inStock++;
-        }
-        
-        analytics.totalValue += (product.price || 0) * (product.stock || 0);
-        
-        // Category analytics
-        const categoryName = product.category?.name || 'غير مصنف';
-        if (!analytics.categories[categoryName]) {
-            analytics.categories[categoryName] = {
-                count: 0,
-                totalValue: 0,
-                totalStock: 0
-            };
-        }
-        analytics.categories[categoryName].count++;
-        analytics.categories[categoryName].totalValue += (product.price || 0) * (product.stock || 0);
-        analytics.categories[categoryName].totalStock += product.stock || 0;
-    });
-    
-    analytics.averagePrice = analytics.total > 0 
-        ? products.reduce((sum, p) => sum + (p.price || 0), 0) / analytics.total 
-        : 0;
-    
-    return analytics;
-}
-
-// ===========================================
 // System Functions
 // ===========================================
 
@@ -423,14 +147,6 @@ export function isUpdatedRecently(createdAt, updatedAt) {
     // Show update info if updated more than 1 minute after creation
     return (updated - created) > (1000 * 60);
 }
-
-
-// export function formatPrice(price) {
-//     return new Intl.NumberFormat('ar-SA', {
-//         minimumFractionDigits: 2,
-//         maximumFractionDigits: 2
-//     }).format(price);
-// }
 
 export function truncateText(text, maxLength) {
     if (!text) return '';

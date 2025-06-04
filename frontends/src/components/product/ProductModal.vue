@@ -75,14 +75,14 @@
                                     <label class="form-label">
                                         الوحدة <span class="required">*</span>
                                     </label>
-                                    <v-select v-model="editedProduct.unit" :items="unitOptions" :rules="[rules.required]"
+                                    <v-select v-model="editedProduct.unit" :items="UNIT_ICON_OPTIONS" :rules="[rules.required]"
                                         variant="outlined" density="comfortable" placeholder="اختر الوحدة"
                                         hide-details="auto" class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
                                                     <v-icon color="primary" size="16" class="me-2">
-                                                        {{ getUnitIcon(item.raw.value) }}
+                                                        {{ item.raw.value }}
                                                     </v-icon>
                                                 </template>
                                             </v-list-item>
@@ -90,7 +90,7 @@
                                         <template v-slot:selection="{ item }">
                                             <div class="d-flex align-center">
                                                 <v-icon color="primary" size="16" class="me-2">
-                                                    {{ getUnitIcon(item.raw.value) }}
+                                                    {{ item.raw.value }}
                                                 </v-icon>
                                                 {{ item.raw.title }}
                                             </div>
@@ -193,9 +193,9 @@
                                             <v-icon color="info" size="20">mdi-package-variant</v-icon>
                                         </template>
                                         <template v-slot:append-inner>
-                                            <v-chip :color="getStockStatusColor(editedProduct.stock)" size="x-small"
+                                            <v-chip :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color" size="x-small"
                                                 class="stock-indicator">
-                                                {{ getStockStatusText(editedProduct.stock) }}
+                                                {{ getStockMeta(editedProduct.stock, editedProduct.minimumStock).text }}
                                             </v-chip>
                                         </template>
                                     </v-text-field>
@@ -392,9 +392,11 @@
 </template>
 
 <script>
-import { saveProduct, updateProduct, getStockText, getStockColor, getCategories } from '@/utils/product-util';
+import { UNIT_ICON_OPTIONS } from '@/constants/icons';
+import { getStockMeta } from '@/utils/product-util';
+import { saveProduct, updateProduct, getCategories } from '@/services/product-service';
 import { success, error } from '@/utils/system-util';
-import { ImageServiceClient } from '@/utils/image-service-client'; // Import the image service client
+import { ImageServiceClient } from '@/services/image-service'; // Import the image service client
 
 export default {
     name: 'ProductModal',
@@ -441,20 +443,6 @@ export default {
             categoryLoading: false,
             categorySearchTimeout: null,
             imageServiceClient: new ImageServiceClient(), // Initialize image service client
-            unitOptions: [
-                { title: 'قطعة', value: 'piece' },
-                { title: 'كيلوغرام', value: 'kg' },
-                { title: 'غرام', value: 'gram' },
-                { title: 'لتر', value: 'liter' },
-                { title: 'مليلتر', value: 'ml' },
-                { title: 'متر', value: 'meter' },
-                { title: 'سنتيمتر', value: 'cm' },
-                { title: 'صندوق', value: 'box' },
-                { title: 'علبة', value: 'can' },
-                { title: 'زجاجة', value: 'bottle' },
-                { title: 'كيس', value: 'bag' },
-                { title: 'عبوة', value: 'pack' }
-            ],
             rules: {
                 required: value => !!value || 'هذا الحقل مطلوب',
                 positive: value => value > 0 || 'يجب أن يكون أكبر من صفر',
@@ -560,6 +548,7 @@ export default {
         this.loadInitialCategories();
     },
     methods: {
+        getStockMeta,
         resetForm() {
             this.editedProductId = null;
             this.editedProduct = {
@@ -663,52 +652,6 @@ export default {
 
         closeDialog() {
             this.dialogVisible = false;
-        },
-
-        getStatusColor(status) {
-            const colors = {
-                'active': 'success',
-                'low-stock': 'warning',
-                'out-of-stock': 'error',
-                'inactive': 'grey'
-            };
-            return colors[status] || 'grey';
-        },
-
-        getStatusIcon(status) {
-            const icons = {
-                'active': 'mdi-check-circle',
-                'low-stock': 'mdi-alert-circle',
-                'out-of-stock': 'mdi-close-circle',
-                'inactive': 'mdi-pause-circle'
-            };
-            return icons[status] || 'mdi-help-circle';
-        },
-
-        getStockStatusColor(stock) {
-            return getStockColor(stock, this.editedProduct.minimumStock);
-        },
-
-        getStockStatusText(stock) {
-            return getStockText(stock, this.editedProduct.minimumStock);
-        },
-
-        getUnitIcon(unit) {
-            const icons = {
-                'piece': 'mdi-cube',
-                'kg': 'mdi-weight-kilogram',
-                'gram': 'mdi-weight-gram',
-                'liter': 'mdi-cup-water',
-                'ml': 'mdi-eyedropper',
-                'meter': 'mdi-ruler',
-                'cm': 'mdi-ruler',
-                'box': 'mdi-package-variant-closed',
-                'can': 'mdi-can',
-                'bottle': 'mdi-bottle-soda',
-                'bag': 'mdi-bag-personal',
-                'pack': 'mdi-package'
-            };
-            return icons[unit] || 'mdi-cube';
         },
 
         isValidImageUrl(url) {

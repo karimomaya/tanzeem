@@ -269,7 +269,7 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">أيقونة المورد</label>
-                                    <v-select v-model="editedSupplier.icon" :items="ICON_OPTIONS" variant="outlined"
+                                    <v-select v-model="editedSupplier.icon" :items="LOCATION_ICON_OPTIONS" variant="outlined"
                                         density="comfortable" placeholder="اختر الأيقونة" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:item="{ props, item }">
@@ -392,9 +392,9 @@
 import { success, error } from '@/utils/system-util';
 import { getCurrencyIcon, getCurrencySymbol } from '@/utils/currency-util';
 import { getBusinessType, getPaymentTerms } from '@/utils/purchase-util';
-import { getCountries, getGovernorates } from '@/utils/lookup-core-util';
+import { getCountries, getGovernorates } from '@/services/lookup-service';
 
-import {  ICON_OPTIONS } from '@/constants/icons.js';
+import {  LOCATION_ICON_OPTIONS } from '@/constants/icons.js';
 import {  COLOR_OPTIONS } from '@/constants/colors.js';
 
 export default {
@@ -412,7 +412,7 @@ export default {
     emits: ['update:modelValue', 'save'],
     data() {
         return {
-            ICON_OPTIONS, COLOR_OPTIONS,
+            LOCATION_ICON_OPTIONS, COLOR_OPTIONS,
             formValid: false,
             loading: false,
             editedSupplierId: null,

@@ -166,7 +166,7 @@
 </template>
 
 <script>
-import { getCategoriesStats } from '@/utils/product-util';
+import { getCategoriesStats } from '@/services/product-service';
 export default {
     name: 'CategoryStats',
     props: {

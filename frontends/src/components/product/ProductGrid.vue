@@ -127,7 +127,7 @@
                                 <div class="product-stock-indicator"
                                     :class="`product-stock-${getStockLevel(product.stock, product.minimumStock)}`">
                                     <div class="product-stock-dot"></div>
-                                    <span class="product-stock-text">{{ getStockText(product.stock, product.minimumStock)
+                                    <span class="product-stock-text">{{ getStockMeta(product.stock, product.minimumStock).text
                                     }}</span>
                                 </div>
                                 <div class="product-stock-count">{{ product.stock }} في المخزون</div>
@@ -135,7 +135,7 @@
 
                             <!-- Stock Progress Bar -->
                             <v-progress-linear :model-value="getStockPercentage(product.stock, product.minimumStock)"
-                                :color="getStockColor(product.stock, product.minimumStock)" height="4" rounded
+                                :color="getStockMeta(product.stock, product.minimumStock).color" height="4" rounded
                                 class="stock-progress"></v-progress-linear>
                         </div>
                     </v-card-text>
@@ -270,10 +270,7 @@
 <script>
 import {formatCurrency} from '@/utils/system-util'
 import {
-    getStockStatus,
-    getStockText,
-    getStockColor,
-    getStockIcon,
+    getStockMeta,
     getStockLevel,
     getStockPercentage,
     truncateText,
@@ -371,10 +368,7 @@ export default {
     },
     methods: {
         // Import utility functions
-        getStockStatus,
-        getStockIcon,
-        getStockText,
-        getStockColor,
+        getStockMeta,
         getStockLevel,
         getStockPercentage,
         formatCurrency,

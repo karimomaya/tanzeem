@@ -205,8 +205,8 @@
 
 <script>
 import { formatCurrency } from '@/utils/system-util';
-import { getProducts } from '@/utils/product-util';
-import { createPurchaseOrder, updatePurchaseOrder } from '@/utils/purchase-util';
+import { getProducts } from '@/services/product-service';
+import { createPurchaseOrder, updatePurchaseOrder } from '@/services/purchase-service';
 import { success, error } from '@/utils/system-util';
 
 export default {

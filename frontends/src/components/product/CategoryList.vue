@@ -73,19 +73,6 @@
                     </div>
                 </template>
 
-                <!-- Enhanced Description Display -->
-                <!-- <template v-slot:item.description="{ item }">
-                    <div class="description-cell">
-                        <div v-if="item.description" class="description-text">
-                            {{ truncateText(item.description, 80) }}
-                        </div>
-                        <div v-else class="no-description">
-                            <v-icon size="16" color="grey-lighten-1" class="me-1">mdi-text-box-remove</v-icon>
-                            <span class="text-grey-lighten-1">لا يوجد وصف</span>
-                        </div>
-                    </div>
-                </template> -->
-
                 <!-- Enhanced Activity Display -->
                 <template v-slot:item.activity="{ item }">
                     <div class="activity-cell">

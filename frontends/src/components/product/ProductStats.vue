@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { getProductsStats } from '@/utils/product-util';
+import { getProductsStats } from '@/services/product-service';
 export default {
     
     name: 'ProductStats',

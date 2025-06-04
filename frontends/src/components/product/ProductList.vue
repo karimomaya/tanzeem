@@ -86,12 +86,12 @@
                 <!-- Enhanced Stock Column -->
                 <template v-slot:item.stock="{ item }">
                     <div class="product-stock-cell">
-                        <v-chip :color="getStockColor(item.stock, item.minimumStock)"
+                        <v-chip :color="getStockMeta(item.stock, item.minimumStock).color"
                             :variant="item.stock === 0 ? 'elevated' : 'tonal'" size="small" class="product-stock-chip">
-                            <v-icon start size="14">{{ getStockIcon(item.stock, item.minimumStock) }}</v-icon>
+                            <v-icon start size="14">{{ getStockMeta(item.stock, item.minimumStock).icon }}</v-icon>
                             {{ item.stock }}
                         </v-chip>
-                        <div class="product-stock-status">{{ getStockStatus(item.stock, item.minimumStock) }}</div>
+                        <div class="product-stock-status">{{ getStockMeta(item.stock, item.minimumStock).text }}</div>
                     </div>
                 </template>
 
@@ -228,10 +228,7 @@
 <script>
 import {formatCurrency} from '@/utils/system-util'
 import {
-    getStockStatus,
-    getStockIcon,
-    getStockText,
-    getStockColor,
+    getStockMeta,
     getStockLevel,
     truncateText,
     createDuplicateProduct,
@@ -352,10 +349,7 @@ export default {
     },
     methods: {
         // Import utility functions
-        getStockText,
-        getStockColor,
-        getStockIcon,
-        getStockStatus,
+        getStockMeta,
         getStockLevel,
         formatCurrency,
         truncateText,

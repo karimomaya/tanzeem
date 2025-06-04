@@ -1,5 +1,3 @@
-// utils/image-service-client.js
-
 // Import your existing makeRequest function
 import { makeRequest } from '@/utils/request-util'; // Adjust the path as needed
 

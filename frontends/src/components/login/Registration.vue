@@ -76,7 +76,7 @@
 </template>
  
 <script>
-import { registration } from '@/utils/auth-util.js'
+import { registration } from '@/services/auth-service.js'
 import { error, success } from '@/utils/system-util.js'
 
 export default {

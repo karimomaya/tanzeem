@@ -180,7 +180,7 @@
 </template>
 
 <script>
-import { saveCategory, updateCategory } from '@/utils/product-util';
+import { saveCategory, updateCategory } from '@/services/product-service';
 import { success, error } from '@/utils/system-util';
 
 export default {
