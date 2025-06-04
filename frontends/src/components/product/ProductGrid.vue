@@ -268,7 +268,7 @@
 </template>
 
 <script>
-import {formatCurrency} from '@/utils/system-util'
+import { formatCurrency } from '@/utils/currency-util'
 import {
     getStockMeta,
     getStockLevel,

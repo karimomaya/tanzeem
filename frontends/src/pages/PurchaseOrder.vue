@@ -223,7 +223,8 @@ import DeleteModal from '@/components/layouts/DeleteModal.vue';
 import PurchaseStats from '@/components/purchase/PurchaseStats.vue';
 // import SupplierStats from '@/components/purchase/SupplierStats.vue';
 import { getPurchaseOrders, deletePurchaseOrder, getSuppliers, deleteSupplier, updateSupplier, markPurchaseOrderAsReceived } from '@/services/purchase-service';
-import { success, error, formatCurrency } from '@/utils/system-util';
+import { success, error } from '@/utils/system-util';
+import { formatCurrency } from '@/utils/currency-util';
 
 export default {
     name: 'PurchaseOrderPage',

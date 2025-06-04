@@ -152,7 +152,8 @@
 </template>
 
 <script>
-import { formatCurrency , formatNumber} from '@/utils/system-util';
+import { formatCurrency } from '@/utils/currency-util';
+import { formatNumber} from '@/utils/system-util';
 import { getPurchaseStats } from '@/utils/purchase-util';
 
 export default {

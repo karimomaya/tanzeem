@@ -300,8 +300,8 @@
 </template>
 
 <script>
+import { formatCurrency } from '@/utils/currency-util';
 import { 
-    formatCurrency, 
     formatDate
 } from '@/utils/system-util';
 import { 

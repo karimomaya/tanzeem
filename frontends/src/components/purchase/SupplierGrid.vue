@@ -319,7 +319,8 @@
 
 
 <script>
-import { formatCurrency,  formatDate } from '@/utils/system-util';
+import { formatCurrency } from '@/utils/currency-util';
+import { formatDate } from '@/utils/system-util';
 import { 
     isUpdatedRecently,
     getPaginationVisible,

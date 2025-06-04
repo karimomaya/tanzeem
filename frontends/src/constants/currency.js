@@ -9,3 +9,10 @@ export const CURRENCY_SYMBOL = {
     'USD': 'usd',
     'SAR': 'ر.س.'
 }
+
+export const CURRENCY_FORMAT = {
+    'EGP': 'ar-EG',
+    'AED': 'ar-AE',
+    'SAR': 'ar-AE',
+    'OMR': 'ar-AE',
+}

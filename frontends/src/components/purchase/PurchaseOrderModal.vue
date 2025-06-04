@@ -204,7 +204,7 @@
 </template>
 
 <script>
-import { formatCurrency } from '@/utils/system-util';
+import { formatCurrency } from '@/utils/currency-util';
 import { getProducts } from '@/services/product-service';
 import { createPurchaseOrder, updatePurchaseOrder } from '@/services/purchase-service';
 import { success, error } from '@/utils/system-util';

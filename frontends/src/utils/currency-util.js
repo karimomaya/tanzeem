@@ -1,30 +1,22 @@
-import {  CURRENCY_SYMBOL, CURRENCY_ICON } from '@/constants/currency';
+import {  CURRENCY_SYMBOL, CURRENCY_ICON, CURRENCY_FORMAT } from '@/constants/currency';
+import { getTenantInfo } from '@/utils/auth-util';
 
 export function getCurrencyIcon() {
-    const token = localStorage.getItem('accessToken'); // or however you store your JWT
-    if (!token) return null;
-    
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-
-        return CURRENCY_ICON[payload.defaultCurrency] || 'mdi-currency-usd' ;
-    } catch (error) {
-        console.error('Error decoding JWT:', error);
-        return null;
-    }
+    const tenantInfo = getTenantInfo()
+    return tenantInfo && tenantInfo.defaultCurrency ? CURRENCY_ICON[tenantInfo.defaultCurrency] || 'mdi-currency-usd' : 'mdi-currency-usd';
 }
 
 
 export function getCurrencySymbol() {
-    const token = localStorage.getItem('accessToken'); // or however you store your JWT
-    if (!token) return null;
-    
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+    const tenantInfo = getTenantInfo()
+    return tenantInfo && tenantInfo.defaultCurrency ? CURRENCY_SYMBOL[tenantInfo.defaultCurrency] || 'ج.م.' : 'ج.م.';
+}
 
-        return CURRENCY_SYMBOL[payload.defaultCurrency] || 'mdi-currency-usd' ;
-    } catch (error) {
-        console.error('Error decoding JWT:', error);
-        return null;
-    }
+export function formatCurrency(amount) {
+    const tenantInfo = getTenantInfo()
+    const currency = tenantInfo.defaultCurrency || 'EGP';
+    return new Intl.NumberFormat(CURRENCY_FORMAT[currency], {
+        style: 'currency',
+        currency: currency
+    }).format(amount);
 }

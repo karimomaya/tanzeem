@@ -57,10 +57,10 @@
                             كود المورد: {{ item.code }}
                         </div>
                         <div class="meta-data">
-                            <div class="meta-item">
+                            <div class="meta-item" v-if="item.createdBy">
                                 <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
                                 <span class="meta-text">{{ formatDate(item.createdAt, 'created') }}</span>
-                                <span v-if="item.createdBy" class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy }}</span>
+                                <span class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy }}</span>
                             </div>
                             <div v-if="item.updatedAt && isUpdatedRecently(item.createdAt, item.updatedAt)"
                                 class="meta-item">
@@ -106,7 +106,7 @@
                         </div>
                         <div class="stat-row">
                             <v-chip color="success" variant="tonal" size="small" class="stat-chip">
-                                <v-icon start size="14">mdi-currency-usd</v-icon>
+                                <v-icon start size="14">{{ getCurrencyIcon() }}</v-icon>
                                 {{ formatCurrency(item.totalAmount || 0) }}
                             </v-chip>
                         </div>
@@ -271,7 +271,8 @@
 </template>
 
 <script>
-import { formatCurrency, formatDate } from '@/utils/system-util';
+import { formatCurrency, getCurrencyIcon } from '@/utils/currency-util';
+import { formatDate } from '@/utils/system-util';
 import { 
     isUpdatedRecently,
     truncateText,
@@ -358,6 +359,7 @@ export default {
     },
     methods: {
         formatCurrency,
+        getCurrencyIcon,
         truncateText,
         isUpdatedRecently,
         formatDate,
