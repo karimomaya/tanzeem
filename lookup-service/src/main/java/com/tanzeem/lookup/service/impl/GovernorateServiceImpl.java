@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -41,9 +42,12 @@ public class GovernorateServiceImpl implements GovernorateService {
     }
 
     @Override
-    @Cacheable(value = "governorate", key = "#countryCode")
+    @Cacheable(value = "governorate", key = "#code")
     public GovernorateResponse getGovernorateByCode(String code) {
-        return null;
+        GovernorateResponse governorateResponse = governorateRepository.findByCode(code)
+                .map(this::mapToResponse)
+                .orElseThrow(() -> new EntityNotFoundException("Governorate not found with code: " + code));
+        return governorateResponse;
     }
 
 
