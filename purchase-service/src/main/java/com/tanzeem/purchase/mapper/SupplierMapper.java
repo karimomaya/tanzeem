@@ -45,6 +45,7 @@ public class SupplierMapper {
                 .icon(supplier.getIcon())
                 .color(supplier.getColor())
                 .notes(supplier.getNotes())
+                .rating(supplier.getRating())
                 .build();
     }
 }

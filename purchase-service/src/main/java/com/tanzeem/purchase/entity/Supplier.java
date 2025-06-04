@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -56,6 +54,8 @@ public class Supplier extends AuditableBaseEntity {
     // Visual Info
     private String icon; // e.g. mdi-truck
     private String color; // hex: #366091
+
+    private Integer rating;
 
     @Lob
     private String notes;
