@@ -1,8 +1,9 @@
 package com.tanzeem.lookup.service.impl;
 
 import com.tanzeem.common.dto.CountryResponse;
-import com.tanzeem.lookup.dto.GovernorateResponse;
+import com.tanzeem.common.dto.GovernorateResponse;
 import com.tanzeem.lookup.entity.Governorate;
+import com.tanzeem.lookup.mapper.CountryMapper;
 import com.tanzeem.lookup.repository.GovernorateRepository;
 import com.tanzeem.lookup.service.CountryService;
 import com.tanzeem.lookup.service.GovernorateService;
@@ -21,6 +22,7 @@ public class GovernorateServiceImpl implements GovernorateService {
 
     private final GovernorateRepository governorateRepository;
     private final CountryService countryService;
+    private final CountryMapper countryMapper;
 
     @Override
     @Cacheable(value = "governorates", key = "#countryCode")
@@ -38,15 +40,26 @@ public class GovernorateServiceImpl implements GovernorateService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Cacheable(value = "governorate", key = "#countryCode")
+    public GovernorateResponse getGovernorateByCode(String code) {
+        return null;
+    }
+
 
     private GovernorateResponse mapToResponse(Governorate g) {
-        GovernorateResponse dto = new GovernorateResponse();
-        dto.setId(g.getId());
-        dto.setName(g.getName());
-        dto.setCode(g.getCode());
-        dto.setIsActive(g.isActive());
-        dto.setCountryId(g.getCountry().getId());
-        dto.setCountryName(g.getCountry().getName());
-        return dto;
+
+        return GovernorateResponse.builder()
+                .country(countryMapper.mapToResponse(g.getCountry()))
+                .id(g.getId())
+                .name(g.getName())
+                .code(g.getCode())
+                .isActive(g.isActive())
+                .createdAt(g.getCreatedAt())
+                .updatedAt(g.getUpdatedAt())
+                .description(g.getDescription())
+                .createdBy(g.getCreatedBy())
+                .updatedBy(g.getUpdatedBy())
+                .build();
     }
 }

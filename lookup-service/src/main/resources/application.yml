@@ -2,7 +2,7 @@ spring:
   application:
     name: lookup-service
   cache:
-    cache-names: businessType,countries,governorates
+    cache-names: businessType,countries,governorates,governorate,country
     caffeine:
       spec: maximumSize=1000,expireAfterWrite=10m
   web:

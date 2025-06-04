@@ -2,6 +2,7 @@ package com.tanzeem.purchase.service.impl;
 
 import com.tanzeem.common.client.LookupClient;
 import com.tanzeem.common.dto.CountryResponse;
+import com.tanzeem.common.dto.GovernorateResponse;
 import com.tanzeem.purchase.dto.SupplierResponse;
 import com.tanzeem.purchase.entity.Supplier;
 import com.tanzeem.purchase.repository.SupplierRepository;
@@ -30,11 +31,9 @@ public class SupplierServiceImpl implements SupplierService {
 
     private SupplierResponse mapToResponse(Supplier supplier){
         CountryResponse countryResponse = null;
-        try{
-            countryResponse = lookupClient.getCountryByCode(supplier.getCountryCode());
-        }catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        GovernorateResponse governorateResponse = null;
+        try{ countryResponse = lookupClient.getCountryByCode(supplier.getCountryCode()); }catch (Exception ex) {ex.printStackTrace(); }
+        try{ governorateResponse = lookupClient.getGovernorateByCode(supplier.getGovernorateCode()); }catch (Exception ex) {ex.printStackTrace(); }
         return SupplierResponse.builder().id(supplier.getId())
                 .name(supplier.getName())
                 .code(supplier.getCode())
@@ -45,22 +44,15 @@ public class SupplierServiceImpl implements SupplierService {
                 .address(supplier.getAddress())
                 .postalCode(supplier.getPostalCode())
                 .country(countryResponse)
+                .governorate(governorateResponse)
+                .businessType(supplier.getBusinessType())
+                .taxNumber(supplier.getTaxNumber())
+                .registrationNumber(supplier.getRegistrationNumber())
+                .paymentTerms(supplier.getPaymentTerms())
+                .creditLimit(supplier.getCreditLimit())
+                .icon(supplier.getIcon())
+                .color(supplier.getColor())
+                .notes(supplier.getNotes())
                 .build();
-
-
-        /*
-
-
-    private CountryResponse country;
-    private GovernorateResponse governorate;
-    private String businessType;
-    private String taxNumber;
-    private String registrationNumber;
-    private String paymentTerms;
-    private Double creditLimit;
-    private String icon;
-    private String color;
-    private String notes;
-         */
     }
 }

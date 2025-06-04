@@ -1,6 +1,7 @@
 package com.tanzeem.common.client;
 
 import com.tanzeem.common.dto.CountryResponse;
+import com.tanzeem.common.dto.GovernorateResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,4 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface LookupClient {
     @RequestMapping(method = RequestMethod.GET, value = "/countries/{code}")
     public CountryResponse getCountryByCode(@PathVariable String code);
+    @RequestMapping(method = RequestMethod.GET, value = "/governorates/{code}")
+    public GovernorateResponse getGovernorateByCode(@PathVariable String code);
 }

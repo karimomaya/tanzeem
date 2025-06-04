@@ -2,6 +2,7 @@ package com.tanzeem.lookup.service.impl;
 
 import com.tanzeem.common.dto.CountryResponse;
 import com.tanzeem.lookup.entity.Country;
+import com.tanzeem.lookup.mapper.CountryMapper;
 import com.tanzeem.lookup.repository.CountryRepository;
 import com.tanzeem.lookup.service.CountryService;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,12 +18,13 @@ import java.util.stream.Collectors;
 public class CountryServiceImpl implements CountryService {
 
     private final CountryRepository countryRepository;
+    private final CountryMapper countryMapper;
 
     @Override
     @Cacheable("countries")
     public List<CountryResponse> getAllCountries() {
         return countryRepository.findAll().stream()
-                .map(this::mapToResponse)
+                .map(countryMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -30,23 +32,13 @@ public class CountryServiceImpl implements CountryService {
     @Cacheable(value = "countries", key = "#code")
     public CountryResponse getCountryByCode(String code) {
         Country country = countryRepository.findByCode(code).orElseThrow(()->new EntityNotFoundException("Country not found"));
-        return mapToResponse(country);
+        return countryMapper.mapToResponse(country);
     }
 
     @Override
     public CountryResponse getCountryById(Long id) {
         Country country = countryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Country not found"));
-        return mapToResponse(country);
-    }
-
-    private CountryResponse mapToResponse(Country country) {
-        CountryResponse response = new CountryResponse();
-        response.setId(country.getId());
-        response.setName(country.getName());
-        response.setCode(country.getCode());
-        response.setFlagIcon(country.getFlagIcon());
-        response.setActive(country.isActive());
-        return response;
+        return countryMapper.mapToResponse(country);
     }
 }
