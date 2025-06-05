@@ -26,10 +26,6 @@ spring:
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017
-      database: crawler
   main:
     allow-bean-definition-overriding: true
 logging:
