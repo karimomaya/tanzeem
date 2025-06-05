@@ -151,11 +151,11 @@
                                     </v-select>
                                 </div>
                             </v-col>
-                            <!-- City -->
+                            <!-- governorate -->
                             <v-col cols="12" md="4">
                                 <div class="form-group">
                                     <label class="form-label">المدينة</label>
-                                    <v-select v-model="editedSupplier.city" :items="cityOptions" variant="outlined"
+                                    <v-select v-model="editedSupplier.governorate" :items="governorateOptions" variant="outlined"
                                         item-value="code"
                                         item-title="name"
                                         density="comfortable" placeholder="اختر المدينة" hide-details="auto"
@@ -227,7 +227,7 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">شروط الدفع</label>
-                                    <v-select v-model="editedSupplier.paymentTerms" :items="paymentTermsOptions"
+                                    <v-select v-model="editedSupplier.paymentTerm" :items="paymentTermsOptions"
                                         item-value="code"
                                         item-title="name"
                                         variant="outlined" density="comfortable" placeholder="اختر شروط الدفع"
@@ -404,7 +404,8 @@ export default {
             type: Boolean,
             default: false
         },
-        supplier: {
+
+        supplierToEdit: {
             type: Object,
             default: null
         }
@@ -416,6 +417,7 @@ export default {
             formValid: false,
             loading: false,
             editedSupplierId: null,
+            isInitialLoad: false,
             editedSupplier: {
                 name: '',
                 code: '',
@@ -423,12 +425,12 @@ export default {
                 phone: '',
                 email: '',
                 address: '',
-                city: '',
+                governorate: '',
                 postalCode: '',
                 country: '',
                 businessType: '',
                 taxNumber: '',
-                paymentTerms: '',
+                paymentTerm: '',
                 creditLimit: 0,
                 icon: 'mdi-truck',
                 color: '#366091',
@@ -438,7 +440,7 @@ export default {
                 totalOrders: 0,
                 totalAmount: 0
             },
-            cityOptions: [],
+            governorateOptions: [],
             countryOptions: [],
             businessTypeOptions: [],
             paymentTermsOptions: [],
@@ -491,18 +493,38 @@ export default {
     },
     watch: {
         async 'editedSupplier.country'(newCountryCode)  {
-            if(!newCountryCode) return
-            this.cityOptions = await this.getGovernorates(newCountryCode);
-            this.cityOptions = this.cityOptions || []
-            this.editedSupplier.city = null; // reset city when country changes
+            if(!newCountryCode || this.isInitialLoad) return
+            this.governorateOptions = await this.getGovernorates(newCountryCode);
+
+            this.editedSupplier.governorate = null; 
         },
-        supplier: {
+        supplierToEdit: {
             immediate: true,
-            handler(newSupplier) {
+            async handler(newSupplier) {
                 if (newSupplier) {
-                    this.editedSupplier = { ...newSupplier };
+                    this.isInitialLoad = true; // Set flag before setting country
+
+                    // First, load governorate options if country exists
+                    if (newSupplier.country?.code || newSupplier.country) {
+                        const countryCode = newSupplier.country?.code || newSupplier.country;
+                        this.governorateOptions = await this.getGovernorates(countryCode);
+                    }
+
+                    this.editedSupplier = { 
+                        ...newSupplier, 
+                        country: newSupplier.country.code || newSupplier.country,
+                        governorate: newSupplier.governorate?.code || newSupplier.governorate,
+                        businessType: newSupplier.businessType?.code || newSupplier.businessType,
+                        paymentTerm: newSupplier.paymentTerm?.code || newSupplier.paymentTerm,
+                    };
                     this.editedSupplierId = newSupplier.id;
+
+                    setTimeout(() => {
+                        this.isInitialLoad = false;
+                    }, 100);
+                    
                 } else {
+                    this.isInitialLoad = false;
                     this.resetForm();
                 }
             }
@@ -526,12 +548,12 @@ export default {
                 phone: '',
                 email: '',
                 address: '',
-                city: '',
+                governorate: '',
                 postalCode: '',
                 country: '',
                 businessType: '',
                 taxNumber: '',
-                paymentTerms: '',
+                paymentTerm: '',
                 creditLimit: 0,
                 icon: 'mdi-truck',
                 color: '#366091',

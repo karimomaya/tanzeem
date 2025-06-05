@@ -1,6 +1,8 @@
 package com.tanzeem.purchase.entity;
 
 import com.tanzeem.common.entity.AuditableBaseEntity;
+import com.tanzeem.purchase.entity.lookup.BusinessType;
+import com.tanzeem.purchase.entity.lookup.PaymentTerm;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -10,7 +12,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "suppliers")
@@ -45,10 +46,14 @@ public class Supplier extends AuditableBaseEntity {
     private String governorateCode;
 
     // Business Info
-    private String businessType;
+    @ManyToOne
+    @JoinColumn(name = "business_type", referencedColumnName = "code", insertable = false, updatable = false)
+    private BusinessType businessType;
     private String taxNumber;
     private String registrationNumber;
-    private String paymentTerms; // e.g. "net_30"
+    @ManyToOne
+    @JoinColumn(name = "payment_term", referencedColumnName = "code", insertable = false, updatable = false)
+    private PaymentTerm paymentTerm; // e.g. "net_30"
     private Double creditLimit;
 
     // Visual Info

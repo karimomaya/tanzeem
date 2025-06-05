@@ -94,6 +94,18 @@
                     </div>
                 </template>
 
+                <!-- المعلومات التجارية -->
+                <template v-slot:item.business="{ item }">
+                    <div v-if="item.businessType" class="contact-item">
+                        <v-icon size="14" color="success" class="me-1">mdi-briefcase</v-icon>
+                        <span class="contact-text">{{ item.businessType.name }}</span>
+                    </div>
+                    <div v-if="item.paymentTerm" class="contact-item">
+                        <v-icon size="14" color="info" class="me-1">mdi-credit-card</v-icon>
+                        <span class="contact-text">{{ item.paymentTerm.name }}</span>
+                    </div>
+                </template>
+
                 <!-- Enhanced Statistics Display -->
                 <template v-slot:item.statistics="{ item }">
                     <div class="statistics-cell">
@@ -334,11 +346,12 @@ export default {
         return {
             supplierHeaders: [
                 { title: 'الأيقونة', key: 'icon', sortable: false, align: 'start', width: '8%' },
-                { title: 'الاسم', key: 'name', sortable: true, width: '22%' },
-                { title: 'معلومات الاتصال', key: 'contact', sortable: false, width: '25%' },
-                { title: 'الإحصائيات', key: 'statistics', sortable: true, align: 'start', width: '18%' },
-                { title: 'التقييم', key: 'rating', sortable: true, align: 'start', width: '15%' },
-                { title: 'الحالة', key: 'isActive', sortable: true, align: 'start', width: '10%' },
+                { title: 'الاسم', key: 'name', sortable: true, width: '20%' },
+                { title: 'معلومات الاتصال', key: 'contact', sortable: false, width: '22%' },
+                { title: 'المعلومات التجارية', key: 'business', sortable: false, width: '15%' }, // New column
+                { title: 'الإحصائيات', key: 'statistics', sortable: true, align: 'start', width: '15%' },
+                { title: 'التقييم', key: 'rating', sortable: true, align: 'start', width: '12%' },
+                { title: 'الحالة', key: 'isActive', sortable: true, align: 'start', width: '8%' },
                 { title: 'الإجراءات', key: 'actions', sortable: false, align: 'start', width: '8%' }
             ],
             statusOptions: [

@@ -4,6 +4,7 @@ package com.tanzeem.purchase.mapper;
 import com.tanzeem.common.client.LookupClient;
 import com.tanzeem.common.dto.CountryResponse;
 import com.tanzeem.common.dto.GovernorateResponse;
+import com.tanzeem.common.mapper.LookupMapper;
 import com.tanzeem.purchase.dto.SupplierResponse;
 import com.tanzeem.purchase.entity.Supplier;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class SupplierMapper {
 
     private final LookupClient lookupClient;
+    private final LookupMapper lookupMapper;
     /**
      * Maps a Supplier entity to a SupplierResponse DTO.
      *
@@ -25,7 +27,6 @@ public class SupplierMapper {
         GovernorateResponse governorateResponse = null;
         try{ countryResponse = lookupClient.getCountryByCode(supplier.getCountryCode()); }catch (Exception ex) {ex.printStackTrace(); }
         try{ governorateResponse = lookupClient.getGovernorateByCode(supplier.getGovernorateCode()); }catch (Exception ex) {ex.printStackTrace(); }
-
         return SupplierResponse.builder().id(supplier.getId())
                 .name(supplier.getName())
                 .code(supplier.getCode())
@@ -37,10 +38,10 @@ public class SupplierMapper {
                 .postalCode(supplier.getPostalCode())
                 .country(countryResponse)
                 .governorate(governorateResponse)
-                .businessType(supplier.getBusinessType())
+                .businessType( lookupMapper.mapToResponse(supplier.getBusinessType()))
                 .taxNumber(supplier.getTaxNumber())
                 .registrationNumber(supplier.getRegistrationNumber())
-                .paymentTerms(supplier.getPaymentTerms())
+                .paymentTerm(lookupMapper.mapToResponse(supplier.getPaymentTerm()))
                 .creditLimit(supplier.getCreditLimit())
                 .icon(supplier.getIcon())
                 .color(supplier.getColor())

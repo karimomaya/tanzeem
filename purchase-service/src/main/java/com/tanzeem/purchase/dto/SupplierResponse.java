@@ -2,6 +2,7 @@ package com.tanzeem.purchase.dto;
 
 import com.tanzeem.common.dto.CountryResponse;
 import com.tanzeem.common.dto.GovernorateResponse;
+import com.tanzeem.common.dto.LookupResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +26,10 @@ public class SupplierResponse {
     private String postalCode;
     private CountryResponse country;
     private GovernorateResponse governorate;
-    private String businessType;
+    private LookupResponse businessType;
     private String taxNumber;
     private String registrationNumber;
-    private String paymentTerms;
+    private LookupResponse paymentTerm;
     private Double creditLimit;
     private String icon;
     private String color;

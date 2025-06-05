@@ -1,8 +1,5 @@
 package com.tanzeem.purchase.service.impl;
 
-import com.tanzeem.common.client.LookupClient;
-import com.tanzeem.common.dto.CountryResponse;
-import com.tanzeem.common.dto.GovernorateResponse;
 import com.tanzeem.purchase.dto.SupplierResponse;
 import com.tanzeem.purchase.entity.Supplier;
 import com.tanzeem.purchase.mapper.SupplierMapper;

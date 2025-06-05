@@ -11,6 +11,7 @@ public class CountryMapper {
     public CountryResponse mapToResponse(Country country) {
         return CountryResponse.builder()
                 .id(country.getId())
+                .code(country.getCode())
                 .name(country.getName())
                 .flagIcon(country.getFlagIcon())
                 .description(country.getDescription())
