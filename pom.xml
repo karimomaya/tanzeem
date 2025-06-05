@@ -13,6 +13,7 @@
       <module>image-service</module>
       <module>lookup-service</module>
       <module>common-core</module>
+      <module>rating-service</module>
   </modules>
   <packaging>pom</packaging>
   <parent>
