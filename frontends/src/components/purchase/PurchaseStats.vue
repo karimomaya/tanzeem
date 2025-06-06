@@ -72,7 +72,7 @@
 <script>
 import { formatCurrency } from '@/utils/currency-util';
 import { formatNumber} from '@/utils/system-util';
-import { getPurchaseStats } from '@/utils/purchase-util';
+import { getPurchaseStats } from '@/services/purchase-service';
 import StatsCard from '@/components/common/StatsCard.vue';
 
 export default {
