@@ -347,7 +347,15 @@ export default {
         formatCurrency,
 
         async updateSupplierStatus(supplierData) {
-            let response = await updateSupplier(supplierData);
+            console.log(supplierData)
+            let data = { 
+                ...supplierData, 
+                country: supplierData.country.code || supplierData.country,
+                governorate: supplierData.governorate?.code || supplierData.governorate,
+                businessType: supplierData.businessType?.code || supplierData.businessType,
+                paymentTerm: supplierData.paymentTerm?.code || supplierData.paymentTerm,
+            }
+            let response = await updateSupplier(data);
             if (response != null && response.id != null) {
                 success('تم تحديث المورد بنجاح');
                 this.handleSupplierSave();
@@ -457,13 +465,7 @@ export default {
                 params.append('search', this.searchTerm);
             }
 
-            if (this.statusFilter && this.statusFilter !== 'all') {
-                if (type === 'orders') {
-                    params.append('status', this.statusFilter);
-                } else {
-                    params.append('isActive', this.statusFilter);
-                }
-            }
+            params.append('isActive', this.statusFilter);
 
             // Add date range filter for orders
             if (type === 'orders' && this.dateRange && this.dateRange.length === 2) {
