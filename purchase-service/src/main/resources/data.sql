@@ -57,7 +57,7 @@ VALUES
 ( '2024-01-18', 18, 'INV-018', 1320.00, 'فاتورة مرتجعة', 'tanzeem', 'COMPLETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-19', 19, 'INV-019', 560.00, 'طلب تخفيض', 'tanzeem', 'COMPLETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-20', 20, 'INV-020', 690.00, 'شراء جزئي', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
-INSERT INTO purchase_items ( product_id, product_name, quantity, unit_price, total_price, purchase_id, created_at, updated_at, created_by, updated_by)
+INSERT INTO purchase_items ( product_id, product_name_at_purchase, quantity, unit_price, total_price, purchase_id, created_at, updated_at, created_by, updated_by)
 VALUES
 ( 101, 'منتج أ', 2, 200.00, 400.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( 102, 'منتج ب', 3, 150.00, 450.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),

@@ -1,6 +1,8 @@
 package com.tanzeem.purchase.repository;
 
 import com.tanzeem.purchase.entity.Purchase;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,9 +47,9 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long>{
             SELECT COUNT(p)
             FROM Purchase p
             WHERE p.tenantId = :tenantId
-            AND p.actualDeliveryDate IS NOT NULL
-            AND p.expectedDeliveryDate IS NOT NULL
-            AND p.actualDeliveryDate <= p.expectedDeliveryDate
+            AND p.deliveredAt IS NOT NULL
+            AND p.expectedDeliveryAt IS NOT NULL
+            AND p.deliveredAt <= p.expectedDeliveryAt
        """)
     long countOnTimeDeliveries(@Param("tenantId") String tenantId);
 
@@ -59,8 +61,8 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long>{
     SELECT COUNT(p)
     FROM Purchase p
     WHERE p.supplier.id = :supplierId
-      AND p.actualDeliveryDate IS NOT NULL
-      AND p.actualDeliveryDate <= p.expectedDeliveryDate AND p.tenantId = :tenantId
+      AND p.deliveredAt IS NOT NULL
+      AND p.deliveredAt <= p.expectedDeliveryAt AND p.tenantId = :tenantId
     """)
     Long countOnTimeDeliveriesBySupplierId(@Param("supplierId") Long supplierId, @Param("tenantId") String tenantId);
 
@@ -70,4 +72,8 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long>{
     WHERE supplier_id = :supplierId AND confirmed_date IS NOT NULL AND tenant_id = :tenantId
     """, nativeQuery = true)
     Optional<Double> getAverageResponseTimeInDays(@Param("supplierId") Long supplierId, @Param("tenantId") String tenantId);
+
+    Page<Purchase> findByTenantIdAndInvoiceNumberContainingIgnoreCase(String tenantId, String invoiceNumber, Pageable pageable);
+
+    Page<Purchase> findByIsActiveAndTenantIdAndInvoiceNumberContainingIgnoreCase(Boolean isActiveParam, String tenantId, String invoiceNumber, Pageable pageable);
 }
