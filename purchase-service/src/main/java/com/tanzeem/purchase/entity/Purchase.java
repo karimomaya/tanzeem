@@ -3,24 +3,24 @@ package com.tanzeem.purchase.entity;
 import com.tanzeem.common.entity.AuditableBaseEntity;
 import com.tanzeem.purchase.enums.PurchaseStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "purchases")
+@Table(name = "purchases", indexes = {
+        @Index(name = "idx_supplier_id", columnList = "supplier_id"),
+        @Index(name = "idx_purchase_date", columnList = "purchaseDate")
+})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,7 +30,7 @@ public class Purchase  extends AuditableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotNull
     private LocalDate purchaseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,7 +38,7 @@ public class Purchase  extends AuditableBaseEntity {
     private Supplier supplier;
 
     private String invoiceNumber;
-
+    @DecimalMin("0.00")
     private BigDecimal totalAmount;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -49,9 +49,9 @@ public class Purchase  extends AuditableBaseEntity {
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status;
 
-    private LocalDate expectedDeliveryDate;
-    private LocalDate actualDeliveryDate;
+    private LocalDate expectedDeliveryAt;
+    private LocalDate deliveredAt;
 
-    private LocalDate confirmedDate;
+    private LocalDate confirmedAt;
 
 }
