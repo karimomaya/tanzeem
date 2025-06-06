@@ -10,12 +10,12 @@
 
                 <div class="d-flex align-center ga-3">
                     <!-- Items per page -->
-                    <div class="items-per-page">
+                    <!--<div class="items-per-page">
                         <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
                         <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
                             density="compact" hide-details style="width: 80px;" class="items-select"
                             @update:model-value="$emit('update:items-per-page', $event)"></v-select>
-                    </div>
+                    </div>-->
 
                     <!-- Export button -->
                     <v-btn variant="outlined" color="primary" prepend-icon="mdi-download" class="export-btn"
@@ -35,8 +35,9 @@
         <v-card class="table-card" elevation="0">
             <v-data-table-server :headers="supplierHeaders" :items="suppliers" :items-per-page="itemsPerPage" :page="page"
                 :items-length="totalItems" :loading="loading" loading-text="جاري التحميل... يرجى الانتظار"
-                no-data-text="لا توجد موردين للعرض" @update:options="updateTableOptions" class="modern-table" hover
-                show-current-page>
+                no-data-text="لا توجد موردين للعرض" 
+                class="modern-table" hover
+                show-current-page hide-default-footer>
                 
                 <!-- Enhanced Icon Display -->
                 <template v-slot:item.icon="{ item }">
@@ -243,41 +244,24 @@
 
                 <!-- Enhanced No Data -->
                 <template v-slot:no-data>
-                    <div class="no-data-state">
-                        <div class="no-data-content">
-                            <div class="no-data-icon">
-                                <v-icon size="60" color="grey-lighten-2">mdi-truck</v-icon>
-                            </div>
-                            <h4 class="no-data-title">لا توجد موردين</h4>
-                            <p class="no-data-subtitle">لم يتم العثور على موردين مطابقين لمعايير البحث الحالية</p>
-                            <v-btn color="primary" variant="tonal" prepend-icon="mdi-plus" class="mt-4"
-                                @click="$emit('add-supplier')">
-                                إضافة مورد جديد
-                            </v-btn>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Enhanced Footer -->
-                <template v-slot:bottom>
-                    <div class="table-footer">
-                        <div class="footer-info">
-                            <span class="text-body-2 text-medium-emphasis">
-                                عرض {{ (page - 1) * itemsPerPage + 1 }} - {{ Math.min(page * itemsPerPage, totalItems) }} من
-                                أصل {{ totalItems }} مورد
-                            </span>
-                        </div>
-                        <v-pagination v-if="Math.ceil(totalItems / itemsPerPage) > 1" :model-value="page"
-                            :length="Math.ceil(totalItems / itemsPerPage)" :total-visible="5"
-                            @update:model-value="$emit('update:page', $event)" color="primary" size="small"
-                            class="table-pagination"></v-pagination>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
-                            variant="outlined" density="compact" hide-details style="max-width: 120px;"
-                            class="items-per-page-select"
-                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
-                    </div>
+                    <NoDataState
+                        icon="mdi-truck"
+                        title="لا توجد موردين"
+                        subtitle="لم يتم العثور على موردين مطابقين لمعايير البحث الحالية"
+                        add-button-text="إضافة مورد جديد"
+                        @add-item="$emit('add-supplier')"
+                    />
                 </template>
             </v-data-table-server>
+            <TablePagination
+                :page="page"
+                :items-per-page="itemsPerPage"
+                :total-items="totalItems"
+                item-label="مورد"
+                :items-per-page-options="itemsPerPageOptions"
+                @update:page="$emit('update:page', $event)"
+                @update:items-per-page="$emit('update:items-per-page', $event)"
+            />
         </v-card>
     </div>
 </template>
@@ -285,14 +269,16 @@
 <script>
 import { formatCurrency, getCurrencyIcon } from '@/utils/currency-util';
 import { formatDate } from '@/utils/system-util';
-import { 
-    isUpdatedRecently,
-    truncateText,
-    getPaginationVisible
-} from '@/utils/product-util';
+import { isUpdatedRecently, truncateText } from '@/utils/product-util';
+import TablePagination from '@/components/common/TablePagination.vue';
+import NoDataState from '@/components/common/NoDataState.vue';
 
 export default {
     name: 'SupplierList',
+    components: {
+        TablePagination,
+        NoDataState
+    },
     props: {
         suppliers: {
             type: Array,
@@ -337,7 +323,6 @@ export default {
         'update:status-filter',
         'update:sort-option',
         'refresh',
-        'update:options',
         'view',
         'duplicate',
         'toggle-status'
@@ -376,12 +361,6 @@ export default {
         truncateText,
         isUpdatedRecently,
         formatDate,
-        getPaginationVisible,
-
-        updateTableOptions(options) {
-            // Handle table updates (pagination, sorting, etc.)
-            this.$emit('update:options', options);
-        },
 
         getOrderCountColor(count) {
             if (count === 0) return 'grey';

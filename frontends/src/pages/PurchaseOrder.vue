@@ -151,8 +151,7 @@
                                         :total-items="orderPagination.totalItems" :page="orderPagination.page"
                                         :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
                                         @edit="editPurchaseOrder" @delete="confirmDeletePurchaseOrder"
-                                        @view="viewPurchaseOrder" @mark-received="markAsReceived"
-                                        @update:options="updateTableOptions" />
+                                        @view="viewPurchaseOrder" @mark-received="markAsReceived" />
                                 </div>
                             </v-window-item>
 
@@ -187,7 +186,7 @@
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
                                         @update:search-term="updateSearchTerm" @update:status-filter="updateStatusFilter"
                                         @update:sort-option="updateSortOption" @refresh="loadSuppliers"
-                                        @update:options="updateTableOptions" @toggle-status="updateSupplierStatus" />
+                                        @toggle-status="updateSupplierStatus" />
                                 </div>
                             </v-window-item>
                         </v-window>
@@ -400,8 +399,8 @@ export default {
                 const response = await getPurchaseOrders(params);
                 if (response && response.content) {
                     this.purchaseOrders = response.content;
-                    this.orderPagination.totalItems = response.totalElements;
-                    this.totalOrders = response.totalElements;
+                    this.orderPagination.totalItems = response.page.totalElements;
+                    this.totalOrders = response.page.totalElements;
                 } else {
                     console.warn('No data received from getPurchaseOrders');
                     this.purchaseOrders = [];
@@ -426,8 +425,9 @@ export default {
                 const response = await getSuppliers(params);
                 if (response && response.content) {
                     this.suppliers = response.content;
-                    this.supplierPagination.totalItems = response.totalElements;
-                    this.totalSuppliers = response.totalElements;
+                    console.log(response)
+                    this.supplierPagination.totalItems = response.page.totalElements;
+                    this.totalSuppliers = response.page.totalElements;
                 } else {
                     console.warn('No data received from getSuppliers');
                     this.suppliers = [];

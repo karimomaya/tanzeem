@@ -534,12 +534,6 @@ export default {
     background: rgba(54, 96, 145, 0.02) !important;
 }
 
-/* No Data State */
-
-.no-data-icon {
-    margin-bottom: 24px;
-}
-
 /* Table Footer */
 
 .items-per-page-select .v-field {
