@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "suppliers")
-@SQLDelete(sql = "UPDATE suppliers SET deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE suppliers SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
 @Data
 @AllArgsConstructor
