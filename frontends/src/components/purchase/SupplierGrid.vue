@@ -222,86 +222,16 @@
         </div>
 
         <!-- Enhanced Pagination Card -->
-        <v-card v-if="!loading && totalItems > 0" class="pagination-card" elevation="0">
-            <v-card-text class="pagination-content">
-                <!-- Pagination Info -->
-                <div class="pagination-info">
-                    <div class="info-section pagination-info-section">
-                        <span class="text-body-2 text-large-emphasis">
-                            عرض {{ startItem }} - {{ endItem }} من أصل {{ totalItems }} مورد
-                        </span>
-                        <div class="pagination-stats">
-                            <v-chip size="x-small" color="primary" variant="tonal" class="me-2">
-                                <v-icon start size="12">mdi-layers</v-icon>
-                                صفحة {{ page }} من {{ totalPages }}
-                            </v-chip>
-                            <v-chip size="x-small" color="info" variant="tonal">
-                                <v-icon start size="12">mdi-grid</v-icon>
-                                {{ itemsPerPage }} عنصر/صفحة
-                            </v-chip>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Pagination Controls -->
-                <div class="pagination-controls">
-                    <v-pagination :model-value="page" :length="totalPages" :total-visible="getPaginationVisible"
-                        @update:model-value="handlePageChange" color="primary" size="small" class="pagination-control"
-                        :disabled="loading" show-first-last-page></v-pagination>
-                </div>
-
-                <!-- Items Per Page & Actions -->
-                <div class="pagination-actions">
-                    <div class="items-per-page">
-                        <span class="text-body-2 text-large-emphasis me-2">عرض:</span>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
-                            density="compact" hide-details style="width: 90px;" class="items-select"
-                            @update:model-value="handleItemsPerPageChange" :disabled="loading"></v-select>
-                    </div>
-
-                    <!-- Quick Jump -->
-                    <div class="quick-jump">
-                        <span class="text-body-2 text-large-emphasis me-2">انتقال لصفحة:</span>
-                        <v-text-field v-model="jumpToPage" type="number" :min="1" :max="totalPages" variant="outlined"
-                            density="compact" hide-details style="width: 80px;" class="jump-input"
-                            @keyup.enter="handleQuickJump" @blur="handleQuickJump"
-                            :disabled="loading || totalPages <= 1"></v-text-field>
-                    </div>
-                </div>
-            </v-card-text>
-
-            <!-- Mobile Pagination -->
-            <div class="mobile-pagination d-md-none">
-                <v-card-text class="mobile-pagination-content">
-                    <div class="mobile-info">
-                        <span class="text-body-2 text-large-emphasis">
-                            {{ startItem }} - {{ endItem }} من {{ totalItems }}
-                        </span>
-                    </div>
-
-                    <div class="mobile-controls">
-                        <v-btn icon="mdi-chevron-right" size="small" variant="outlined" color="primary"
-                            :disabled="page >= totalPages || loading" @click="handlePageChange(page + 1)"></v-btn>
-
-                        <div class="mobile-page-info">
-                            <span class="text-body-2 font-weight-large">
-                                {{ page }} / {{ totalPages }}
-                            </span>
-                        </div>
-
-                        <v-btn icon="mdi-chevron-left" size="small" variant="outlined" color="primary"
-                            :disabled="page <= 1 || loading" @click="handlePageChange(page - 1)"></v-btn>
-                    </div>
-
-                    <div class="mobile-items-per-page">
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
-                            variant="outlined" density="compact" hide-details class="mobile-items-select"
-                            @update:model-value="handleItemsPerPageChange" :disabled="loading"></v-select>
-                    </div>
-                </v-card-text>
-            </div>
-        </v-card>
-
+        <TablePagination
+            v-if="!loading && totalItems > 0"
+            :page="page"
+            :items-per-page="itemsPerPage"
+            :total-items="totalItems"
+            item-label="مورد"
+            :items-per-page-options="itemsPerPageOptions"
+            @update:page="handlePageChange"
+            @update:items-per-page="handleItemsPerPageChange"
+        />
         <!-- Floating Refresh Button -->
         <v-btn v-if="!loading" icon="mdi-refresh" color="primary" size="large" class="refresh-fab" elevation="8"
             @click="$emit('refresh')" :loading="loading">
@@ -321,14 +251,17 @@
 <script>
 import { formatCurrency } from '@/utils/currency-util';
 import { formatDate } from '@/utils/system-util';
+import TablePagination from '@/components/common/TablePagination.vue';
 import { 
     isUpdatedRecently,
-    getPaginationVisible,
     truncateText
 } from '@/utils/product-util';
 
 export default {
     name: 'SupplierGrid',
+    components: {
+        TablePagination
+    },
     props: {
         suppliers: {
             type: Array,
@@ -412,7 +345,6 @@ export default {
         formatCurrency,
         isUpdatedRecently,
         formatDate,
-        getPaginationVisible,
         truncateText,
 
         getSupplierRatingColor(rating) {
