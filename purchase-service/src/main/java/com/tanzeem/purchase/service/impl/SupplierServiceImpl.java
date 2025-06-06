@@ -38,6 +38,26 @@ public class SupplierServiceImpl implements SupplierService {
     private final RatingClient ratingClient;
     private final BusinessTypeRepository businessTypeRepository;
     private final PaymentTermRepository paymentTermRepository;
+
+
+    @Override
+    public SupplierResponse create(SupplierRequest supplierRequest) {
+        Supplier supplier = supplierMapper.mapToEntity(supplierRequest);
+        supplier.setTenantId(AuthContextHolder.getTenantId());
+
+        try {businessTypeRepository.findByCodeAndTenantId(supplierRequest.getBusinessType(), AuthContextHolder.getTenantId())
+                .ifPresent(supplier::setBusinessType);} catch (Exception ex) {}
+        try {paymentTermRepository.findByCodeAndTenantId(supplierRequest.getPaymentTerm(), AuthContextHolder.getTenantId())
+                .ifPresent(supplier::setPaymentTerm);} catch (Exception ex) {}
+
+        // Calculate initial rating
+        int rating = calculateSupplierRating(supplier);
+        supplier.setRating(rating);
+
+        Supplier savedSupplier = supplierRepository.save(supplier);
+        return supplierMapper.mapToResponse(savedSupplier);
+    }
+
     @Override
     public Page<SupplierResponse> getAll(String search, String isActive, Pageable pageable) {
         if (search == null) search = "";

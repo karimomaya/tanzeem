@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class LookupMapper {
     public LookupResponse mapToResponse(BaseLookupEntity baseLookupEntity){
+        if (baseLookupEntity == null) {
+            return null;
+        }
         return LookupResponse.builder()
                 .name(baseLookupEntity.getName())
                 .createdBy(baseLookupEntity.getCreatedBy())

@@ -20,6 +20,11 @@ public class SupplierController {
         return ResponseEntity.ok(supplierService.getAll(search, isActive, pageable));
     }
 
+    @PostMapping
+    public ResponseEntity<SupplierResponse> update( @RequestBody SupplierRequest supplierRequest) {
+        return ResponseEntity.ok(supplierService.create(supplierRequest));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<SupplierResponse> update(@PathVariable Long id, @RequestBody SupplierRequest supplierRequest) {
         return ResponseEntity.ok(supplierService.update(id, supplierRequest));

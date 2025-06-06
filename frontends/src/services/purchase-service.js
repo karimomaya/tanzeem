@@ -85,20 +85,19 @@ export async function getSuppliers(params = null) {
     return await makeRequest(`${url}`, { method: 'GET' });
 }
 
-export async function getSupplierById(id) {
-    try {
-        // return await httpService.get(`${PURCHASE_BASE_URL}/suppliers/${id}`);
-    } catch (error) {
-        console.error('Error fetching supplier:', error);
-        throw error;
-    }
-}
+
 
 export async function createSupplier(supplierData) {
     try {
-        // return await httpService.post(`${PURCHASE_BASE_URL}/suppliers`, supplierData);
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(supplierData)
+        };
+        let url = `${PURCHASE_BASE_URL}/suppliers`;
+        return await makeRequest(`${url}`, options);
     } catch (error) {
-        console.error('Error creating supplier:', error);
+        console.error('Error updating supplier:', error);
         throw error;
     }
 }
@@ -420,7 +419,6 @@ export default {
     
     // Suppliers
     getSuppliers,
-    getSupplierById,
     createSupplier,
     updateSupplier,
     deleteSupplier,
