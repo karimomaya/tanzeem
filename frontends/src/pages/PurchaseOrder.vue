@@ -30,7 +30,7 @@
                 <v-container fluid class="px-6">
                     <PurchaseStats v-if="activeTab === 'orders'" :refresh="refreshStats"
                         @stats-refreshed="refreshStats = false" />
-                    <!-- <SupplierStats v-else :refresh="refreshStats" @stats-refreshed="refreshStats = false" /> -->
+                    <SupplierStats v-else :refresh="refreshStats" @stats-refreshed="refreshStats = false" />
                 </v-container>
             </div>
 
@@ -217,10 +217,10 @@ import SupplierGrid from '@/components/purchase/SupplierGrid.vue';
 import SupplierList from '@/components/purchase/SupplierList.vue';
 import PurchaseOrderModal from '@/components/purchase/PurchaseOrderModal.vue';
 import SupplierModal from '@/components/purchase/SupplierModal.vue';
+import SupplierStats from '@/components/purchase/SupplierStats.vue';
 // import PurchaseOrderViewModal from '@/components/purchase/PurchaseOrderViewModal.vue';
 import DeleteModal from '@/components/layouts/DeleteModal.vue';
 import PurchaseStats from '@/components/purchase/PurchaseStats.vue';
-// import SupplierStats from '@/components/purchase/SupplierStats.vue';
 import { getPurchaseOrders, deletePurchaseOrder, getSuppliers, deleteSupplier, updateSupplier, markPurchaseOrderAsReceived } from '@/services/purchase-service';
 import { success, error } from '@/utils/system-util';
 import { formatCurrency } from '@/utils/currency-util';
@@ -237,7 +237,7 @@ export default {
         // PurchaseOrderViewModal,
         DeleteModal,
         PurchaseStats,
-        // SupplierStats,
+        SupplierStats,
     },
     data() {
         return {

@@ -3,48 +3,36 @@
         <!-- Main Stats Row -->
         <v-row class="mb-6">
             <v-col cols="12" sm="6" lg="3">
-                <div class="stat-card stat-card-blue">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-chart-line</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">إجمالي المنتجات</div>
-                        <div class="stat-value">{{ productStats.total || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="إجمالي المنتجات"
+                    :value="productStats.total || 0"
+                    icon="mdi-chart-line"
+                    color="blue"
+                />
             </v-col>
             <v-col cols="12" sm="6" lg="3">
-                <div class="stat-card stat-card-green">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-check-circle</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">المنتجات النشطة</div>
-                        <div class="stat-value">{{ productStats.active || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="المنتجات النشطة"
+                    :value="productStats.active || 0"
+                    icon="mdi-check-circle"
+                    color="green"
+                />
             </v-col>
             <v-col cols="12" sm="6" lg="3">
-                <div class="stat-card stat-card-purple">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-alert-circle</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">مخزون منخفض</div>
-                        <div class="stat-value">{{ productStats.lowStock || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="مخزون منخفض"
+                    :value="productStats.lowStock || 0"
+                    icon="mdi-alert-circle"
+                    color="purple"
+                />
             </v-col>
             <v-col cols="12" sm="6" lg="3">
-                <div class="stat-card stat-card-yellow">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-close-circle</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">نفد المخزون</div>
-                        <div class="stat-value">{{ productStats.outOfStock || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="نفد المخزون"
+                    :value="productStats.outOfStock || 0"
+                    icon="mdi-close-circle"
+                    color="yellow"
+                />
             </v-col>
         </v-row>
 
@@ -134,9 +122,12 @@
 
 <script>
 import { getProductsStats } from '@/services/product-service';
+import StatsCard from '@/components/common/StatsCard.vue';
 export default {
-    
     name: 'ProductStats',
+    components: {
+        StatsCard
+    },
     props: {
         refresh: {
             type: Boolean,

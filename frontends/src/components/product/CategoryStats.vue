@@ -3,37 +3,28 @@
         <!-- Main Stats Row -->
         <v-row class="mb-6">
             <v-col cols="12" sm="6" lg="4">
-                <div class="stat-card stat-card-blue">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-chart-line</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">إجمالي التصنيفات</div>
-                        <div class="stat-value">{{ categoryStats.total || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="إجمالي التصنيفات"
+                    :value="categoryStats.total || 0"
+                    icon="mdi-chart-line"
+                    color="blue"
+                />
             </v-col>
             <v-col cols="12" sm="6" lg="4">
-                <div class="stat-card stat-card-green">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-check-circle</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">التصنيفات النشطة</div>
-                        <div class="stat-value">{{ categoryStats.active || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="التصنيفات النشطة"
+                    :value="categoryStats.active || 0"
+                    icon="mdi-check-circle"
+                    color="green"
+                />
             </v-col>
             <v-col cols="12" sm="12" lg="4">
-                <div class="stat-card stat-card-purple">
-                    <div class="stat-icon">
-                        <v-icon color="white" size="24">mdi-close-circle</v-icon>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">غير نشطة</div>
-                        <div class="stat-value">{{ categoryStats.inactive || 0 }}</div>
-                    </div>
-                </div>
+                <StatsCard 
+                    label="غير نشطة"
+                    :value="categoryStats.inactive || 0"
+                    icon="mdi-close-circle"
+                    color="purple"
+                />
             </v-col>
             <!-- <v-col cols="12" sm="6" lg="3">
                 <div class="stat-card stat-card-teal">
@@ -167,8 +158,12 @@
 
 <script>
 import { getCategoriesStats } from '@/services/product-service';
+import StatsCard from '@/components/common/StatsCard.vue';
 export default {
     name: 'CategoryStats',
+    components: {
+        StatsCard
+    },
     props: {
         refresh: {
             type: Boolean,
