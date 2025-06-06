@@ -24,4 +24,10 @@ public class SupplierController {
         return ResponseEntity.ok(supplierService.update(id, supplierRequest));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        supplierService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

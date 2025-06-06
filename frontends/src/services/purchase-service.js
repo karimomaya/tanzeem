@@ -119,12 +119,11 @@ export async function updateSupplier(supplierData) {
 }
 
 export async function deleteSupplier(id) {
-    try {
-        // return await httpService.delete(`${PURCHASE_BASE_URL}/suppliers/${id}`);
-    } catch (error) {
-        console.error('Error deleting supplier:', error);
-        throw error;
-    }
+    const options = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+    };
+    return await makeRequest(`${PURCHASE_BASE_URL}/suppliers/${id}`, options);
 }
 
 // Statistics API functions

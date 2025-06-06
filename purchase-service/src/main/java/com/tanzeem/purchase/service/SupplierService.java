@@ -8,4 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface SupplierService {
     Page<SupplierResponse> getAll(String search, String isActive, Pageable pageable);
     SupplierResponse update(Long id, SupplierRequest supplierRequest);
+    void delete(Long id);
 }

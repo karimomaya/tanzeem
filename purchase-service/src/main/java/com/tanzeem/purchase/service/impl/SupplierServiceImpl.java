@@ -73,6 +73,11 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierMapper.mapToResponse(updatedSupplier);
     }
 
+    @Override
+    public void delete(Long id) {
+        supplierRepository.deleteById(id);
+    }
+
     /**
      * How to rate supplier
         نسبة التوريد في الوقت (OnTimeDeliveryRate)	40%	عدد الطلبات اللي تم تسليمها في وقتها ÷ إجمالي الطلبات
