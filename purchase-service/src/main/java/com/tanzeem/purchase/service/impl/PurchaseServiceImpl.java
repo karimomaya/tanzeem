@@ -11,6 +11,7 @@ import com.tanzeem.purchase.repository.PurchaseItemRepository;
 import com.tanzeem.purchase.repository.PurchaseRepository;
 import com.tanzeem.purchase.repository.SupplierRepository;
 import com.tanzeem.purchase.service.PurchaseService;
+import com.tanzeem.security.common.AuthContextHolder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,14 +52,14 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public PurchaseResponse getPurchaseById(Long id) {
+    public PurchaseResponse getPurchaseById(long id) {
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Purchase not found"));
         return purchaseMapper.toResponse(purchase);
     }
 
     @Override
-    public PurchaseResponse updatePurchase(Long id, PurchaseRequest request) {
+    public PurchaseResponse updatePurchase(long id, PurchaseRequest request) {
         Purchase existing = purchaseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Purchase not found"));
 
@@ -82,7 +83,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public void deletePurchase(Long id) {
+    public void deletePurchase(long id) {
         if (!purchaseRepository.existsById(id)) {
             throw new EntityNotFoundException("Purchase not found");
         }
@@ -91,11 +92,32 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 
     @Override
-    public PurchaseResponse markAsReceived(Long id) {
+    public PurchaseResponse markAsReceived(long id) {
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Purchase not found"));
         purchase.setStatus(PurchaseStatus.RECEIVED);
         purchaseRepository.save(purchase);
         return purchaseMapper.toResponse(purchase);
+    }
+
+    @Override
+    public Double getAverageResponseTimeInDays(long supplierId) {
+        return purchaseRepository
+                .getAverageResponseTimeInDays(supplierId, AuthContextHolder.getTenantId())
+                .orElse(0.0);
+    }
+
+    @Override
+    public Integer countBySupplierId(long supplierId) {
+        return purchaseRepository.countBySupplierIdAndTenantId(supplierId, AuthContextHolder.getTenantId());
+    }
+
+    @Override
+    public Long countOnTimeDeliveries(long supplierId) {
+        return purchaseRepository.countOnTimeDeliveries(supplierId, AuthContextHolder.getTenantId());
+    }
+
+    public Integer countBySupplierId(Long supplierId) {
+        return purchaseRepository.countBySupplierIdAndTenantId(supplierId, AuthContextHolder.getTenantId());
     }
 }

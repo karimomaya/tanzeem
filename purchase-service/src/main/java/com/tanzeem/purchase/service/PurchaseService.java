@@ -9,8 +9,11 @@ import org.springframework.data.domain.Pageable;
 public interface PurchaseService {
     PurchaseResponse createPurchase(PurchaseRequest purchaseRequest);
     Page<PurchaseResponse> getAllPurchases(Pageable pageable);
-    PurchaseResponse getPurchaseById(Long id);
-    PurchaseResponse updatePurchase(Long id, PurchaseRequest purchaseRequest);
-    void deletePurchase(Long id);
-    PurchaseResponse markAsReceived(Long id);
+    PurchaseResponse getPurchaseById(long id);
+    PurchaseResponse updatePurchase(long id, PurchaseRequest purchaseRequest);
+    void deletePurchase(long id);
+    PurchaseResponse markAsReceived(long id);
+    Double getAverageResponseTimeInDays(long supplierId);
+    Integer countBySupplierId(long supplierId);
+    Long countOnTimeDeliveries(long supplierId);
 }

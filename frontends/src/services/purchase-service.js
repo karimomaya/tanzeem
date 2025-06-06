@@ -105,7 +105,13 @@ export async function createSupplier(supplierData) {
 
 export async function updateSupplier(supplierData) {
     try {
-        // return await httpService.put(`${PURCHASE_BASE_URL}/suppliers/${supplierData.id}`, supplierData);
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(supplierData)
+        };
+        let url = `${PURCHASE_BASE_URL}/suppliers`;
+        return await makeRequest(`${url}/${supplierData.id}`, options);
     } catch (error) {
         console.error('Error updating supplier:', error);
         throw error;

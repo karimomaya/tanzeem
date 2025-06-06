@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface BusinessTypeRepository extends JpaRepository<BusinessType, Long> {
     List<BusinessType> findByTenantIdOrderByNameAsc(String tenantId);
     Optional<BusinessType> findByIdAndTenantId(Long id, String tenantId);
-    Optional<BusinessType> findByCode(String code);
+    Optional<BusinessType> findByCodeAndTenantId(String code, String tenantId);
 }

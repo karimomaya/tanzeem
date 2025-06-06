@@ -393,6 +393,7 @@ import { success, error } from '@/utils/system-util';
 import { getCurrencyIcon, getCurrencySymbol } from '@/utils/currency-util';
 import { getBusinessType, getPaymentTerms } from '@/utils/purchase-util';
 import { getCountries, getGovernorates } from '@/services/lookup-service';
+import { updateSupplier } from '@/services/purchase-service';
 
 import {  LOCATION_ICON_OPTIONS } from '@/constants/icons.js';
 import {  COLOR_OPTIONS } from '@/constants/colors.js';
@@ -588,13 +589,19 @@ export default {
                 // For now, we'll simulate saving
                 if (supplierData.id == null) {
                     // Simulate creating new supplier
-                    supplierData.id = Date.now(); // Temporary ID
                     success('تم حفظ المورد بنجاح');
                     this.$emit('save', supplierData);
                 } else {
                     // Simulate updating existing supplier
-                    success('تم تحديث المورد بنجاح');
-                    this.$emit('save', supplierData);
+                    let response = await updateSupplier(supplierData);
+                    if (response != null && response.id != null) {
+                        success('تم تحديث المورد بنجاح');
+                        this.$emit('save', supplierData);
+                    }else {
+                        error('فشل تحديث المورد');
+                        console.error(response);
+                    }
+                    
                 }
 
                 this.closeDialog();

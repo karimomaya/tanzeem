@@ -49,4 +49,9 @@ public class Purchase  extends AuditableBaseEntity {
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status;
 
+    private LocalDate expectedDeliveryDate;
+    private LocalDate actualDeliveryDate;
+
+    private LocalDate confirmedDate;
+
 }
