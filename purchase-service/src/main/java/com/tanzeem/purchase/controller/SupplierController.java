@@ -2,6 +2,7 @@ package com.tanzeem.purchase.controller;
 
 import com.tanzeem.purchase.dto.SupplierRequest;
 import com.tanzeem.purchase.dto.SupplierResponse;
+import com.tanzeem.purchase.dto.SupplierStatsResponse;
 import com.tanzeem.purchase.service.SupplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,4 +31,10 @@ public class SupplierController {
         return ResponseEntity.noContent().build();
     }
 
-}
+    @GetMapping("/stats")
+    public ResponseEntity<SupplierStatsResponse> getSupplierStats() {
+        SupplierStatsResponse supplierStatsResponse = supplierService.getSupplierStats();
+        return ResponseEntity.ok(supplierStatsResponse);
+    }
+
+    }

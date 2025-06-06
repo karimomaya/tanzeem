@@ -34,4 +34,10 @@ public class RatingController {
         BigDecimal bigDecimal =  ratingService.getAverageRating(targetId, targetType);
         return ResponseEntity.ok(bigDecimal);
     }
+
+    @GetMapping("/average/all")
+    public ResponseEntity<BigDecimal> averageForAll(@RequestParam("targetType") RatingTargetType targetType, @RequestParam("start") String start, @RequestParam("end") String end) {
+        BigDecimal bigDecimal = ratingService.getAverageRatingForAll(targetType, start, end);
+        return ResponseEntity.ok(bigDecimal);
+    }
 }

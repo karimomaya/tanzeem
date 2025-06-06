@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,6 +39,14 @@ public class RatingServiceImpl implements RatingService {
     public BigDecimal getAverageRating(Long targetId, RatingTargetType targetType) {
         return ratingRepository.getAverageRatingByTargetIdAndTargetType(targetId, targetType, AuthContextHolder.getTenantId())
                 .orElse(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getAverageRatingForAll(RatingTargetType targetType, String start, String end) {
+        return ratingRepository.findAverageRatingByTargetTypeAndDateRange(
+                targetType,
+                LocalDateTime.parse(start),
+                LocalDateTime.parse(end)
+        );
     }
 
     private RatingResponse mapToResponse(Rating rating){

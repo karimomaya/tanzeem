@@ -74,7 +74,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .flatMap(List::stream)
                 .map(purchaseMapper::toItemEntity)
                 .peek(item -> item.setPurchase(existing)) // Ensure setPurchase exists in PurchaseItem
-                .collect(Collectors.toList());
+                .toList();
 
         existing.getItems().addAll(updatedItems);
         purchaseRepository.save(existing);
@@ -113,8 +113,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public Long countOnTimeDeliveries(long supplierId) {
-        return purchaseRepository.countOnTimeDeliveries(supplierId, AuthContextHolder.getTenantId());
+    public Long countOnTimeDeliveriesBySupplierId(long supplierId) {
+        return purchaseRepository.countOnTimeDeliveriesBySupplierId(supplierId, AuthContextHolder.getTenantId());
     }
 
     public Integer countBySupplierId(Long supplierId) {

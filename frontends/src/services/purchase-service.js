@@ -137,12 +137,8 @@ export async function getPurchaseStats() {
 }
 
 export async function getSupplierStats() {
-    try {
-        // return await httpService.get(`${PURCHASE_BASE_URL}/suppliers/stats`);
-    } catch (error) {
-        console.error('Error fetching supplier statistics:', error);
-        throw error;
-    }
+    let url = `${PURCHASE_BASE_URL}/suppliers/stats`;
+    return await makeRequest(`${url}`, { method: 'GET' });
 }
 
 // Reports API functions

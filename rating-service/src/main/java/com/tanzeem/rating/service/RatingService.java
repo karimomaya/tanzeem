@@ -11,4 +11,5 @@ public interface RatingService {
     RatingResponse createRating(RatingRequest ratingRequest);
     List<RatingResponse> getRatings(Long targetId, RatingTargetType targetType);
     BigDecimal getAverageRating(Long targetId, RatingTargetType targetType);
+    BigDecimal getAverageRatingForAll(RatingTargetType targetType, String start, String end);
 }

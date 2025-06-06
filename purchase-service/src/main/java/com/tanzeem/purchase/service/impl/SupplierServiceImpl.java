@@ -4,12 +4,17 @@ import com.tanzeem.common.client.RatingClient;
 import com.tanzeem.common.enums.RatingTargetType;
 import com.tanzeem.purchase.dto.SupplierRequest;
 import com.tanzeem.purchase.dto.SupplierResponse;
+import com.tanzeem.purchase.dto.SupplierStatsResponse;
+import com.tanzeem.purchase.dto.TopSupplierResponse;
 import com.tanzeem.purchase.entity.Supplier;
 import com.tanzeem.purchase.mapper.SupplierMapper;
+import com.tanzeem.purchase.repository.PurchaseRepository;
 import com.tanzeem.purchase.repository.SupplierRepository;
 import com.tanzeem.purchase.repository.lookup.BusinessTypeRepository;
 import com.tanzeem.purchase.repository.lookup.PaymentTermRepository;
-import com.tanzeem.purchase.service.PurchaseService;
+
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import com.tanzeem.purchase.service.SupplierService;
 import com.tanzeem.security.common.AuthContextHolder;
 import lombok.AllArgsConstructor;
@@ -18,13 +23,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
 public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
-    private final PurchaseService purchaseService;
+    private final PurchaseRepository purchaseRepository;
     private final RatingClient ratingClient;
     private final BusinessTypeRepository businessTypeRepository;
     private final PaymentTermRepository paymentTermRepository;
@@ -78,6 +88,99 @@ public class SupplierServiceImpl implements SupplierService {
         supplierRepository.deleteById(id);
     }
 
+    @Override
+    public SupplierStatsResponse getSupplierStats() {
+        String tenantId = AuthContextHolder.getTenantId();
+
+        // Current period
+        long total = supplierRepository.countByTenantId(tenantId);
+        long active = supplierRepository.countByIsActiveTrueAndTenantId(tenantId);
+
+        YearMonth currentMonth = YearMonth.now();
+        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(LocalTime.MAX);
+
+        long newSuppliersThisMonth = supplierRepository.countByCreatedAtBetweenAndTenantId(startOfMonth, endOfMonth, tenantId);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+
+        String startOfMonthStr = startOfMonth.format(formatter);
+        String nowStr = LocalDateTime.now().format(formatter);
+
+        BigDecimal avgRating = ratingClient.getAverageRatingForAll(RatingTargetType.SUPPLIER, startOfMonthStr, nowStr);
+
+        BigDecimal totalSpending = Optional.ofNullable(purchaseRepository.sumTotalAmountByTenantId(tenantId))
+                .orElse(BigDecimal.ZERO);
+        BigDecimal avgOrderValue = Optional.ofNullable(purchaseRepository.avgTotalAmountByTenantId(tenantId))
+                .orElse(BigDecimal.ZERO);
+
+        List<Object[]> topSuppliers = purchaseRepository.findTopSupplierByTotalAmount(tenantId);
+        TopSupplierResponse topSupplier = topSuppliers.isEmpty() ? null : new TopSupplierResponse(
+                (String) topSuppliers.get(0)[1], // Name
+                ((Number) topSuppliers.get(0)[2]).intValue(), // Order Count
+                (BigDecimal) topSuppliers.get(0)[3] // Total Amount
+        );
+
+        long onTime = purchaseRepository.countOnTimeDeliveries(tenantId);
+        long totalOrders = purchaseRepository.countByTenantId(tenantId);
+        double onTimeDeliveryRate = totalOrders > 0 ? (onTime * 1.0 / totalOrders) * 100 : 0;
+
+        // Previous period
+        YearMonth previousMonth = currentMonth.minusMonths(1);
+        LocalDateTime startOfPreviousMonth = previousMonth.atDay(1).atStartOfDay();
+        LocalDateTime endOfPreviousMonth = previousMonth.atEndOfMonth().atTime(LocalTime.MAX);
+
+        long previousNewSuppliers = supplierRepository.countByCreatedAtBetweenAndTenantId(startOfPreviousMonth, endOfPreviousMonth, tenantId);
+
+
+
+        String startOfPreviousMonthStr = startOfPreviousMonth.format(formatter);
+        String endOfPreviousMonthStr = endOfPreviousMonth.format(formatter);
+
+
+        BigDecimal previousAvgRating = ratingClient.getAverageRatingForAll(RatingTargetType.SUPPLIER, startOfPreviousMonthStr, endOfPreviousMonthStr);
+        BigDecimal previousTotalSpending = Optional.ofNullable(purchaseRepository.sumTotalAmountByTenantIdAndCreatedAtBetween(tenantId, startOfPreviousMonth, endOfPreviousMonth))
+                .orElse(BigDecimal.ZERO);
+        BigDecimal previousAvgOrderValue = Optional.ofNullable(purchaseRepository.avgTotalAmountByTenantIdAndCreatedAtBetween(tenantId, startOfPreviousMonth, endOfPreviousMonth))
+                .orElse(BigDecimal.ZERO);
+
+        long previousOnTime = purchaseRepository.countOnTimeDeliveries(tenantId); // Ideally you'd have a time filter here too
+        long previousTotalOrders = purchaseRepository.countByTenantId(tenantId);  // Ideally you'd count for previous month
+        double previousOnTimeDeliveryRate = previousTotalOrders > 0 ? (previousOnTime * 1.0 / previousTotalOrders) * 100 : 0;
+
+        return SupplierStatsResponse.builder()
+                .total(total)
+                .active(active)
+                .newThisMonth(newSuppliersThisMonth)
+                .averageRating(avgRating)
+                .totalSpending(totalSpending)
+                .averageOrderValue(avgOrderValue)
+                .topSupplier(topSupplier)
+                .onTimeDeliveryRate(onTimeDeliveryRate)
+
+                .totalGrowth(calculateGrowth(total, total)) // total is not filtered by time, so growth might not be meaningful
+                .newSuppliersGrowth(calculateGrowth(newSuppliersThisMonth, previousNewSuppliers))
+                .ratingTrend(calculateGrowth(avgRating, previousAvgRating))
+                .spendingGrowth(calculateGrowth(totalSpending, previousTotalSpending))
+                .averageOrderTrend(calculateGrowth(avgOrderValue, previousAvgOrderValue))
+                .deliveryTrend(calculateGrowth(onTimeDeliveryRate, previousOnTimeDeliveryRate))
+
+                .build();
+    }
+
+
+    private double calculateGrowth(double current, double previous) {
+        if (previous == 0) return 0;
+        return ((current - previous) / previous) * 100;
+    }
+
+    private BigDecimal calculateGrowth(BigDecimal current, BigDecimal previous) {
+        if (previous == null || previous.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;
+        BigDecimal diff = current.subtract(previous);
+        return diff.multiply(BigDecimal.valueOf(100)).divide(previous, 1, RoundingMode.HALF_UP);
+    }
+
     /**
      * How to rate supplier
         نسبة التوريد في الوقت (OnTimeDeliveryRate)	40%	عدد الطلبات اللي تم تسليمها في وقتها ÷ إجمالي الطلبات
@@ -90,16 +193,17 @@ public class SupplierServiceImpl implements SupplierService {
     private int calculateSupplierRating(Supplier supplier) {
         Long supplierId = supplier.getId();
         // On-Time Delivery Score
-        int totalOrders = purchaseService.countBySupplierId(supplierId);
+        int totalOrders = purchaseRepository.countBySupplierIdAndTenantId(supplierId, AuthContextHolder.getTenantId());
         if (totalOrders == 0) return 0;
 
-        long onTimeDeliveries = purchaseService.countOnTimeDeliveries(supplierId);
+        long onTimeDeliveries = purchaseRepository.countOnTimeDeliveriesBySupplierId(supplierId, AuthContextHolder.getTenantId());
         double onTimeDeliveryRate = (onTimeDeliveries * 1.0) / totalOrders;
 
         //@TODO:implement purchase return
         int returnedOrders = 0;//purchaseReturnRepository.countBySupplierIdAndTenantId(supplierId, tenantId); // You need this repo
 
-        double avgResponseTime = (purchaseService.getAverageResponseTimeInDays(supplier.getId()));
+        double avgResponseTime = (purchaseRepository.getAverageResponseTimeInDays(supplier.getId(), AuthContextHolder.getTenantId())
+                .orElse(0.0) / 30.0); // Convert to months
 
 
         BigDecimal manualRating = ratingClient.getAverageRating(supplierId, RatingTargetType.SUPPLIER);
