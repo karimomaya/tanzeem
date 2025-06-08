@@ -12,16 +12,9 @@ export async function getPaymentTerms() {
 
 // Purchase Order API functions
 export async function getPurchaseOrders(params = null) {
-    try {
-        let url = `${PURCHASE_BASE_URL}/orders`;
-        if (params) {
-            url += `?${params.toString()}`;
-        }
-        // return await httpService.get(url);
-    } catch (error) {
-        console.error('Error fetching purchase orders:', error);
-        throw error;
-    }
+    let url = `${PURCHASE_BASE_URL}/purchases`;
+    if (params) url += `?${params.toString()}`;
+    return await makeRequest(`${url}`, { method: 'GET' });
 }
 
 export async function getPurchaseOrderById(id) {

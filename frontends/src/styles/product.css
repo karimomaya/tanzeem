@@ -610,11 +610,6 @@
     gap: 8px;
 }
 
-.header-title {
-    font-weight: 600;
-    color: #2d3748;
-}
-
 .sort-icon {
     transition: all 0.2s ease;
 }

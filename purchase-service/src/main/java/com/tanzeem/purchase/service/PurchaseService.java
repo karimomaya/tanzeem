@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PurchaseService {
     PurchaseResponse createPurchase(PurchaseRequest purchaseRequest);
-    Page<PurchaseResponse> getAllPurchases(Pageable pageable);
+    Page<PurchaseResponse> getAll(String search, String isActive, Pageable pageable);
     PurchaseResponse getPurchaseById(long id);
     PurchaseResponse updatePurchase(long id, PurchaseRequest purchaseRequest);
     void deletePurchase(long id);

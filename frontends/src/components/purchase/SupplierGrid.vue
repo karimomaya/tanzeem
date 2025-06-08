@@ -250,7 +250,7 @@
 
 <script>
 import { formatCurrency } from '@/utils/currency-util';
-import { formatDate } from '@/utils/system-util';
+import { formatDate } from '@/utils/date-util';
 import TablePagination from '@/components/common/TablePagination.vue';
 import { 
     isUpdatedRecently,

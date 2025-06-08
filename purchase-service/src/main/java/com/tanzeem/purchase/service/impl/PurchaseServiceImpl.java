@@ -46,9 +46,15 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public Page<PurchaseResponse> getAllPurchases(Pageable pageable) {
-        return purchaseRepository.findAll(pageable)
-                .map(purchaseMapper::toResponse);
+    public Page<PurchaseResponse> getAll(String search, String isActive, Pageable pageable) {
+
+        if (search == null) search = "";
+        Boolean isActiveParam = "all".equalsIgnoreCase(isActive) ? null : Boolean.valueOf(isActive);
+        Page<Purchase> purchases;
+        if (isActiveParam == null) purchases = purchaseRepository.findByTenantIdAndInvoiceNumberContainingIgnoreCase(AuthContextHolder.getTenantId(),search , pageable);
+        else purchases = purchaseRepository.findByIsActiveAndTenantIdAndInvoiceNumberContainingIgnoreCase(isActiveParam, AuthContextHolder.getTenantId(),search , pageable);
+
+        return purchases.map(purchaseMapper::toResponse);
     }
 
     @Override

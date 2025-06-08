@@ -93,7 +93,7 @@
 import StatsCard from '@/components/common/StatsCard.vue';
 import { getSupplierStats } from '@/services/purchase-service';
 import { formatCurrency } from '@/utils/currency-util';
-import { formatDate } from '@/utils/system-util';
+import { formatDate } from '@/utils/date-util';
 
 export default {
     name: 'SupplierStats',

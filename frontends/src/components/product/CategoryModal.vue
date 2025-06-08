@@ -1,32 +1,15 @@
 <template>
-    <v-dialog v-model="dialogVisible" max-width="700px" persistent>
+    <v-dialog v-model="dialogVisible" max-width="1000px" persistent>
         <v-card rounded="xl" elevation="8">
             <!-- Header -->
-            <div class="modal-header">
-                <div class="d-flex align-center">
-                    <div class="header-icon">
-                        <v-icon color="white" size="24">mdi-tag-multiple</v-icon>
-                    </div>
-                    <div class="ms-4">
-                        <h2 class="header-title">
-                            {{ editedCategoryId ? 'تعديل التصنيف' : 'إضافة تصنيف جديد' }}
-                        </h2>
-                        <p class="header-subtitle">
-                            {{ editedCategoryId ? 'تحديث بيانات التصنيف' : 'أدخل بيانات التصنيف الجديد' }}
-                        </p>
-                    </div>
-                </div>
-                <v-btn icon="mdi-close" variant="text" color="white" size="small" class="close-btn"
-                    @click="closeDialog"></v-btn>
-            </div>
+            <ModalHeader :icon="'mdi-tag-multiple'"
+                :title="editedCategoryId ? 'تعديل التصنيف' : 'إضافة تصنيف جديد'"
+                :subtitle="editedCategoryId ? 'تحديث بيانات التصنيف' : 'أدخل بيانات التصنيف الجديد' "
+                @close="closeDialog" />
             <!-- Form Content -->
             <div class="modal-body">
                 <v-form ref="categoryForm" v-model="formValid">
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="primary" class="me-2">mdi-information</v-icon>
-                            <h3 class="section-title">المعلومات الأساسية</h3>
-                        </div>
+                    <FormSection title="المعلومات الأساسية" icon="mdi-information" :color="SECTION_COLORS.basic">
                         <v-row>
                             <!-- Category Name -->
                             <v-col cols="12" md="6">
@@ -34,7 +17,8 @@
                                     <label class="form-label">
                                         اسم التصنيف <span class="required">*</span>
                                     </label>
-                                    <v-text-field v-model="editedCategory.name" :rules="[rules.required]" variant="outlined"
+                                    <v-text-field v-model="editedCategory.name"
+                                        :rules="fieldValidations.required('التصنيف')" variant="outlined"
                                         density="comfortable" placeholder="أدخل اسم التصنيف" hide-details="auto"
                                         class="modern-field"></v-text-field>
                                 </div>
@@ -46,9 +30,10 @@
                                     <label class="form-label">
                                         الأيقونة <span class="required">*</span>
                                     </label>
-                                    <v-select v-model="editedCategory.icon" :items="iconOptions" item-title="text"
-                                        item-value="value" :rules="[rules.required]" variant="outlined"
-                                        density="comfortable" placeholder="اختر الأيقونة" hide-details="auto" class="modern-field">
+                                    <v-select v-model="editedCategory.icon" :items="CATEGORY_ICON_OPTIONS" item-title="text"
+                                        item-value="value" :rules="fieldValidations.required('الأيقونة')" variant="outlined"
+                                        density="comfortable" placeholder="اختر الأيقونة" hide-details="auto"
+                                        class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
@@ -75,8 +60,8 @@
                                         اللون <span class="required">*</span>
                                     </label>
                                     <v-color-picker style="background: transparent;" v-model="editedCategory.color"
-                                        mode="hexa" hide-canvas hide-inputs swatches :rules="[rules.required]"
-                                        class="modern-field"></v-color-picker>
+                                        mode="hexa" hide-canvas hide-inputs :swatches="colorSwatches"
+                                        :rules="fieldValidations.required('اللون')" class="modern-field"></v-color-picker>
                                 </div>
                             </v-col>
 
@@ -108,17 +93,13 @@
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
+                    </FormSection>
 
 
                     <!-- Preview Card -->
-                    <div class="form-section" v-if="editedCategory.name || editedCategory.icon">
-                        <div class="section-header">
-                            <v-icon color="primary" class="me-2">mdi-information</v-icon>
-                            <h3 class="section-title"> معاينة التصنيف</h3>
-                        </div>
+                    <FormSection title="معاينة التصنيف" icon="mdi-eye" :color="SECTION_COLORS.preview"  v-if="editedCategory.name || editedCategory.icon">
                         <v-row>
-                            <v-col cols="12" >
+                            <v-col cols="12">
 
                                 <div class="form-group">
                                     <v-card elevation="2" rounded="lg" class="pa-4 bg-grey-lighten-5">
@@ -135,46 +116,23 @@
                                                     {{ editedCategory.description || 'وصف التصنيف' }}
                                                 </div>
                                             </div>
-                                            <v-chip :color="editedCategory.active ? 'success' : 'error'" size="small"
-                                                class="font-weight-medium">
-                                                {{ editedCategory.active ? 'نشط' : 'غير نشط' }}
+                                            <v-chip :color="editedCategory.active ? 'success' : 'error'" size="small" class="font-weight-medium">
+                                            {{ editedCategory.active ? 'نشط' : 'غير نشط' }}
                                             </v-chip>
                                         </div>
                                     </v-card>
                                 </div>
-
                             </v-col>
                         </v-row>
-                    </div>
-
+                    </FormSection>
                 </v-form>
             </div>
-
             <!-- Actions -->
-            <div class="modal-actions">
-                <div class="d-flex align-center justify-space-between">
-                    <div class="form-status">
-                        <v-icon :color="formValid ? 'success' : 'warning'" size="16" class="me-1">
-                            {{ formValid ? 'mdi-check-circle' : 'mdi-alert-circle' }}
-                        </v-icon>
-                        <span class="text-caption" :class="formValid ? 'text-success' : 'text-warning'">
-                            {{ formValid ? 'النموذج صحيح' : 'يرجى ملء الحقول المطلوبة' }}
-                        </span>
-                    </div>
-                    <div class="d-flex ga-3">
-                        <v-btn variant="outlined" color="grey-darken-1" size="large" class="cancel-btn"
-                            @click="closeDialog">
-                            إلغاء
-                        </v-btn>
-                        <v-btn color="primary" size="large" :disabled="!formValid" :loading="loading" class="save-btn"
-                            @click="saveCategory">
-                            {{ editedCategoryId ? 'تحديث التصنيف' : 'حفظ التصنيف' }}
-                        </v-btn>
-                    </div>
-
-                </div>
-
-            </div>
+            <ModalActions :form-valid="formValid" :loading="loading"
+                :primary-text="editedCategoryId ? 'تحديث التصنيف' : 'حفظ التصنيف'"
+                :primary-icon="editedCategoryId ? 'mdi-content-save' : 'mdi-plus'"
+                :primary-disabled="!formValid" :cancel-disabled="loading"
+                @cancel="closeDialog" @primary-action="saveCategory" />
         </v-card>
     </v-dialog>
 </template>
@@ -182,9 +140,20 @@
 <script>
 import { saveCategory, updateCategory } from '@/services/product-service';
 import { success, error } from '@/utils/system-util';
+import { fieldValidations } from '@/utils/validation-util';
+import { CATEGORY_ICON_OPTIONS } from '@/constants/icons';
+import ModalHeader from '@/components/common/ModalHeader.vue'
+import ModalActions from '@/components/common/ModalActions.vue'
+import { SECTION_COLORS } from '@/constants/colors'
+import FormSection from '@/components/common/FormSection.vue'
 
 export default {
     name: 'CategoryModal',
+    components: {
+        ModalHeader,
+        ModalActions,
+        FormSection
+    },
     props: {
         modelValue: {
             type: Boolean,
@@ -198,6 +167,9 @@ export default {
     emits: ['update:modelValue', 'save'],
     data() {
         return {
+            SECTION_COLORS,
+            CATEGORY_ICON_OPTIONS,
+            fieldValidations,
             formValid: false,
             loading: false,
             editedCategoryId: null,
@@ -208,52 +180,12 @@ export default {
                 description: '',
                 active: true
             },
-            iconOptions: [
-                { text: 'أجهزة كمبيوتر', value: 'mdi-laptop' },
-                { text: 'هواتف ذكية', value: 'mdi-cellphone' },
-                { text: 'أجهزة لوحية', value: 'mdi-tablet' },
-                { text: 'كاميرا', value: 'mdi-camera' },
-                { text: 'سماعات', value: 'mdi-headphones' },
-                { text: 'ساعات ذكية', value: 'mdi-watch' },
-                { text: 'ألعاب', value: 'mdi-gamepad-variant' },
-                { text: 'مكتبة', value: 'mdi-book-open-variant' },
-                { text: 'ملابس', value: 'mdi-tshirt-crew' },
-                { text: 'أحذية', value: 'mdi-shoe-formal' },
-                { text: 'مجوهرات', value: 'mdi-diamond' },
-                { text: 'رياضة', value: 'mdi-basketball' },
-                { text: 'منزل وحديقة', value: 'mdi-home' },
-                { text: 'طعام ومشروبات', value: 'mdi-food' },
-                { text: 'صحة وجمال', value: 'mdi-heart' },
-                { text: 'أطفال', value: 'mdi-baby-carriage' },
-                { text: 'سيارات', value: 'mdi-car' },
-                { text: 'أدوات', value: 'mdi-hammer-screwdriver' },
-                { text: 'مكتب', value: 'mdi-briefcase' },
-                { text: 'فنون وحرف', value: 'mdi-palette' },
-                // إضافات من أصناف SQL
-                { text: 'فواكه', value: 'mdi-fruit-cherries' },
-                { text: 'خضروات', value: 'mdi-carrot' },
-                { text: 'مخبوزات', value: 'mdi-bread-slice' },
-                { text: 'مشروبات', value: 'mdi-glass-cocktail' },
-                { text: 'ألبان', value: 'mdi-cow' },
-                { text: 'لحوم', value: 'mdi-food-steak' },
-                { text: 'حلويات', value: 'mdi-cupcake' },
-                { text: 'بهارات', value: 'mdi-shaker' },
-                { text: 'حبوب', value: 'mdi-seed' },
-                { text: 'معلبات', value: 'mdi-food-variant' },
-                { text: 'مكسرات', value: 'mdi-peanut' },
-                { text: 'معلبات لحوم', value: 'mdi-food-drumstick' },
-                { text: 'زيوت ودهون', value: 'mdi-bottle-tonic' },
-                { text: 'معكرونة وأرز', value: 'mdi-noodles' },
-                { text: 'منتجات تنظيف', value: 'mdi-spray-bottle' },
-                { text: 'منتجات أطفال', value: 'mdi-baby-face-outline' },
-                { text: 'منتجات تجميل', value: 'mdi-lipstick' },
-                { text: 'أطعمة مجمدة', value: 'mdi-snowflake' },
-                { text: 'منتجات صحية', value: 'mdi-leaf' },
-                { text: 'وجبات خفيفة', value: 'mdi-food' }
+            colorSwatches: [
+                ['#F44336', '#E91E63', '#9C27B0', '#673AB7'],
+                ['#3F51B5', '#2196F3', '#03A9F4', '#00BCD4'],
+                ['#009688', '#4CAF50', '#8BC34A', '#CDDC39'],
+                ['#FFEB3B', '#FFC107', '#FF9800', '#FF5722']
             ],
-            rules: {
-                required: value => !!value || 'هذا الحقل مطلوب'
-            }
         };
     },
     computed: {
@@ -359,4 +291,5 @@ export default {
     border: 2px dashed #e2e8f0;
     border-radius: 8px;
     background: white;
-}</style>
+}
+</style>

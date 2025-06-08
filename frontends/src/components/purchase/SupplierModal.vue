@@ -1,34 +1,16 @@
 <template>
-    <v-dialog v-model="dialogVisible" max-width="900px" persistent>
+    <v-dialog v-model="dialogVisible" max-width="1000px" persistent>
         <v-card rounded="xl" elevation="8">
             <!-- Modern Header -->
-            <div class="modal-header">
-                <div class="d-flex align-center">
-                    <div class="header-icon">
-                        <v-icon color="white" size="24">mdi-truck</v-icon>
-                    </div>
-                    <div class="ms-4">
-                        <h2 class="header-title">
-                            {{ editedSupplierId ? 'تعديل المورد' : 'إضافة مورد جديد' }}
-                        </h2>
-                        <p class="header-subtitle">
-                            {{ editedSupplierId ? 'تحديث بيانات المورد الحالي' : 'أدخل بيانات المورد الجديد' }}
-                        </p>
-                    </div>
-                </div>
-                <v-btn icon="mdi-close" variant="text" color="white" size="small" class="close-btn"
-                    @click="closeDialog"></v-btn>
-            </div>
+            <ModalHeader :icon="'mdi-truck'" :title="editedSupplierId ? 'تعديل المورد' : 'إضافة مورد جديد'"
+                :subtitle="editedSupplierId ? 'تحديث بيانات المورد الحالي' : 'أدخل بيانات المورد الجديد'"
+                @close="closeDialog" />
 
             <!-- Form Content -->
             <div class="modal-body">
                 <v-form ref="supplierForm" v-model="formValid">
                     <!-- Basic Information Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="primary" class="me-2">mdi-information</v-icon>
-                            <h3 class="section-title">المعلومات الأساسية</h3>
-                        </div>
+                    <FormSection title="المعلومات الأساسية" icon="mdi-information" :color="SECTION_COLORS.basic">
 
                         <v-row>
                             <!-- Supplier Name -->
@@ -113,15 +95,9 @@
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
-
+                    </FormSection>
                     <!-- Address Information Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="orange" class="me-2">mdi-map-marker</v-icon>
-                            <h3 class="section-title">معلومات العنوان</h3>
-                        </div>
-
+                    <FormSection title="معلومات العنوان" icon="mdi-map-marker" :color="SECTION_COLORS.address">
                         <v-row>
                             <!-- Full Address -->
                             <v-col cols="12">
@@ -131,7 +107,7 @@
                                         placeholder="أدخل العنوان الكامل للمورد..." rows="3" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="orange" size="20">mdi-map-marker</v-icon>
+                                            <v-icon :color="SECTION_COLORS.address" size="20">mdi-map-marker</v-icon>
                                         </template>
                                     </v-textarea>
                                 </div>
@@ -141,12 +117,10 @@
                                 <div class="form-group">
                                     <label class="form-label">البلد</label>
                                     <v-select v-model="editedSupplier.country" :items="countryOptions" variant="outlined"
-                                        item-value="code"
-                                        item-title="name"
-                                        density="comfortable" placeholder="اختر البلد" hide-details="auto"
-                                        class="modern-field">
+                                        item-value="code" item-title="name" density="comfortable" placeholder="اختر البلد"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="orange" size="20">mdi-earth</v-icon>
+                                            <v-icon :color="SECTION_COLORS.address" size="20">mdi-earth</v-icon>
                                         </template>
                                     </v-select>
                                 </div>
@@ -155,18 +129,15 @@
                             <v-col cols="12" md="4">
                                 <div class="form-group">
                                     <label class="form-label">المدينة</label>
-                                    <v-select v-model="editedSupplier.governorate" :items="governorateOptions" variant="outlined"
-                                        item-value="code"
-                                        item-title="name"
-                                        density="comfortable" placeholder="اختر المدينة" hide-details="auto"
-                                        class="modern-field">
+                                    <v-select v-model="editedSupplier.governorate" :items="governorateOptions"
+                                        variant="outlined" item-value="code" item-title="name" density="comfortable"
+                                        placeholder="اختر المدينة" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="orange" size="20">mdi-city</v-icon>
+                                            <v-icon :color="SECTION_COLORS.address" size="20">mdi-city</v-icon>
                                         </template>
                                     </v-select>
                                 </div>
                             </v-col>
-
                             <!-- Postal Code -->
                             <v-col cols="12" md="4">
                                 <div class="form-group">
@@ -175,40 +146,29 @@
                                         variant="outlined" density="comfortable" placeholder="12345" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="orange" size="20">mdi-mailbox</v-icon>
+                                            <v-icon :color="SECTION_COLORS.address" size="20">mdi-mailbox</v-icon>
                                         </template>
                                     </v-text-field>
                                 </div>
                             </v-col>
-
-                            
                         </v-row>
-                    </div>
-
+                    </FormSection>
                     <!-- Business Information Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="success" class="me-2">mdi-briefcase</v-icon>
-                            <h3 class="section-title">المعلومات التجارية</h3>
-                        </div>
-
+                    <FormSection title="المعلومات التجارية" icon="mdi-briefcase" :color="SECTION_COLORS.business">
                         <v-row>
                             <!-- Business Type -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">نوع النشاط التجاري</label>
                                     <v-select v-model="editedSupplier.businessType" :items="businessTypeOptions"
-                                        item-value="code"
-                                        item-title="name"
-                                        variant="outlined" density="comfortable" placeholder="اختر نوع النشاط"
-                                        hide-details="auto" class="modern-field">
+                                        item-value="code" item-title="name" variant="outlined" density="comfortable"
+                                        placeholder="اختر نوع النشاط" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="success" size="20">mdi-briefcase</v-icon>
+                                            <v-icon :color="SECTION_COLORS.business" size="20">mdi-briefcase</v-icon>
                                         </template>
                                     </v-select>
                                 </div>
                             </v-col>
-
                             <!-- Tax Number -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
@@ -217,61 +177,50 @@
                                         variant="outlined" density="comfortable" placeholder="رقم التسجيل الضريبي"
                                         hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="success" size="20">mdi-receipt</v-icon>
+                                            <v-icon :color="SECTION_COLORS.business" size="20">mdi-receipt</v-icon>
                                         </template>
                                     </v-text-field>
                                 </div>
                             </v-col>
-
                             <!-- Payment Terms -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">شروط الدفع</label>
                                     <v-select v-model="editedSupplier.paymentTerm" :items="paymentTermsOptions"
-                                        item-value="code"
-                                        item-title="name"
-                                        variant="outlined" density="comfortable" placeholder="اختر شروط الدفع"
-                                        hide-details="auto" class="modern-field">
+                                        item-value="code" item-title="name" variant="outlined" density="comfortable"
+                                        placeholder="اختر شروط الدفع" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="success" size="20">mdi-credit-card</v-icon>
+                                            <v-icon :color="SECTION_COLORS.business" size="20">mdi-credit-card</v-icon>
                                         </template>
                                     </v-select>
                                 </div>
                             </v-col>
-
                             <!-- Credit Limit -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">الحد الائتماني</label>
-                                    <v-text-field v-model.number="editedSupplier.creditLimit"
-                                        :rules="[rules.nonNegative]" type="number" variant="outlined"
-                                        density="comfortable" placeholder="0.00" :prefix="getCurrencySymbol()" hide-details="auto"
-                                        class="modern-field">
+                                    <v-text-field v-model.number="editedSupplier.creditLimit" :rules="[rules.nonNegative]"
+                                        type="number" variant="outlined" density="comfortable" placeholder="0.00"
+                                        :prefix="getCurrencySymbol()" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
-                                            <v-icon color="success" size="20">{{ getCurrencyIcon() }}</v-icon>
-                                            
+                                            <v-icon :color="SECTION_COLORS.business" size="20">{{ getCurrencyIcon()
+                                            }}</v-icon>
                                         </template>
                                     </v-text-field>
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
-
+                    </FormSection>
                     <!-- Supplier Icon & Color Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="warning" class="me-2">mdi-palette</v-icon>
-                            <h3 class="section-title">الأيقونة واللون</h3>
-                        </div>
-
+                    <FormSection title="الأيقونة واللون" icon="mdi-palette" :color="SECTION_COLORS.appearance">
                         <v-row>
                             <!-- Icon Selection -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">أيقونة المورد</label>
-                                    <v-select v-model="editedSupplier.icon" :items="LOCATION_ICON_OPTIONS" variant="outlined"
-                                        density="comfortable" placeholder="اختر الأيقونة" hide-details="auto"
-                                        class="modern-field">
+                                    <v-select v-model="editedSupplier.icon" :items="LOCATION_ICON_OPTIONS"
+                                        variant="outlined" density="comfortable" placeholder="اختر الأيقونة"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
@@ -292,7 +241,6 @@
                                     </v-select>
                                 </div>
                             </v-col>
-
                             <!-- Color Selection -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
@@ -303,7 +251,8 @@
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
-                                                    <div class="color-dot me-3" :style="{ background: item.raw.value }"></div>
+                                                    <div class="color-dot me-3" :style="{ background: item.raw.value }">
+                                                    </div>
                                                 </template>
                                             </v-list-item>
                                         </template>
@@ -317,33 +266,11 @@
                                 </div>
                             </v-col>
 
-                            <!-- Icon Preview -->
-                            <v-col cols="12">
-                                <div class="form-group">
-                                    <label class="form-label">معاينة</label>
-                                    <div class="icon-preview">
-                                        <v-avatar size="64" :color="editedSupplier.color || '#366091'" class="preview-avatar">
-                                            <v-icon color="white" size="32">
-                                                {{ editedSupplier.icon || 'mdi-truck' }}
-                                            </v-icon>
-                                        </v-avatar>
-                                        <div class="preview-text ms-4">
-                                            <h4>{{ editedSupplier.name || 'اسم المورد' }}</h4>
-                                            <p class="text-grey">{{ editedSupplier.code || 'كود المورد' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </v-col>
                         </v-row>
-                    </div>
+                    </FormSection>
 
                     <!-- Additional Information Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="info" class="me-2">mdi-text</v-icon>
-                            <h3 class="section-title">معلومات إضافية</h3>
-                        </div>
-
+                    <FormSection title="معلومات إضافية" icon="mdi-text" :color="SECTION_COLORS.additional">
                         <v-row>
                             <!-- Notes -->
                             <v-col cols="12">
@@ -355,35 +282,32 @@
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
+                    </FormSection>
+                    <!-- Icon Preview -->
+                    <FormSection title="معاينة" icon="mdi-eye" :color="SECTION_COLORS.preview">
+                        <v-col cols="12">
+                            <div class="form-group">
+                                <div class="icon-preview">
+                                    <v-avatar size="64" :color="editedSupplier.color || '#366091'" class="preview-avatar">
+                                        <v-icon color="white" size="32">
+                                            {{ editedSupplier.icon || 'mdi-truck' }}
+                                        </v-icon>
+                                    </v-avatar>
+                                    <div class="preview-text ms-4">
+                                        <h4>{{ editedSupplier.name || 'اسم المورد' }}</h4>
+                                        <p class="text-grey">{{ editedSupplier.code || 'كود المورد' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-col>
+                    </FormSection>
                 </v-form>
             </div>
-
-            <!-- Modern Actions -->
-            <div class="modal-actions">
-                <div class="d-flex align-center justify-space-between">
-                    <div class="form-status">
-                        <v-icon :color="formValid ? 'success' : 'warning'" size="16" class="me-1">
-                            {{ formValid ? 'mdi-check-circle' : 'mdi-alert-circle' }}
-                        </v-icon>
-                        <span class="text-caption" :class="formValid ? 'text-success' : 'text-warning'">
-                            {{ formValid ? 'النموذج صحيح' : 'يرجى ملء الحقول المطلوبة' }}
-                        </span>
-                    </div>
-
-                    <div class="d-flex ga-3">
-                        <v-btn variant="outlined" color="grey-darken-1" size="large" class="cancel-btn"
-                            @click="closeDialog">
-                            إلغاء
-                        </v-btn>
-                        <v-btn color="primary" size="large" :disabled="!formValid" :loading="loading" class="save-btn"
-                            @click="saveSupplier">
-                            <v-icon start>{{ editedSupplierId ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
-                            {{ editedSupplierId ? 'تحديث المورد' : 'حفظ المورد' }}
-                        </v-btn>
-                    </div>
-                </div>
-            </div>
+            <!-- Actions -->
+            <ModalActions :form-valid="formValid" :loading="loading"
+                :primary-text="editedSupplierId ? 'تحديث المورد' : 'حفظ المورد'"
+                :primary-icon="editedSupplierId ? 'mdi-content-save' : 'mdi-plus'" :primary-disabled="!formValid"
+                :cancel-disabled="loading" @cancel="closeDialog" @primary-action="saveSupplier" />
         </v-card>
     </v-dialog>
 </template>
@@ -394,11 +318,20 @@ import { getCurrencyIcon, getCurrencySymbol } from '@/utils/currency-util';
 import { getCountries, getGovernorates } from '@/services/lookup-service';
 import { updateSupplier, createSupplier, getBusinessType, getPaymentTerms } from '@/services/purchase-service';
 
-import {  LOCATION_ICON_OPTIONS } from '@/constants/icons.js';
-import {  COLOR_OPTIONS } from '@/constants/colors.js';
+import { LOCATION_ICON_OPTIONS } from '@/constants/icons.js';
+import { COLOR_OPTIONS } from '@/constants/colors.js';
+import ModalHeader from '@/components/common/ModalHeader.vue'
+import ModalActions from '@/components/common/ModalActions.vue'
+import { SECTION_COLORS } from '@/constants/colors'
+import FormSection from '@/components/common/FormSection.vue'
 
 export default {
     name: 'SupplierModal',
+    components: {
+        ModalHeader,
+        ModalActions,
+        FormSection
+    },
     props: {
         modelValue: {
             type: Boolean,
@@ -413,6 +346,7 @@ export default {
     emits: ['update:modelValue', 'save'],
     data() {
         return {
+            SECTION_COLORS,
             LOCATION_ICON_OPTIONS, COLOR_OPTIONS,
             formValid: false,
             loading: false,
@@ -444,7 +378,7 @@ export default {
             countryOptions: [],
             businessTypeOptions: [],
             paymentTermsOptions: [],
-            
+
             rules: {
                 required: value => !!value || 'هذا الحقل مطلوب',
                 nonNegative: value => value >= 0 || 'يجب أن يكون صفر أو أكبر',
@@ -492,11 +426,11 @@ export default {
         }
     },
     watch: {
-        async 'editedSupplier.country'(newCountryCode)  {
-            if(!newCountryCode || this.isInitialLoad) return
+        async 'editedSupplier.country'(newCountryCode) {
+            if (!newCountryCode || this.isInitialLoad) return
             this.governorateOptions = await this.getGovernorates(newCountryCode);
 
-            this.editedSupplier.governorate = null; 
+            this.editedSupplier.governorate = null;
         },
         supplierToEdit: {
             immediate: true,
@@ -510,8 +444,8 @@ export default {
                         this.governorateOptions = await this.getGovernorates(countryCode);
                     }
 
-                    this.editedSupplier = { 
-                        ...newSupplier, 
+                    this.editedSupplier = {
+                        ...newSupplier,
                         country: newSupplier.country.code || newSupplier.country,
                         governorate: newSupplier.governorate?.code || newSupplier.governorate,
                         businessType: newSupplier.businessType?.code || newSupplier.businessType,
@@ -522,7 +456,7 @@ export default {
                     setTimeout(() => {
                         this.isInitialLoad = false;
                     }, 100);
-                    
+
                 } else {
                     this.isInitialLoad = false;
                     this.resetForm();
@@ -589,7 +523,7 @@ export default {
                     if (response != null && response.id != null) {
                         success('تم حفظ المورد بنجاح');
                         this.$emit('save', supplierData);
-                    }else {
+                    } else {
                         error('فشل حفظ المورد');
                         console.error(response);
                     }
@@ -598,11 +532,11 @@ export default {
                     if (response != null && response.id != null) {
                         success('تم تحديث المورد بنجاح');
                         this.$emit('save', supplierData);
-                    }else {
+                    } else {
                         error('فشل تحديث المورد');
                         console.error(response);
                     }
-                    
+
                 }
 
                 this.closeDialog();
@@ -655,14 +589,6 @@ export default {
     font-size: 14px;
 }
 
-/* Form Section Styling */
-.form-section {
-    margin-bottom: 32px;
-}
-
-.form-section:last-child {
-    margin-bottom: 0;
-}
 
 /* Business Type and Payment Terms Styling */
 .modern-field .v-field__input {
@@ -674,24 +600,18 @@ export default {
     transform: scale(1.1);
 }
 
-/* Required Field Indicator */
-.required {
-    color: #e53e3e;
-    font-weight: bold;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .icon-preview {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .preview-text {
         margin-left: 0 !important;
         margin-top: 16px;
     }
-    
+
     .color-dot {
         width: 16px;
         height: 16px;
@@ -699,23 +619,12 @@ export default {
 }
 
 @media (max-width: 600px) {
-    .modal-body {
-        padding: 16px;
-    }
-    
-    .form-section {
-        margin-bottom: 24px;
-    }
-    
-    .section-header {
-        margin-bottom: 16px;
-    }
-    
+
     .preview-avatar {
         width: 48px !important;
         height: 48px !important;
     }
-    
+
     .preview-avatar .v-icon {
         font-size: 24px !important;
     }
@@ -732,22 +641,5 @@ export default {
 
 .color-dot:hover {
     transform: scale(1.1);
-}
-
-/* Print Styles */
-@media print {
-    .modal-header,
-    .modal-actions {
-        display: none !important;
-    }
-    
-    .modal-body {
-        padding: 0 !important;
-    }
-    
-    .form-section {
-        break-inside: avoid;
-        margin-bottom: 20px;
-    }
 }
 </style>

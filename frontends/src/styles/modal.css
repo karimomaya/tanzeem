@@ -197,3 +197,67 @@
         justify-content: center;
     }
 }
+
+.header-title {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+
+/* Form Field Styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.required {
+    color: #ef4444;
+}
+
+.modern-field {
+    margin-top: 4px;
+}
+
+.modern-field .v-field__input {
+    font-size: 14px;
+}
+
+.modern-field .v-field__outline {
+    border-radius: 8px !important;
+}
+
+/* File Upload Styling */
+.modern-field .v-file-input__text {
+    color: #64748b;
+}
+
+.modern-field .v-field__input {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* Chip styling for file selection */
+.v-chip {
+    margin: 2px;
+}
+.section-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }

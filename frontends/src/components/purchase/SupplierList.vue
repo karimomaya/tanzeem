@@ -268,7 +268,7 @@
 
 <script>
 import { formatCurrency, getCurrencyIcon } from '@/utils/currency-util';
-import { formatDate } from '@/utils/system-util';
+import { formatDate } from '@/utils/date-util';
 import { isUpdatedRecently, truncateText } from '@/utils/product-util';
 import TablePagination from '@/components/common/TablePagination.vue';
 import NoDataState from '@/components/common/NoDataState.vue';

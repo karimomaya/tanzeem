@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/purchases")
+@RequestMapping("/api/purchases")
 @RequiredArgsConstructor
 public class PurchaseController {
     private final PurchaseService purchaseService;
@@ -25,8 +25,8 @@ public class PurchaseController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PurchaseResponse>> getAllPurchases(Pageable pageable) {
-        Page<PurchaseResponse> purchases = purchaseService.getAllPurchases(pageable);
+    public ResponseEntity<Page<PurchaseResponse>> getAll(Pageable pageable, @RequestParam(required = false) String search, @RequestParam(required = false, defaultValue = "true") String isActive ) {
+        Page<PurchaseResponse> purchases = purchaseService.getAll(search, isActive, pageable);
         return ResponseEntity.ok(purchases);
     }
 

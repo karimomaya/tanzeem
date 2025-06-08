@@ -19,7 +19,10 @@ public class PurchaseResponse {
     private PaginatedResponse<List<PurchaseItemResponse>> items;
     private String notes;
     private LocalDateTime createdAt;
-    private LocalDateTime receivedAt;
+    private LocalDateTime deliveredAt;
+    private LocalDateTime expectedDeliveryAt;
     private String createdBy;
     private String updatedBy;
+    private String status;
+
 }

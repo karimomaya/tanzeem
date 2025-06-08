@@ -104,13 +104,6 @@
                                     </v-btn-toggle>
                                 </v-col>
 
-                                <!-- Export Button -->
-                                <v-col cols="auto">
-                                    <v-btn variant="outlined" class="export-btn" prepend-icon="mdi-download"
-                                        @click="exportData">
-                                        تصدير البيانات
-                                    </v-btn>
-                                </v-col>
                             </v-row>
                         </v-col>
                     </v-row>
@@ -147,11 +140,18 @@
                                         @view="viewPurchaseOrder" @mark-received="markAsReceived"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
                                         @update:sort-by="updateSorting" @refresh="loadPurchaseOrders" />
-                                    <PurchaseOrderList v-else :purchase-orders="purchaseOrders" :loading="loading"
+                                        <PurchaseOrderList v-else :purchase-orders="purchaseOrders" :loading="loading"
                                         :total-items="orderPagination.totalItems" :page="orderPagination.page"
                                         :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
-                                        @edit="editPurchaseOrder" @delete="confirmDeletePurchaseOrder"
-                                        @view="viewPurchaseOrder" @mark-received="markAsReceived" />
+                                        @edit="editPurchaseOrder" 
+                                        @delete="confirmDeletePurchaseOrder"
+                                        @view="viewPurchaseOrder" 
+                                        @mark-received="markAsReceived"
+                                        @duplicate="handleDuplicatePurchaseOrder"
+                                        @add-purchase="openAddDialog"
+                                        @update:page="updatePage"
+                                        @update:items-per-page="updateItemsPerPage"
+                                        @update:options="updateTableOptions" />
                                 </div>
                             </v-window-item>
 
@@ -196,8 +196,7 @@
         </v-main>
 
         <!-- Purchase Order Dialog -->
-        <PurchaseOrderModal v-model="purchaseOrderDialog" :purchase-order="selectedPurchaseOrder" :suppliers="suppliers"
-            @save="handlePurchaseOrderSave" />
+        <PurchaseOrderModal v-model="purchaseOrderDialog" :purchase-order="selectedPurchaseOrder" @save="handlePurchaseOrderSave" />
 
         <!-- Supplier Dialog -->
         <SupplierModal v-model="supplierDialog" :supplier-to-edit="selectedSupplier" @save="handleSupplierSave" />
@@ -345,7 +344,10 @@ export default {
 
     methods: {
         formatCurrency,
-
+        handleDuplicatePurchaseOrder(duplicatedOrder) {
+            this.selectedPurchaseOrder = duplicatedOrder;
+            this.purchaseOrderDialog = true;
+        },
         async updateSupplierStatus(supplierData) {
             console.log(supplierData)
             let data = { 
@@ -538,11 +540,6 @@ export default {
             this.dateMenu = false;
             this.orderPagination.page = 1;
             this.loadPurchaseOrders();
-        },
-
-        exportData() {
-            // Implement export functionality
-            success('سيتم تصدير البيانات قريباً');
         },
 
         openAddDialog() {

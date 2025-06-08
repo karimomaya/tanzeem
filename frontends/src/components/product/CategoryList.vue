@@ -247,7 +247,7 @@ import {
     isUpdatedRecently,
     truncateText,
 } from '@/utils/product-util';
-import { formatDate } from '@/utils/system-util';
+import { formatDate } from '@/utils/date-util';
 export default {
     name: 'CategoryList',
     props: {

@@ -1,35 +1,16 @@
 <template>
-    <v-dialog v-model="dialogVisible" max-width="900px" persistent>
+    <v-dialog v-model="dialogVisible" max-width="1000px" persistent>
         <v-card rounded="xl" elevation="8">
-            <!-- Modern Header -->
-            <div class="modal-header">
-                <div class="d-flex align-center">
-                    <div class="header-icon">
-                        <v-icon color="white" size="24">mdi-package-variant</v-icon>
-                    </div>
-                    <div class="ms-4">
-                        <h2 class="header-title">
-                            {{ editedProductId ? 'تعديل المنتج' : 'إضافة منتج جديد' }}
-                        </h2>
-                        <p class="header-subtitle">
-                            {{ editedProductId ? 'تحديث بيانات المنتج الحالي' : 'أدخل بيانات المنتج الجديد' }}
-                        </p>
-                    </div>
-                </div>
-                <v-btn icon="mdi-close" variant="text" color="white" size="small" class="close-btn"
-                    @click="closeDialog"></v-btn>
-            </div>
+            <!-- Header -->
+            <ModalHeader :icon="'mdi-clipboard-list'" :title="editedProductId ? 'تعديل المنتج' : 'إضافة منتج جديد'"
+                :subtitle="editedProductId ? 'تحديث بيانات المنتج الحالي' : 'أدخل بيانات المنتج الجديد'"
+                @close="closeDialog" />
 
             <!-- Form Content -->
             <div class="modal-body">
                 <v-form ref="productForm" v-model="formValid">
                     <!-- Basic Information Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="primary" class="me-2">mdi-information</v-icon>
-                            <h3 class="section-title">المعلومات الأساسية</h3>
-                        </div>
-
+                    <FormSection title="المعلومات الأساسية" icon="mdi-information" :color="SECTION_COLORS.basic">
                         <v-row>
                             <!-- Product Name -->
                             <v-col cols="12" md="6">
@@ -37,9 +18,9 @@
                                     <label class="form-label">
                                         اسم المنتج <span class="required">*</span>
                                     </label>
-                                    <v-text-field v-model="editedProduct.name" :rules="[rules.required]" variant="outlined"
-                                        density="comfortable" placeholder="أدخل اسم المنتج" hide-details="auto"
-                                        class="modern-field"></v-text-field>
+                                    <v-text-field v-model="editedProduct.name" :rules="fieldValidations.productName"
+                                        variant="outlined" density="comfortable" placeholder="أدخل اسم المنتج"
+                                        hide-details="auto" class="modern-field"></v-text-field>
                                 </div>
                             </v-col>
 
@@ -49,7 +30,7 @@
                                     <label class="form-label">
                                         رمز المنتج (SKU) <span class="required">*</span>
                                     </label>
-                                    <v-text-field v-model="editedProduct.sku" :rules="[rules.required, rules.sku]"
+                                    <v-text-field v-model="editedProduct.sku" :rules="fieldValidations.productSku"
                                         variant="outlined" density="comfortable" placeholder="مثال: PRD-001"
                                         hide-details="auto" class="modern-field"></v-text-field>
                                 </div>
@@ -59,7 +40,7 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">الباركود</label>
-                                    <v-text-field v-model="editedProduct.barcode" :rules="[rules.barcode]"
+                                    <v-text-field v-model="editedProduct.barcode" :rules="fieldValidations.productBarcode"
                                         variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود"
                                         hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
@@ -75,9 +56,10 @@
                                     <label class="form-label">
                                         الوحدة <span class="required">*</span>
                                     </label>
-                                    <v-select v-model="editedProduct.unit" :items="UNIT_ICON_OPTIONS" :rules="[rules.required]"
-                                        variant="outlined" density="comfortable" placeholder="اختر الوحدة"
-                                        hide-details="auto" class="modern-field">
+                                    <v-select v-model="editedProduct.unit" :items="UNIT_ICON_OPTIONS"
+                                        :rules="fieldValidations.required('الوحدة')" variant="outlined"
+                                        density="comfortable" placeholder="اختر الوحدة" hide-details="auto"
+                                        class="modern-field">
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props">
                                                 <template v-slot:prepend>
@@ -105,12 +87,11 @@
                                     <label class="form-label">
                                         التصنيف <span class="required">*</span>
                                     </label>
-                                    <v-autocomplete v-model="selectedCategoryId" :items="searchableCategories"
-                                        :search="categorySearch" @update:search="onCategorySearch" item-title="name"
-                                        item-value="id" :rules="[rules.required]" variant="outlined" density="comfortable"
-                                        placeholder="ابحث عن التصنيف..." hide-details="auto" class="modern-field"
-                                        :loading="categoryLoading" no-data-text="لا توجد نتائج"
-                                        :menu-props="{ maxHeight: 300 }" clearable>
+                                    <SearchableSelect v-model="editedProduct.category.id" :api-service="getCategories"
+                                        :current-item="product?.category || null"
+                                        :rules="fieldValidations.required('التصنيف')" placeholder="ابحث عن التصنيف..."
+                                        class="modern-field">
+
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props" class="category-item">
                                                 <template v-slot:prepend>
@@ -124,24 +105,19 @@
                                                 </v-list-item-subtitle>
                                             </v-list-item>
                                         </template>
+
                                         <template v-slot:prepend-inner>
                                             <v-icon color="primary" size="20">mdi-magnify</v-icon>
                                         </template>
-                                        <template v-slot:no-data>
-                                            <v-list-item>
-                                                <v-list-item-title class="text-center text-grey">
-                                                    {{ categorySearch ? 'لا توجد نتائج للبحث' : 'ابدأ بكتابة اسم التصنيف' }}
-                                                </v-list-item-title>
-                                            </v-list-item>
-                                        </template>
-                                    </v-autocomplete>
+                                    </SearchableSelect>
                                 </div>
                             </v-col>
+
                             <!-- Status Switch -->
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">
-                                        حالة المنتج 
+                                        حالة المنتج
                                     </label>
                                     <div class="d-flex align-center mt-2">
                                         <v-switch v-model="editedProduct.active" color="primary" hide-details
@@ -153,15 +129,10 @@
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
+                    </FormSection>
 
                     <!-- Pricing & Inventory Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="success" class="me-2">mdi-currency-usd</v-icon>
-                            <h3 class="section-title">التسعير والمخزون</h3>
-                        </div>
-
+                    <FormSection title="التسعير والمخزون" icon="mdi-currency-usd" :color="SECTION_COLORS.pricing">
                         <v-row>
                             <!-- Price -->
                             <v-col cols="12" md="6">
@@ -170,7 +141,7 @@
                                         السعر <span class="required">*</span>
                                     </label>
                                     <v-text-field v-model.number="editedProduct.price"
-                                        :rules="[rules.required, rules.positive]" type="number" variant="outlined"
+                                        :rules="fieldValidations.productPrice" type="number" variant="outlined"
                                         density="comfortable" placeholder="0.00" prefix="ج.م." hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:prepend-inner>
@@ -187,14 +158,15 @@
                                         الكمية في المخزون <span class="required">*</span>
                                     </label>
                                     <v-text-field v-model.number="editedProduct.stock"
-                                        :rules="[rules.required, rules.nonNegative]" type="number" variant="outlined"
+                                        :rules="fieldValidations.productStock" type="number" variant="outlined"
                                         density="comfortable" placeholder="0" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="info" size="20">mdi-package-variant</v-icon>
                                         </template>
                                         <template v-slot:append-inner>
-                                            <v-chip :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color" size="x-small"
-                                                class="stock-indicator">
+                                            <v-chip
+                                                :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
+                                                size="x-small" class="stock-indicator">
                                                 {{ getStockMeta(editedProduct.stock, editedProduct.minimumStock).text }}
                                             </v-chip>
                                         </template>
@@ -209,7 +181,7 @@
                                         الحد الأدنى للمخزون <span class="required">*</span>
                                     </label>
                                     <v-text-field v-model.number="editedProduct.minimumStock"
-                                        :rules="[rules.required, rules.nonNegative]" type="number" variant="outlined"
+                                        :rules="fieldValidations.nonNegativeAndRequired" type="number" variant="outlined"
                                         density="comfortable" placeholder="0" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-alert-circle</v-icon>
@@ -218,15 +190,10 @@
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
+                    </FormSection>
 
                     <!-- Image Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="warning" class="me-2">mdi-image</v-icon>
-                            <h3 class="section-title">صورة المنتج</h3>
-                        </div>
-
+                    <FormSection title="صورة المنتج" icon="mdi-image" :color="SECTION_COLORS.media">
                         <v-row>
                             <!-- Image Upload Type Selection -->
                             <v-col cols="12">
@@ -244,10 +211,10 @@
                             <v-col cols="12" v-if="imageUploadType === 'file'">
                                 <div class="form-group">
                                     <label class="form-label">اختر صورة المنتج</label>
-                                    <v-file-input v-model="selectedImageFile" :rules="[rules.imageFile]" variant="outlined"
-                                        density="comfortable" placeholder="اختر ملف الصورة" prepend-icon="" accept="image/*"
-                                        hide-details="auto" class="modern-field" @change="handleFileSelect"
-                                        :loading="uploadLoading">
+                                    <v-file-input v-model="selectedImageFile" :rules="fieldValidations.productImage"
+                                        variant="outlined" density="comfortable" placeholder="اختر ملف الصورة"
+                                        prepend-icon="" accept="image/*" hide-details="auto" class="modern-field"
+                                        @change="handleFileSelect" :loading="uploadLoading">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-cloud-upload</v-icon>
                                         </template>
@@ -270,7 +237,7 @@
                             <v-col cols="12" v-if="imageUploadType === 'url'">
                                 <div class="form-group">
                                     <label class="form-label">رابط الصورة</label>
-                                    <v-text-field v-model="imageUrlInput" :rules="[rules.url]" variant="outlined"
+                                    <v-text-field v-model="imageUrlInput" :rules="fieldValidations.url" variant="outlined"
                                         density="comfortable" placeholder="https://example.com/image.jpg"
                                         hide-details="auto" class="modern-field" :loading="urlDownloadLoading">
                                         <template v-slot:prepend-inner>
@@ -315,15 +282,10 @@
                                 </div>
                             </v-col>
                         </v-row>
-                    </div>
+                    </FormSection>
 
                     <!-- Additional Information Section -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <v-icon color="info" class="me-2">mdi-text</v-icon>
-                            <h3 class="section-title">معلومات إضافية</h3>
-                        </div>
-
+                    <FormSection title="معلومات إضافية" icon="mdi-text" :color="SECTION_COLORS.additional">
                         <v-row>
                             <!-- Description -->
                             <v-col cols="12">
@@ -335,59 +297,61 @@
                                 </div>
                             </v-col>
                         </v-row>
-                        
-                    </div>
+                    </FormSection>
+                    <v-col cols="12" v-if="editedProduct.name || editedProduct.sku">
+                        <FormSection title="معاينة المنتج" icon="mdi-eye" :color="SECTION_COLORS.preview">
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-card elevation="2" rounded="lg" class="pa-4 bg-grey-lighten-5">
+                                        <div class="d-flex align-center">
+                                            <div v-if="imagePreviewUrl" class="me-3">
+                                                <v-img :src="imagePreviewUrl" width="60" height="60" contain
+                                                    class="rounded"></v-img>
+                                            </div>
+                                            <div v-else class="me-3">
+                                                <v-avatar size="60" color="grey-lighten-3">
+                                                    <v-icon size="30" color="grey">mdi-package-variant</v-icon>
+                                                </v-avatar>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-subtitle-1 font-weight-medium">
+                                                    {{ editedProduct.name || 'اسم المنتج' }}
+                                                </div>
+                                                <div class="text-body-2 text-grey-darken-1">
+                                                    {{ editedProduct.sku || 'رمز المنتج' }}
+                                                </div>
+                                                <div class="text-body-2 text-success font-weight-bold">
+                                                    {{ formatCurrency(editedProduct.price || 0) }}
+                                                </div>
+                                            </div>
+                                            <div class="text-center">
+                                                <v-chip
+                                                    :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
+                                                    size="small">
+                                                    {{ getStockMeta(editedProduct.stock, editedProduct.minimumStock).text }}
+                                                </v-chip>
+                                                <div class="text-caption mt-1">{{ editedProduct.stock || 0 }} متوفر</div>
+                                            </div>
+                                        </div>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </FormSection>
+                    </v-col>
                 </v-form>
             </div>
 
             <!-- Modern Actions -->
-            <div class="modal-actions">
-                <div class="d-flex align-center justify-space-between">
-                    <div class="form-status">
-                        <v-icon :color="formValid ? 'success' : 'warning'" size="16" class="me-1">
-                            {{ formValid ? 'mdi-check-circle' : 'mdi-alert-circle' }}
-                        </v-icon>
-                        <span class="text-caption" :class="formValid ? 'text-success' : 'text-warning'">
-                            {{ formValid ? 'النموذج صحيح' : 'يرجى ملء الحقول المطلوبة' }}
-                        </span>
-                    </div>
+            <ModalActions :form-valid="formValid" :loading="loading"
+                :primary-text="editedProductId ? 'تحديث المنتج' : 'حفظ المنتج'"
+                :primary-icon="editedProductId ? 'mdi-content-save' : 'mdi-plus'"
+                :primary-disabled="!formValid || uploadLoading || urlDownloadLoading" :cancel-disabled="loading"
+                @cancel="closeDialog" @primary-action="saveProduct" />
 
-                    <div class="d-flex ga-3">
-                        <v-btn variant="outlined" color="grey-darken-1" size="large" class="cancel-btn"
-                            @click="closeDialog">
-                            إلغاء
-                        </v-btn>
-                        <v-btn color="primary" size="large" :disabled="!formValid || uploadLoading || urlDownloadLoading"
-                            :loading="loading" class="save-btn" @click="saveProduct">
-                            <v-icon start>{{ editedProductId ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
-                            {{ editedProductId ? 'تحديث المنتج' : 'حفظ المنتج' }}
-                        </v-btn>
-                    </div>
-                </div>
-            </div>
         </v-card>
 
         <!-- Image Preview Dialog -->
-        <v-dialog v-model="previewImage" max-width="500px">
-            <v-card>
-                <v-card-title class="d-flex align-center justify-space-between">
-                    <span>معاينة الصورة</span>
-                    <v-btn icon="mdi-close" variant="text" @click="previewImage = false"></v-btn>
-                </v-card-title>
-                <v-card-text class="pa-0">
-                    <v-img :src="previewImageUrl" max-height="400" contain class="grey-lighten-2">
-                        <template v-slot:error>
-                            <div class="d-flex align-center justify-center h-100">
-                                <div class="text-center">
-                                    <v-icon size="48" color="grey-lighten-1">mdi-image-broken</v-icon>
-                                    <p class="text-grey-lighten-1 mt-2">لا يمكن تحميل الصورة</p>
-                                </div>
-                            </div>
-                        </template>
-                    </v-img>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
+        <FilePreviewDialog v-model="previewDialog" :file="selectedFile" />
     </v-dialog>
 </template>
 
@@ -397,9 +361,24 @@ import { getStockMeta } from '@/utils/product-util';
 import { saveProduct, updateProduct, getCategories } from '@/services/product-service';
 import { success, error } from '@/utils/system-util';
 import { ImageServiceClient } from '@/services/image-service'; // Import the image service client
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
+import { fieldValidations } from '@/utils/validation-util';
+import ModalHeader from '@/components/common/ModalHeader.vue'
+import ModalActions from '@/components/common/ModalActions.vue'
+import FilePreviewDialog from '@/components/common/FilePreviewDialog.vue'
+import { SECTION_COLORS } from  '@/constants/colors'
+import { formatCurrency } from '@/utils/currency-util';
+import FormSection from '@/components/common/FormSection.vue'
 
 export default {
     name: 'ProductModal',
+    components: {
+        SearchableSelect,
+        ModalHeader,
+        ModalActions,
+        FilePreviewDialog,
+        FormSection
+    },
     props: {
         modelValue: {
             type: Boolean,
@@ -413,6 +392,9 @@ export default {
     emits: ['update:modelValue', 'save'],
     data() {
         return {
+            SECTION_COLORS,
+            UNIT_ICON_OPTIONS,
+            fieldValidations,
             formValid: false,
             loading: false,
             uploadLoading: false,
@@ -425,6 +407,8 @@ export default {
             imageUrlInput: '',
             imagePreviewUrl: null,
             editedProductId: null,
+            previewDialog: false,
+            selectedFile: null,
             editedProduct: {
                 name: '',
                 sku: '',
@@ -438,45 +422,7 @@ export default {
                 active: true,
                 imageUrl: '' // Changed from 'image' to 'imageUrl' to match backend
             },
-            searchableCategories: [],
-            categorySearch: '',
-            categoryLoading: false,
-            categorySearchTimeout: null,
             imageServiceClient: new ImageServiceClient(), // Initialize image service client
-            rules: {
-                required: value => !!value || 'هذا الحقل مطلوب',
-                positive: value => value > 0 || 'يجب أن يكون أكبر من صفر',
-                nonNegative: value => value >= 0 || 'يجب أن يكون صفر أو أكبر',
-                sku: value => {
-                    const pattern = /^[A-Z0-9-_]+$/i;
-                    return pattern.test(value) || 'رمز المنتج يجب أن يحتوي على أحرف وأرقام فقط';
-                },
-                barcode: value => {
-                    if (!value) return true;
-                    const pattern = /^[0-9]+$/;
-                    return pattern.test(value) || 'الباركود يجب أن يحتوي على أرقام فقط';
-                },
-                url: value => {
-                    if (!value) return true;
-                    const pattern = /^https?:\/\/.+/i;
-                    return pattern.test(value) || 'يرجى إدخال رابط صحيح';
-                },
-                imageFile: value => {
-                    if (!value || value.length === 0) return true;
-                    let file = value;
-                    if (value instanceof Array) file = value[0];
-                    const maxSize = 10 * 1024 * 1024; // 10MB (matching backend)
-                    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-
-                    if (file.size > maxSize) {
-                        return 'حجم الملف يجب أن يكون أقل من 10 ميجابايت';
-                    }
-                    if (!allowedTypes.includes(file.type)) {
-                        return 'نوع الملف غير مدعوم. يرجى اختيار صورة بصيغة JPG, PNG, GIF, أو WebP';
-                    }
-                    return true;
-                }
-            }
         };
     },
     computed: {
@@ -488,26 +434,6 @@ export default {
                 this.$emit('update:modelValue', value);
             }
         },
-        // Add this new computed property
-        selectedCategoryId: {
-            get() {
-                return this.editedProduct.category?.id || null;
-            },
-            set(value) {
-                if (value) {
-                    // Find the selected category from the list
-                    const selectedCategory = this.searchableCategories.find(cat => cat.id === value);
-                    if (selectedCategory) {
-                        this.editedProduct.category = {
-                            id: selectedCategory.id,
-                            name: selectedCategory.name
-                        };
-                    }
-                } else {
-                    this.editedProduct.category = { id: null, name: '' };
-                }
-            }
-        }
     },
     watch: {
         product: {
@@ -522,11 +448,6 @@ export default {
                         this.imageUrlInput = newProduct.imageUrl;
                         this.updateImagePreview();
                     }
-
-                    // Handle category for editing - ensure the current category is in the searchable list
-                    if (newProduct.category.id && newProduct.category.name) {
-                        await this.ensureCategoryInList(newProduct.category.id, newProduct.category.name);
-                    }
                 } else {
                     this.resetForm();
                 }
@@ -535,20 +456,16 @@ export default {
         modelValue(newValue) {
             if (!newValue) {
                 this.resetForm();
-            } else {
-                // Load initial categories when modal opens
-                this.loadInitialCategories();
             }
         },
         imageUploadType() {
             this.clearImageData();
         }
     },
-    mounted() {
-        this.loadInitialCategories();
-    },
     methods: {
+        getCategories,
         getStockMeta,
+        formatCurrency,
         resetForm() {
             this.editedProductId = null;
             this.editedProduct = {
@@ -561,7 +478,7 @@ export default {
                 minimumStock: 0,
                 unit: 'piece',
                 description: '',
-                active: true ,
+                active: true,
                 imageUrl: ''
             };
             this.imageUploadType = 'url';
@@ -573,83 +490,10 @@ export default {
                 this.$refs.productForm.resetValidation();
             }
         },
-        async ensureCategoryInList(categoryId, categoryName) {
-            // Check if the category is already in the list
-            const existingCategory = this.searchableCategories.find(cat => cat.id === categoryId);
-
-            if (!existingCategory) {
-                // Add the current category to the list so it can be displayed
-                const currentCategory = {
-                    id: categoryId,
-                    name: categoryName,
-                    // Add any other properties that might be needed
-                };
-
-                // Add to the beginning of the array so it's easily visible
-                this.searchableCategories.unshift(currentCategory);
-            }
+        previewFile(file) {
+            this.selectedFile = file
+            this.previewDialog = true
         },
-        async loadInitialCategories() {
-            this.categoryLoading = true;
-            try {
-                const params = new URLSearchParams({
-                    page: 0, // Convert to 0-based index
-                    size: 5
-                });
-                const response = await getCategories(params); // Load first 5 categories
-                this.searchableCategories = response && response.content ? response.content : [];
-
-                // If we're editing a product and its category isn't in the loaded list, add it
-                if (this.editedProduct.category && this.editedProduct.category.id && this.editedProduct.category.name) {
-                    await this.ensureCategoryInList(this.editedProduct.category.id, this.editedProduct.category.name);
-                }
-            } catch (error) {
-                console.error('Error loading initial categories:', error);
-                this.searchableCategories = [];
-            } finally {
-                this.categoryLoading = false;
-            }
-        },
-        async searchCategoriesFromBackend(searchTerm) {
-            this.categoryLoading = true;
-            try {
-                const params = new URLSearchParams({
-                    page: 0, // Convert to 0-based index
-                    size: 5
-                });
-                if (searchTerm) {
-                    params.append('search', searchTerm);
-                }
-                const response = await getCategories(params); // Search with max 10 results
-                this.searchableCategories = response && response.content ? response.content : [];
-            } catch (error) {
-                console.error('Error searching categories:', error);
-                this.searchableCategories = [];
-            } finally {
-                this.categoryLoading = false;
-            }
-        },
-
-        onCategorySearch(searchValue) {
-            this.categorySearch = searchValue;
-
-            // Clear previous timeout
-            if (this.categorySearchTimeout) {
-                clearTimeout(this.categorySearchTimeout);
-            }
-
-            // If search is empty, load initial categories
-            if (!searchValue || searchValue.trim() === '') {
-                this.loadInitialCategories();
-                return;
-            }
-
-            // Debounce search to avoid too many API calls
-            this.categorySearchTimeout = setTimeout(() => {
-                this.searchCategoriesFromBackend(searchValue.trim());
-            }, 300); // 300ms delay
-        },
-
         closeDialog() {
             this.dialogVisible = false;
         },

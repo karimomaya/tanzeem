@@ -225,7 +225,6 @@
                                         :status-filter="statusFilter" @add-category="openAddDialog"
                                         @edit-category="editCategory" @delete-confirmation="confirmDeleteCategory"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:search-term="updateSearchTerm" @update:status-filter="updateStatusFilter"
                                         @update:sort-option="updateSortOption" @refresh="loadCategories"
                                         @update:options="updateTableOptions" @toggle-status="updateCategoryStatus" />
                                 </div>
