@@ -236,8 +236,7 @@
         </v-main>
 
         <!-- Product Dialog -->
-        <ProductModal v-model="productDialog" :product="selectedProduct" :categories="categories"
-            @save="handleProductSave" />
+        <ProductModal v-model="productDialog" :product="selectedProduct" @save="handleProductSave" />
 
         <!-- Category Dialog -->
         <CategoryModal v-model="categoryDialog" :category-to-edit="selectedCategory" @save="handleCategorySave" />
