@@ -40,9 +40,10 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">الباركود</label>
-                                    <v-text-field v-model="editedProduct.barcode" :rules="fieldValidations.productBarcode"
-                                        variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود"
-                                        hide-details="auto" class="modern-field">
+                                    <v-text-field v-model="editedProduct.barcode"
+                                        :rules="fieldValidations.productBarcode" variant="outlined"
+                                        density="comfortable" placeholder="أدخل رقم الباركود" hide-details="auto"
+                                        class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="info" size="20">mdi-barcode</v-icon>
                                         </template>
@@ -95,7 +96,8 @@
                                         <template v-slot:item="{ props, item }">
                                             <v-list-item v-bind="props" class="category-item">
                                                 <template v-slot:prepend>
-                                                    <v-avatar size="32" :color="item.raw.color || 'primary'" class="me-3">
+                                                    <v-avatar size="32" :color="item.raw.color || 'primary'"
+                                                        class="me-3">
                                                         <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder'
                                                         }}</v-icon>
                                                     </v-avatar>
@@ -181,8 +183,9 @@
                                         الحد الأدنى للمخزون <span class="required">*</span>
                                     </label>
                                     <v-text-field v-model.number="editedProduct.minimumStock"
-                                        :rules="fieldValidations.nonNegativeAndRequired" type="number" variant="outlined"
-                                        density="comfortable" placeholder="0" hide-details="auto" class="modern-field">
+                                        :rules="fieldValidations.nonNegativeAndRequired" type="number"
+                                        variant="outlined" density="comfortable" placeholder="0" hide-details="auto"
+                                        class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="warning" size="20">mdi-alert-circle</v-icon>
                                         </template>
@@ -195,91 +198,18 @@
                     <!-- Image Section -->
                     <FormSection title="صورة المنتج" icon="mdi-image" :color="SECTION_COLORS.media">
                         <v-row>
-                            <!-- Image Upload Type Selection -->
                             <v-col cols="12">
-                                <div class="form-group">
-                                    <label class="form-label">طريقة إضافة الصورة</label>
-                                    <v-radio-group v-model="imageUploadType" inline hide-details
-                                        class="image-type-selector">
-                                        <v-radio label="رفع ملف" value="file" color="primary"></v-radio>
-                                        <v-radio label="رابط خارجي" value="url" color="primary"></v-radio>
-                                    </v-radio-group>
-                                </div>
-                            </v-col>
-
-                            <!-- File Upload -->
-                            <v-col cols="12" v-if="imageUploadType === 'file'">
-                                <div class="form-group">
-                                    <label class="form-label">اختر صورة المنتج</label>
-                                    <v-file-input v-model="selectedImageFile" :rules="fieldValidations.productImage"
-                                        variant="outlined" density="comfortable" placeholder="اختر ملف الصورة"
-                                        prepend-icon="" accept="image/*" hide-details="auto" class="modern-field"
-                                        @change="handleFileSelect" :loading="uploadLoading">
-                                        <template v-slot:prepend-inner>
-                                            <v-icon color="warning" size="20">mdi-cloud-upload</v-icon>
-                                        </template>
-                                        <template v-slot:append-inner>
-                                            <div class="d-flex align-center">
-                                                <v-progress-circular v-if="uploadLoading" :model-value="uploadProgress"
-                                                    size="20" color="primary" class="me-2">
-                                                </v-progress-circular>
-                                                <v-btn v-if="selectedImageFile && selectedImageFile.length > 0"
-                                                    icon="mdi-eye" size="x-small" variant="text"
-                                                    @click="previewUploadedImage">
-                                                </v-btn>
-                                            </div>
-                                        </template>
-                                    </v-file-input>
-                                </div>
-                            </v-col>
-
-                            <!-- URL Input -->
-                            <v-col cols="12" v-if="imageUploadType === 'url'">
-                                <div class="form-group">
-                                    <label class="form-label">رابط الصورة</label>
-                                    <v-text-field v-model="imageUrlInput" :rules="fieldValidations.url" variant="outlined"
-                                        density="comfortable" placeholder="https://example.com/image.jpg"
-                                        hide-details="auto" class="modern-field" :loading="urlDownloadLoading">
-                                        <template v-slot:prepend-inner>
-                                            <v-icon color="warning" size="20">mdi-link</v-icon>
-                                        </template>
-                                        <template v-slot:append-inner>
-                                            <div class="d-flex align-center">
-                                                <v-btn v-if="imageUrlInput && !urlDownloadLoading" icon="mdi-download"
-                                                    size="x-small" variant="text" color="primary"
-                                                    @click="downloadImageFromUrl"
-                                                    :disabled="!isValidImageUrl(imageUrlInput)">
-                                                </v-btn>
-                                                <v-btn v-if="imageUrlInput" icon="mdi-eye" size="x-small" variant="text"
-                                                    @click="previewImageLogic">
-                                                </v-btn>
-                                            </div>
-                                        </template>
-                                    </v-text-field>
-                                    <div v-if="imageUrlInput && !isValidImageUrl(imageUrlInput)"
-                                        class="text-caption text-warning mt-1">
-                                        سيتم تحميل الصورة وحفظها محلياً عند الحفظ
-                                    </div>
-                                </div>
-                            </v-col>
-
-                            <!-- Image Preview -->
-                            <v-col cols="12" v-if="imagePreviewUrl">
-                                <div class="image-preview-container">
-                                    <label class="form-label">معاينة الصورة</label>
-                                    <div class="image-preview">
-                                        <v-img :src="imagePreviewUrl" height="200" width="200" contain
-                                            class="preview-image">
-                                            <template v-slot:error>
-                                                <div class="d-flex align-center justify-center h-100">
-                                                    <v-icon size="48" color="grey-lighten-1">mdi-image-broken</v-icon>
-                                                </div>
-                                            </template>
-                                        </v-img>
-                                        <v-btn icon="mdi-close" size="x-small" variant="elevated" color="error"
-                                            class="remove-image-btn" @click="removeImage"></v-btn>
-                                    </div>
-                                </div>
+                                <FileUploadList ref="imageUpload" v-model="selectedImageFiles" label="صور المنتج"
+                                    :multiple="true" accept="image/*" :rules="fieldValidations.productImage"
+                                    placeholder="اختر صور المنتج..." file-list-title="الصور المختارة"
+                                    :show-download="false" :show-url-input="true" url-input-label="رابط الصورة"
+                                    url-placeholder="https://example.com/image.jpg" url-icon="mdi-link"
+                                    url-icon-color="warning" :url-rules="fieldValidations.url" :show-url-download="true"
+                                    :show-url-preview="true"
+                                    url-validation-message="اضغط على زر التحميل لإضافة الصورة للقائمة"
+                                    :url-validation-pattern="/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i"
+                                    @file-added="handleFileSelect" @url-change="handleUrlChange"
+                                    @url-preview="previewImageFromUrl" @preview="previewImageFile" />
                             </v-col>
                         </v-row>
                     </FormSection>
@@ -291,9 +221,9 @@
                             <v-col cols="12">
                                 <div class="form-group">
                                     <label class="form-label">الوصف</label>
-                                    <v-textarea v-model="editedProduct.description" variant="outlined" density="comfortable"
-                                        placeholder="أدخل وصف المنتج..." rows="3" hide-details="auto"
-                                        class="modern-field"></v-textarea>
+                                    <v-textarea v-model="editedProduct.description" variant="outlined"
+                                        density="comfortable" placeholder="أدخل وصف المنتج..." rows="3"
+                                        hide-details="auto" class="modern-field"></v-textarea>
                                 </div>
                             </v-col>
                         </v-row>
@@ -328,9 +258,11 @@
                                                 <v-chip
                                                     :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
                                                     size="small">
-                                                    {{ getStockMeta(editedProduct.stock, editedProduct.minimumStock).text }}
+                                                    {{ getStockMeta(editedProduct.stock,
+                                                        editedProduct.minimumStock).text }}
                                                 </v-chip>
-                                                <div class="text-caption mt-1">{{ editedProduct.stock || 0 }} متوفر</div>
+                                                <div class="text-caption mt-1">{{ editedProduct.stock || 0 }} متوفر
+                                                </div>
                                             </div>
                                         </div>
                                     </v-card>
@@ -345,8 +277,8 @@
             <ModalActions :form-valid="formValid" :loading="loading"
                 :primary-text="editedProductId ? 'تحديث المنتج' : 'حفظ المنتج'"
                 :primary-icon="editedProductId ? 'mdi-content-save' : 'mdi-plus'"
-                :primary-disabled="!formValid || uploadLoading || urlDownloadLoading" :cancel-disabled="loading"
-                @cancel="closeDialog" @primary-action="saveProduct" />
+                :primary-disabled="!formValid || uploadLoading" :cancel-disabled="loading" @cancel="closeDialog"
+                @primary-action="saveProduct" />
 
         </v-card>
 
@@ -366,9 +298,11 @@ import { fieldValidations } from '@/utils/validation-util';
 import ModalHeader from '@/components/common/ModalHeader.vue'
 import ModalActions from '@/components/common/ModalActions.vue'
 import FilePreviewDialog from '@/components/common/FilePreviewDialog.vue'
-import { SECTION_COLORS } from  '@/constants/colors'
+import { SECTION_COLORS } from '@/constants/colors'
 import { formatCurrency } from '@/utils/currency-util';
 import FormSection from '@/components/common/FormSection.vue'
+import FileUploadList from '@/components/common/FileUploadList.vue'
+
 
 export default {
     name: 'ProductModal',
@@ -377,7 +311,8 @@ export default {
         ModalHeader,
         ModalActions,
         FilePreviewDialog,
-        FormSection
+        FormSection,
+        FileUploadList
     },
     props: {
         modelValue: {
@@ -398,14 +333,7 @@ export default {
             formValid: false,
             loading: false,
             uploadLoading: false,
-            urlDownloadLoading: false,
-            uploadProgress: 0,
-            previewImage: false,
-            previewImageUrl: null,
-            imageUploadType: 'url', // 'file' or 'url'
-            selectedImageFile: [],
-            imageUrlInput: '',
-            imagePreviewUrl: null,
+            selectedImageFiles: [],
             editedProductId: null,
             previewDialog: false,
             selectedFile: null,
@@ -420,9 +348,9 @@ export default {
                 unit: 'piece',
                 description: '',
                 active: true,
-                imageUrl: '' // Changed from 'image' to 'imageUrl' to match backend
+                imageUrls: []
             },
-            imageServiceClient: new ImageServiceClient(), // Initialize image service client
+            imageServiceClient: new ImageServiceClient()
         };
     },
     computed: {
@@ -434,6 +362,22 @@ export default {
                 this.$emit('update:modelValue', value);
             }
         },
+        imagePreviewUrl() {
+            // Show the first image for preview
+            if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
+                const firstFile = this.selectedImageFiles[0];
+                if (firstFile.url) {
+                    return firstFile.url; // URL file
+                } else if (firstFile instanceof File) {
+                    return URL.createObjectURL(firstFile); // Regular file
+                }
+            }
+            // Check for existing product images
+            if (this.editedProduct.imageUrls && this.editedProduct.imageUrls.length > 0) {
+                return this.editedProduct.imageUrls[0];
+            }
+            return null;
+        },
     },
     watch: {
         product: {
@@ -443,10 +387,22 @@ export default {
                     this.editedProduct = { ...newProduct };
                     this.editedProductId = newProduct.id;
 
-                    // Set imageUrl in local input for display
-                    if (newProduct.imageUrl) {
-                        this.imageUrlInput = newProduct.imageUrl;
-                        this.updateImagePreview();
+                    // Convert existing images to file list format
+                    if (newProduct.imageUrls && newProduct.imageUrls.length > 0) {
+                        this.selectedImageFiles = newProduct.imageUrls.map((url, index) => ({
+                            name: `existing-image-${index + 1}.jpg`,
+                            type: 'image/jpeg',
+                            size: 0,
+                            url: url,
+                            isUrlFile: true
+                        }));
+
+                        // Update the FileUploadList component
+                        this.$nextTick(() => {
+                            if (this.$refs.imageUpload) {
+                                this.$refs.imageUpload.localFiles = [...this.selectedImageFiles];
+                            }
+                        });
                     }
                 } else {
                     this.resetForm();
@@ -458,9 +414,6 @@ export default {
                 this.resetForm();
             }
         },
-        imageUploadType() {
-            this.clearImageData();
-        }
     },
     methods: {
         getCategories,
@@ -479,15 +432,16 @@ export default {
                 unit: 'piece',
                 description: '',
                 active: true,
-                imageUrl: ''
+                imageUrls: []
             };
-            this.imageUploadType = 'url';
-            this.selectedImageFile = [];
-            this.imageUrlInput = '';
-            this.imagePreviewUrl = null;
-            this.uploadProgress = 0;
+            this.selectedImageFiles = [];
+
             if (this.$refs.productForm) {
                 this.$refs.productForm.resetValidation();
+            }
+            if (this.$refs.imageUpload) {
+                this.$refs.imageUpload.clearFiles();
+                this.$refs.imageUpload.clearUrl();
             }
         },
         previewFile(file) {
@@ -504,85 +458,33 @@ export default {
             return pattern.test(url);
         },
 
-        async handleFileSelect(files) {
-            if (files && files.length > 0) {
-                const file = files[0];
+        previewImageFile(file) {
+            this.selectedFile = file;
+            this.previewDialog = true;
+        },
 
-                // Show local preview immediately
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.imagePreviewUrl = e.target.result;
+        previewImageFromUrl(url) {
+            if (url) {
+                const urlFile = {
+                    name: url.split('/').pop() || 'image.jpg',
+                    type: 'image/jpeg',
+                    size: 0,
+                    url: url
                 };
-                reader.readAsDataURL(file);
-
-                // Clear any URL input
-                this.imageUrlInput = '';
-                this.editedProduct.imageUrl = '';
-            } else {
-                this.imagePreviewUrl = null;
+                this.selectedFile = urlFile;
+                this.previewDialog = true;
             }
         },
 
-        async downloadImageFromUrl() {
-            if (!this.imageUrlInput) return;
-
-            this.urlDownloadLoading = true;
-            try {
-                const response = await this.imageServiceClient.uploadImageFromUrl(this.imageUrlInput, 'product');
-
-                // Set the downloaded image URL
-                this.editedProduct.imageUrl = response.url;
-                this.imagePreviewUrl = response.url;
-
-                success('تم تحميل الصورة بنجاح');
-            } catch (err) {
-                error('فشل تحميل الصورة: ' + err.message);
-                console.error('Error downloading image:', err);
-            } finally {
-                this.urlDownloadLoading = false;
-            }
+        handleFileSelect(files) {
+            console.log('Files selected:', files.length, 'Total files:', this.selectedImageFiles.length);
+            // Files are automatically handled by v-model
         },
 
-        previewUploadedImage() {
-            if (this.selectedImageFile) {
-                this.previewImageUrl = this.imagePreviewUrl;
-                this.previewImage = true;
-            }
+        handleUrlChange(url) {
+            console.log('ProductModal received URL change:', url);
+            // URL changes are handled by the FileUploadList component
         },
-
-        previewImageLogic() {
-            if (this.imageUrlInput) {
-                this.previewImageUrl = this.imageUrlInput;
-                this.previewImage = true;
-            }
-        },
-
-        updateImagePreview() {
-            if (this.imageUploadType === 'url' && this.imageUrlInput) {
-                this.imagePreviewUrl = this.imageUrlInput;
-            } else if (this.imageUploadType === 'file' && this.selectedImageFile) {
-                const file = this.selectedImageFile;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.imagePreviewUrl = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                this.imagePreviewUrl = null;
-            }
-        },
-
-        clearImageData() {
-            this.selectedImageFile = [];
-            this.imageUrlInput = '';
-            this.editedProduct.imageUrl = '';
-            this.imagePreviewUrl = null;
-        },
-
-        removeImage() {
-            this.clearImageData();
-        },
-
         async saveProduct() {
             if (!this.$refs.productForm.validate()) return;
 
@@ -590,73 +492,47 @@ export default {
             try {
                 const productData = { ...this.editedProduct, id: this.editedProductId };
 
-                // Auto-generate SKU if empty
                 if (!productData.sku && productData.name) {
                     productData.sku = productData.name.replace(/\s+/g, '-').toUpperCase().substring(0, 10);
                 }
-                console.log(this.imageUploadType)
-                console.log(this.selectedImageFile)
-                if (this.selectedImageFile) console.log(this.selectedImageFile.length)
-                // Handle image upload based on type
-                if (this.imageUploadType === 'file' && this.selectedImageFile) {
-                    // Upload file to image service
-                    try {
-                        this.uploadLoading = true;
-                        const uploadResponse = await this.imageServiceClient.uploadImage(
-                            this.selectedImageFile,
-                            'product'
-                        );
-                        productData.imageUrl = uploadResponse.url;
-                    } catch (uploadError) {
-                        error('فشل رفع الصورة: ' + uploadError.message);
-                        return;
-                    } finally {
-                        this.uploadLoading = false;
-                    }
-                } else if (this.imageUploadType === 'url' && this.imageUrlInput && !this.editedProduct.imageUrl) {
-                    // Download and store image from URL if not already downloaded
-                    try {
-                        this.urlDownloadLoading = true;
-                        const downloadResponse = await this.imageServiceClient.uploadImageFromUrl(
-                            this.imageUrlInput,
-                            'product'
-                        );
-                        productData.imageUrl = downloadResponse.url;
-                    } catch (downloadError) {
-                        error('فشل تحميل الصورة من الرابط: ' + downloadError.message);
-                        return;
-                    } finally {
-                        this.urlDownloadLoading = false;
+
+                // Handle image uploads
+                const uploadedImageUrls = [];
+                this.uploadLoading = true;
+
+                for (const file of this.selectedImageFiles) {
+                    if (file.isUrlFile) {
+                        uploadedImageUrls.push(file.url);
+                    } else if (file instanceof File) {
+                        try {
+                            const uploadResponse = await this.imageServiceClient.uploadImage(file, 'product');
+                            uploadedImageUrls.push(uploadResponse.url);
+                        } catch (uploadError) {
+                            console.error('Image upload failed:', uploadError);
+                            error('فشل رفع الصورة: ' + uploadError.message);
+                        }
                     }
                 }
 
-                // Save or update product
-                if (productData.id == null) {
-                    let response = await saveProduct(productData);
-                    if (response != null && response.id != null) {
-                        success('تم حفظ المنتج بنجاح');
-                        this.$emit('save', response);
-                    } else {
-                        error('فشل حفظ المنتج');
-                        console.log(response);
-                    }
+                productData.imageUrls = uploadedImageUrls;
+
+                const response = this.editedProductId
+                    ? await updateProduct(productData)
+                    : await saveProduct(productData);
+
+                if (response?.id) {
+                    success(this.editedProductId ? 'تم تحديث المنتج بنجاح' : 'تم حفظ المنتج بنجاح');
+                    this.$emit('save', response);
+                    this.closeDialog();
                 } else {
-                    let response = await updateProduct(productData);
-                    if (response != null && response.id != null) {
-                        success('تم تحديث المنتج بنجاح');
-                        this.$emit('save', response);
-                    } else {
-                        error('فشل تحديث المنتج');
-                        console.error(response);
-                    }
+                    error(this.editedProductId ? 'فشل تحديث المنتج' : 'فشل حفظ المنتج');
                 }
-
-                this.closeDialog();
-            } catch (error) {
-                console.error('Error saving product:', error);
+            } catch (err) {
+                console.error('Error saving product:', err);
                 error('فشل حفظ المنتج');
             } finally {
                 this.loading = false;
+                this.uploadLoading = false;
             }
         }
     }
@@ -682,39 +558,5 @@ export default {
     font-size: 10px !important;
     height: 20px !important;
     font-weight: 600 !important;
-}
-
-/* Image Upload Styling */
-.image-type-selector {
-    margin-top: 8px;
-}
-
-.image-type-selector .v-radio {
-    margin-right: 24px;
-}
-
-.image-preview-container {
-    margin-top: 16px;
-}
-
-.image-preview {
-    position: relative;
-    display: inline-block;
-    border: 2px dashed #e2e8f0;
-    border-radius: 8px;
-    padding: 8px;
-    background: white;
-}
-
-.preview-image {
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.remove-image-btn {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    z-index: 2;
 }
 </style>

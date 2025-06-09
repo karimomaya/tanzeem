@@ -65,7 +65,7 @@ export default createVuetify({
           // Additional semantic colors
           'on-primary': '#ffffff',
           'on-secondary': '#ffffff',
-          'on-surface': '#212529',
+          'on-surface': '#2c3e50',
           'on-background': '#212529',
           'on-error': '#ffffff',
           'on-warning': '#212529',

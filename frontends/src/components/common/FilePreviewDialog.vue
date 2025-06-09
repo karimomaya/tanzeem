@@ -15,24 +15,10 @@
                     </div>
                 </div>
                 <div class="d-flex align-center ga-2">
-                    <v-btn
-                        v-if="isPdf"
-                        icon="mdi-fullscreen"
-                        variant="text"
-                        @click="openFullscreen"
-                        v-tooltip="'ملء الشاشة'"
-                    ></v-btn>
-                    <v-btn
-                        icon="mdi-download"
-                        variant="text"
-                        @click="downloadFile"
-                        v-tooltip="'تحميل الملف'"
-                    ></v-btn>
-                    <v-btn
-                        icon="mdi-close"
-                        variant="text"
-                        @click="closePreview"
-                    ></v-btn>
+                    <v-btn v-if="isPdf" icon="mdi-fullscreen" variant="text" @click="openFullscreen"
+                        v-tooltip="'ملء الشاشة'"></v-btn>
+                    <v-btn icon="mdi-download" variant="text" @click="downloadFile" v-tooltip="'تحميل الملف'"></v-btn>
+                    <v-btn icon="mdi-close" variant="text" @click="closePreview"></v-btn>
                 </div>
             </v-card-title>
 
@@ -57,12 +43,7 @@
 
                     <!-- Image Preview -->
                     <div v-else-if="isImage" class="image-preview">
-                        <v-img
-                            :src="fileUrl"
-                            contain
-                            class="preview-image"
-                            max-height="70vh"
-                        >
+                        <v-img :src="fileUrl" contain class="preview-image" max-height="70vh">
                             <template v-slot:error>
                                 <div class="image-error">
                                     <v-icon size="48" color="error">mdi-image-broken</v-icon>
@@ -74,12 +55,7 @@
 
                     <!-- PDF Preview -->
                     <div v-else-if="isPdf" class="pdf-preview">
-                        <iframe
-                            :src="pdfViewerUrl"
-                            class="pdf-iframe"
-                            frameborder="0"
-                            allow="fullscreen"
-                        ></iframe>
+                        <iframe :src="pdfViewerUrl" class="pdf-iframe" frameborder="0" allow="fullscreen"></iframe>
                     </div>
 
                     <!-- Text/Code Preview -->
@@ -89,34 +65,19 @@
 
                     <!-- CSV Preview -->
                     <div v-else-if="isCsv" class="csv-preview">
-                        <v-data-table
-                            :headers="csvHeaders"
-                            :items="csvData"
-                            density="compact"
-                            class="csv-table"
-                            :items-per-page="50"
-                            :show-current-page="true"
-                        ></v-data-table>
+                        <v-data-table :headers="csvHeaders" :items="csvData" density="compact" class="csv-table"
+                            :items-per-page="50" :show-current-page="true"></v-data-table>
                     </div>
 
                     <!-- Excel Preview -->
                     <div v-else-if="isExcel" class="excel-preview">
                         <v-tabs v-model="activeSheet" class="mb-4">
-                            <v-tab
-                                v-for="(sheet, index) in excelSheets"
-                                :key="index"
-                                :value="index"
-                            >
+                            <v-tab v-for="(sheet, index) in excelSheets" :key="index" :value="index">
                                 {{ sheet.name }}
                             </v-tab>
                         </v-tabs>
-                        <v-data-table
-                            :headers="currentSheetHeaders"
-                            :items="currentSheetData"
-                            density="compact"
-                            class="excel-table"
-                            :items-per-page="50"
-                        ></v-data-table>
+                        <v-data-table :headers="currentSheetHeaders" :items="currentSheetData" density="compact"
+                            class="excel-table" :items-per-page="50"></v-data-table>
                     </div>
 
                     <!-- Audio Preview -->
@@ -171,8 +132,21 @@ export default {
             default: false
         },
         file: {
-            type: File,
-            default: null
+            type: [File, Object],
+            default: null,
+            validator(value) {
+                if (!value) return true;
+
+                // If it's a File object, it's valid
+                if (value instanceof File) return true;
+
+                // If it's an object, it should have name and url properties for URL previews
+                if (typeof value === 'object' && value.name && (value.url || value.type)) {
+                    return true;
+                }
+
+                return false;
+            }
         }
     },
     emits: ['update:modelValue'],
@@ -180,7 +154,6 @@ export default {
         return {
             loading: false,
             error: null,
-            fileUrl: null,
             textContent: '',
             csvHeaders: [],
             csvData: [],
@@ -202,11 +175,13 @@ export default {
             return this.file?.name || 'ملف غير معروف'
         },
         fileSize() {
-            if (!this.file?.size) return '0 KB'
-            const bytes = this.file.size
-            const sizes = ['Bytes', 'KB', 'MB', 'GB']
-            const i = Math.floor(Math.log(bytes) / Math.log(1024))
-            return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
+            if (this.file?.size && this.file.size > 0) {
+                const bytes = this.file.size;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(1024));
+                return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
+            }
+            return 'حجم غير معروف';
         },
         fileType() {
             return this.file?.name.split('.').pop()?.toLowerCase() || ''
@@ -303,6 +278,22 @@ export default {
         },
         currentSheetData() {
             return this.excelSheets[this.activeSheet]?.data || []
+        },
+        fileUrl() {
+            // Support both File objects and URL strings
+            if (this.file?.url) {
+                return this.file.url;
+            }
+
+            // Handle regular File objects
+            if (this.file instanceof File) {
+                if (!this.createdFileUrl) {
+                    this.createdFileUrl = URL.createObjectURL(this.file);
+                }
+                return this.createdFileUrl;
+            }
+
+            return null;
         }
     },
     watch: {
@@ -322,12 +313,16 @@ export default {
     },
     methods: {
         async loadFile() {
-            if (!this.file) return
+            if (!this.file) return;
 
-            this.loading = true
-            this.error = null
+            this.loading = true;
+            this.error = null;
 
             try {
+                if (this.file.url) {
+                    // It's a URL, no need to create object URL
+                    return;
+                }
                 // Create URL for the file
                 this.fileUrl = URL.createObjectURL(this.file)
 
@@ -355,7 +350,7 @@ export default {
         async loadCsvContent() {
             const text = await this.file.text()
             const lines = text.split('\n').filter(line => line.trim())
-            
+
             if (lines.length === 0) return
 
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
@@ -382,7 +377,7 @@ export default {
             this.excelSheets = this.workbook.SheetNames.map(sheetName => {
                 const worksheet = this.workbook.Sheets[sheetName]
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
-                
+
                 if (jsonData.length === 0) {
                     return { name: sheetName, headers: [], data: [] }
                 }
@@ -405,14 +400,20 @@ export default {
         },
 
         downloadFile() {
-            if (!this.fileUrl) return
+            if (this.file?.url && this.file?.isUrlFile) {
+                // For URL files, open in new tab or download directly from URL
+                window.open(this.file.url, '_blank');
+                return;
+            }
 
-            const link = document.createElement('a')
-            link.href = this.fileUrl
-            link.download = this.fileName
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            if (!this.fileUrl) return;
+
+            const link = document.createElement('a');
+            link.href = this.fileUrl;
+            link.download = this.fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         },
 
         openFullscreen() {
@@ -430,6 +431,10 @@ export default {
         },
 
         cleanup() {
+            if (this.createdFileUrl) {
+                URL.revokeObjectURL(this.createdFileUrl);
+                this.createdFileUrl = null;
+            }
             if (this.fileUrl) {
                 URL.revokeObjectURL(this.fileUrl)
                 this.fileUrl = null

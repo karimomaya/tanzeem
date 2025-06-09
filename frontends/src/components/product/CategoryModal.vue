@@ -2,9 +2,8 @@
     <v-dialog v-model="dialogVisible" max-width="1000px" persistent>
         <v-card rounded="xl" elevation="8">
             <!-- Header -->
-            <ModalHeader :icon="'mdi-tag-multiple'"
-                :title="editedCategoryId ? 'تعديل التصنيف' : 'إضافة تصنيف جديد'"
-                :subtitle="editedCategoryId ? 'تحديث بيانات التصنيف' : 'أدخل بيانات التصنيف الجديد' "
+            <ModalHeader :icon="'mdi-tag-multiple'" :title="editedCategoryId ? 'تعديل التصنيف' : 'إضافة تصنيف جديد'"
+                :subtitle="editedCategoryId ? 'تحديث بيانات التصنيف' : 'أدخل بيانات التصنيف الجديد'"
                 @close="closeDialog" />
             <!-- Form Content -->
             <div class="modal-body">
@@ -30,8 +29,9 @@
                                     <label class="form-label">
                                         الأيقونة <span class="required">*</span>
                                     </label>
-                                    <v-select v-model="editedCategory.icon" :items="CATEGORY_ICON_OPTIONS" item-title="text"
-                                        item-value="value" :rules="fieldValidations.required('الأيقونة')" variant="outlined"
+                                    <v-select v-model="editedCategory.icon" :items="CATEGORY_ICON_OPTIONS"
+                                        item-title="text" item-value="value"
+                                        :rules="fieldValidations.required('الأيقونة')" variant="outlined"
                                         density="comfortable" placeholder="اختر الأيقونة" hide-details="auto"
                                         class="modern-field">
                                         <template v-slot:item="{ props, item }">
@@ -61,7 +61,8 @@
                                     </label>
                                     <v-color-picker style="background: transparent;" v-model="editedCategory.color"
                                         mode="hexa" hide-canvas hide-inputs :swatches="colorSwatches"
-                                        :rules="fieldValidations.required('اللون')" class="modern-field"></v-color-picker>
+                                        :rules="fieldValidations.required('اللون')"
+                                        class="modern-field"></v-color-picker>
                                 </div>
                             </v-col>
 
@@ -88,8 +89,8 @@
                                         الوصف
                                     </label>
                                     <v-textarea v-model="editedCategory.description" variant="outlined"
-                                        density="comfortable" placeholder="أدخل وصف التصنيف..." rows="3" hide-details="auto"
-                                        class="modern-field"></v-textarea>
+                                        density="comfortable" placeholder="أدخل وصف التصنيف..." rows="3"
+                                        hide-details="auto" class="modern-field"></v-textarea>
                                 </div>
                             </v-col>
                         </v-row>
@@ -97,7 +98,8 @@
 
 
                     <!-- Preview Card -->
-                    <FormSection title="معاينة التصنيف" icon="mdi-eye" :color="SECTION_COLORS.preview"  v-if="editedCategory.name || editedCategory.icon">
+                    <FormSection title="معاينة التصنيف" icon="mdi-eye" :color="SECTION_COLORS.preview"
+                        v-if="editedCategory.name || editedCategory.icon">
                         <v-row>
                             <v-col cols="12">
 
@@ -116,8 +118,9 @@
                                                     {{ editedCategory.description || 'وصف التصنيف' }}
                                                 </div>
                                             </div>
-                                            <v-chip :color="editedCategory.active ? 'success' : 'error'" size="small" class="font-weight-medium">
-                                            {{ editedCategory.active ? 'نشط' : 'غير نشط' }}
+                                            <v-chip :color="editedCategory.active ? 'success' : 'error'" size="small"
+                                                class="font-weight-medium">
+                                                {{ editedCategory.active ? 'نشط' : 'غير نشط' }}
                                             </v-chip>
                                         </div>
                                     </v-card>
@@ -130,9 +133,8 @@
             <!-- Actions -->
             <ModalActions :form-valid="formValid" :loading="loading"
                 :primary-text="editedCategoryId ? 'تحديث التصنيف' : 'حفظ التصنيف'"
-                :primary-icon="editedCategoryId ? 'mdi-content-save' : 'mdi-plus'"
-                :primary-disabled="!formValid" :cancel-disabled="loading"
-                @cancel="closeDialog" @primary-action="saveCategory" />
+                :primary-icon="editedCategoryId ? 'mdi-content-save' : 'mdi-plus'" :primary-disabled="!formValid"
+                :cancel-disabled="loading" @cancel="closeDialog" @primary-action="saveCategory" />
         </v-card>
     </v-dialog>
 </template>
@@ -243,32 +245,20 @@ export default {
                 const categoryData = {
                     ...this.editedCategory,
                     id: this.editedCategoryId,
-                    productCount: this.editedCategoryId ? undefined : 0 // Don't update product count for existing categories
+                    productCount: this.editedCategoryId ? undefined : 0
                 };
 
-                if (categoryData.id == null) {
-                    // Creating new category
-                    let response = await saveCategory(categoryData);
-                    if (response != null && response.id != null) {
-                        success('تم حفظ التصنيف بنجاح');
-                        this.$emit('save', response);
-                    } else {
-                        error('فشل حفظ التصنيف');
-                        console.log(response);
-                    }
-                } else {
-                    // Updating existing category
-                    let response = await updateCategory(categoryData);
-                    if (response != null && response.id != null) {
-                        success('تم تحديث التصنيف بنجاح');
-                        this.$emit('save', response);
-                    } else {
-                        error('فشل تحديث التصنيف');
-                        console.error(response);
-                    }
-                }
+                const response = categoryData.id == null
+                    ? await saveCategory(categoryData)
+                    : await updateCategory(categoryData);
 
-                this.closeDialog();
+                if (response?.id) {
+                    success(categoryData.id == null ? 'تم حفظ التصنيف بنجاح' : 'تم تحديث التصنيف بنجاح');
+                    this.$emit('save', response);
+                    this.closeDialog();
+                } else {
+                    error(categoryData.id == null ? 'فشل حفظ التصنيف' : 'فشل تحديث التصنيف');
+                }
             } catch (err) {
                 console.error('Error saving category:', err);
                 error('فشل حفظ التصنيف');

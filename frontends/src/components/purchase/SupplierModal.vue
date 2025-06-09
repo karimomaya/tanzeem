@@ -19,9 +19,9 @@
                                     <label class="form-label">
                                         اسم المورد <span class="required">*</span>
                                     </label>
-                                    <v-text-field v-model="editedSupplier.name" :rules="[rules.required]" variant="outlined"
-                                        density="comfortable" placeholder="أدخل اسم المورد" hide-details="auto"
-                                        class="modern-field"></v-text-field>
+                                    <v-text-field v-model="editedSupplier.name" :rules="[rules.required]"
+                                        variant="outlined" density="comfortable" placeholder="أدخل اسم المورد"
+                                        hide-details="auto" class="modern-field"></v-text-field>
                                 </div>
                             </v-col>
 
@@ -71,9 +71,9 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">البريد الإلكتروني</label>
-                                    <v-text-field v-model="editedSupplier.email" :rules="[rules.email]" variant="outlined"
-                                        density="comfortable" placeholder="example@domain.com" hide-details="auto"
-                                        class="modern-field">
+                                    <v-text-field v-model="editedSupplier.email" :rules="[rules.email]"
+                                        variant="outlined" density="comfortable" placeholder="example@domain.com"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon color="info" size="20">mdi-email</v-icon>
                                         </template>
@@ -103,9 +103,9 @@
                             <v-col cols="12">
                                 <div class="form-group">
                                     <label class="form-label">العنوان الكامل</label>
-                                    <v-textarea v-model="editedSupplier.address" variant="outlined" density="comfortable"
-                                        placeholder="أدخل العنوان الكامل للمورد..." rows="3" hide-details="auto"
-                                        class="modern-field">
+                                    <v-textarea v-model="editedSupplier.address" variant="outlined"
+                                        density="comfortable" placeholder="أدخل العنوان الكامل للمورد..." rows="3"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon :color="SECTION_COLORS.address" size="20">mdi-map-marker</v-icon>
                                         </template>
@@ -116,9 +116,9 @@
                             <v-col cols="12" md="4">
                                 <div class="form-group">
                                     <label class="form-label">البلد</label>
-                                    <v-select v-model="editedSupplier.country" :items="countryOptions" variant="outlined"
-                                        item-value="code" item-title="name" density="comfortable" placeholder="اختر البلد"
-                                        hide-details="auto" class="modern-field">
+                                    <v-select v-model="editedSupplier.country" :items="countryOptions"
+                                        variant="outlined" item-value="code" item-title="name" density="comfortable"
+                                        placeholder="اختر البلد" hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon :color="SECTION_COLORS.address" size="20">mdi-earth</v-icon>
                                         </template>
@@ -199,12 +199,13 @@
                             <v-col cols="12" md="6">
                                 <div class="form-group">
                                     <label class="form-label">الحد الائتماني</label>
-                                    <v-text-field v-model.number="editedSupplier.creditLimit" :rules="[rules.nonNegative]"
-                                        type="number" variant="outlined" density="comfortable" placeholder="0.00"
-                                        :prefix="getCurrencySymbol()" hide-details="auto" class="modern-field">
+                                    <v-text-field v-model.number="editedSupplier.creditLimit"
+                                        :rules="[rules.nonNegative]" type="number" variant="outlined"
+                                        density="comfortable" placeholder="0.00" :prefix="getCurrencySymbol()"
+                                        hide-details="auto" class="modern-field">
                                         <template v-slot:prepend-inner>
                                             <v-icon :color="SECTION_COLORS.business" size="20">{{ getCurrencyIcon()
-                                            }}</v-icon>
+                                                }}</v-icon>
                                         </template>
                                     </v-text-field>
                                 </div>
@@ -258,7 +259,8 @@
                                         </template>
                                         <template v-slot:selection="{ item }">
                                             <div class="d-flex align-center">
-                                                <div class="color-dot me-2" :style="{ background: item.raw.value }"></div>
+                                                <div class="color-dot me-2" :style="{ background: item.raw.value }">
+                                                </div>
                                                 {{ item.raw.title }}
                                             </div>
                                         </template>
@@ -288,7 +290,8 @@
                         <v-col cols="12">
                             <div class="form-group">
                                 <div class="icon-preview">
-                                    <v-avatar size="64" :color="editedSupplier.color || '#366091'" class="preview-avatar">
+                                    <v-avatar size="64" :color="editedSupplier.color || '#366091'"
+                                        class="preview-avatar">
                                         <v-icon color="white" size="32">
                                             {{ editedSupplier.icon || 'mdi-truck' }}
                                         </v-icon>
@@ -427,42 +430,40 @@ export default {
     },
     watch: {
         async 'editedSupplier.country'(newCountryCode) {
-            if (!newCountryCode || this.isInitialLoad) return
-            this.governorateOptions = await this.getGovernorates(newCountryCode);
-
+            if (!newCountryCode || this.isInitialLoad) return;
+            this.governorateOptions = await getGovernorates(newCountryCode);
             this.editedSupplier.governorate = null;
         },
+
         supplierToEdit: {
             immediate: true,
             async handler(newSupplier) {
                 if (newSupplier) {
-                    this.isInitialLoad = true; // Set flag before setting country
+                    this.isInitialLoad = true;
 
-                    // First, load governorate options if country exists
                     if (newSupplier.country?.code || newSupplier.country) {
                         const countryCode = newSupplier.country?.code || newSupplier.country;
-                        this.governorateOptions = await this.getGovernorates(countryCode);
+                        this.governorateOptions = await getGovernorates(countryCode);
                     }
 
                     this.editedSupplier = {
                         ...newSupplier,
-                        country: newSupplier.country.code || newSupplier.country,
+                        country: newSupplier.country?.code || newSupplier.country,
                         governorate: newSupplier.governorate?.code || newSupplier.governorate,
                         businessType: newSupplier.businessType?.code || newSupplier.businessType,
                         paymentTerm: newSupplier.paymentTerm?.code || newSupplier.paymentTerm,
                     };
                     this.editedSupplierId = newSupplier.id;
 
-                    setTimeout(() => {
+                    this.$nextTick(() => {
                         this.isInitialLoad = false;
-                    }, 100);
-
+                    });
                 } else {
-                    this.isInitialLoad = false;
                     this.resetForm();
                 }
             }
         },
+
         modelValue(newValue) {
             if (!newValue) {
                 this.resetForm();
@@ -472,7 +473,16 @@ export default {
     methods: {
         getCurrencySymbol,
         getCurrencyIcon,
-        getGovernorates,
+
+        async getGovernorates(countryCode) {
+            try {
+                return await getGovernorates(countryCode);
+            } catch (error) {
+                console.error('Error loading governorates:', error);
+                return [];
+            }
+        },
+
         resetForm() {
             this.editedSupplierId = null;
             this.editedSupplier = {
@@ -513,33 +523,21 @@ export default {
             try {
                 const supplierData = { ...this.editedSupplier, id: this.editedSupplierId };
 
-                // Auto-generate code if empty
                 if (!supplierData.code && supplierData.name) {
                     supplierData.code = 'SUP-' + supplierData.name.replace(/\s+/g, '-').toUpperCase().substring(0, 10);
                 }
 
-                if (supplierData.id == null) {
-                    let response = await createSupplier(supplierData);
-                    if (response != null && response.id != null) {
-                        success('تم حفظ المورد بنجاح');
-                        this.$emit('save', supplierData);
-                    } else {
-                        error('فشل حفظ المورد');
-                        console.error(response);
-                    }
+                const response = supplierData.id == null
+                    ? await createSupplier(supplierData)
+                    : await updateSupplier(supplierData);
+
+                if (response?.id) {
+                    success(supplierData.id == null ? 'تم حفظ المورد بنجاح' : 'تم تحديث المورد بنجاح');
+                    this.$emit('save', supplierData);
+                    this.closeDialog();
                 } else {
-                    let response = await updateSupplier(supplierData);
-                    if (response != null && response.id != null) {
-                        success('تم تحديث المورد بنجاح');
-                        this.$emit('save', supplierData);
-                    } else {
-                        error('فشل تحديث المورد');
-                        console.error(response);
-                    }
-
+                    error(supplierData.id == null ? 'فشل حفظ المورد' : 'فشل تحديث المورد');
                 }
-
-                this.closeDialog();
             } catch (error) {
                 console.error('Error saving supplier:', error);
                 error('فشل حفظ المورد');

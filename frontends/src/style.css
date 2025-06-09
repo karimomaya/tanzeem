@@ -84,3 +84,97 @@
 .required {
     color: #e53e3e;
 }
+
+
+
+/* COMPLETE CSS FIXES for invisible tooltip text */
+
+/* 1. Fix for Vuetify v-tooltip */
+.v-tooltip > .v-overlay__content {
+  background-color: rgba(33, 37, 41, 0.9) !important;
+  color: white !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  max-width: 300px !important;
+  word-wrap: break-word !important;
+  z-index: 9999 !important;
+}
+
+/* 2. Fix for tooltip text content */
+.v-tooltip .v-overlay__content {
+  color: white !important;
+  background: rgba(33, 37, 41, 0.9) !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+/* 3. Ensure tooltip is visible */
+.v-overlay--active .v-overlay__content {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 4. Fix for tooltip positioning */
+.v-tooltip {
+  z-index: 9999 !important;
+}
+
+/* 5. Alternative dark theme fix */
+.v-theme--dark .v-tooltip > .v-overlay__content {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #2c3e50 !important;
+}
+
+/* 6. Specific fix for button tooltips */
+.v-btn .v-tooltip > .v-overlay__content {
+  background-color: #2c3e50 !important;
+  color: white !important;
+  font-size: 11px !important;
+  padding: 6px 10px !important;
+}
+
+/* 7. Force text visibility in tooltips */
+.v-overlay__content * {
+  color: inherit !important;
+}
+
+/* 8. Fix for tooltip arrow/pointer */
+.v-overlay__content::before {
+  border-top-color: rgba(33, 37, 41, 0.9) !important;
+}
+
+/* 9. Additional fixes for different tooltip states */
+.v-tooltip:hover > .v-overlay__content {
+  color: white !important;
+  background-color: rgba(33, 37, 41, 0.9) !important;
+}
+
+/* 10. Fix for tooltip content wrapper */
+.v-overlay__content .v-tooltip__content {
+  color: white !important;
+}
+
+/* 11. Fix for tooltips on different button variants */
+.v-btn--variant-text .v-tooltip > .v-overlay__content,
+.v-btn--variant-outlined .v-tooltip > .v-overlay__content,
+.v-btn--variant-elevated .v-tooltip > .v-overlay__content {
+  background-color: rgba(33, 37, 41, 0.9) !important;
+  color: white !important;
+}
+
+/* 12. Fix for RTL (Arabic) text direction in tooltips */
+.v-tooltip[dir="rtl"] > .v-overlay__content {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* 13. Ensure tooltip shows above other elements */
+.v-overlay--contained .v-overlay__scrim {
+  z-index: 9998 !important;
+}
+
+.v-overlay--contained .v-overlay__content {
+  z-index: 9999 !important;
+}
