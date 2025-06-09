@@ -1,5 +1,6 @@
 <template>
-    <BaseModal v-model="dialogVisible" icon="mdi-clipboard-list"
+    <BaseModal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)"
+        icon="mdi-clipboard-list"
         :title="editedProductId ? 'تعديل المنتج' : 'إضافة منتج جديد'"
         :subtitle="editedProductId ? 'تحديث بيانات المنتج الحالي' : 'أدخل بيانات المنتج الجديد'"
         :primary-text="editedProductId ? 'تحديث المنتج' : 'حفظ المنتج'"
@@ -311,7 +312,6 @@ export default {
             SECTION_COLORS,
             UNIT_ICON_OPTIONS,
             fieldValidations,
-            formValid: false,
             loading: false,
             uploadLoading: false,
             selectedImageFiles: [],
@@ -335,14 +335,6 @@ export default {
         };
     },
     computed: {
-        dialogVisible: {
-            get() {
-                return this.modelValue;
-            },
-            set(value) {
-                this.$emit('update:modelValue', value);
-            }
-        },
         imagePreviewUrl() {
             // Show the first image for preview
             if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
@@ -417,9 +409,6 @@ export default {
             };
             this.selectedImageFiles = [];
 
-            if (this.$refs.productForm) {
-                this.$refs.productForm.resetValidation();
-            }
             if (this.$refs.imageUpload) {
                 this.$refs.imageUpload.clearFiles();
                 this.$refs.imageUpload.clearUrl();
@@ -430,7 +419,7 @@ export default {
             this.previewDialog = true
         },
         closeDialog() {
-            this.dialogVisible = false;
+        this.$emit('update:modelValue', false);
         },
 
         isValidImageUrl(url) {
@@ -467,7 +456,6 @@ export default {
             // URL changes are handled by the FileUploadList component
         },
         async saveProduct() {
-            if (!this.$refs.productForm.validate()) return;
 
             this.loading = true;
             try {

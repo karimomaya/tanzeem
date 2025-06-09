@@ -1,301 +1,252 @@
 <template>
-    <v-dialog v-model="dialogVisible" max-width="1000px" persistent scrollable>
-        <v-card rounded="xl" elevation="8">
-            <!-- Header -->
-            <ModalHeader :icon="'mdi-clipboard-list'"
-                :title="editedPurchaseOrderId ? 'تعديل أمر الشراء' : 'إضافة أمر شراء جديد'"
-                :subtitle="editedPurchaseOrderId ? 'تحديث بيانات أمر الشراء' : 'إنشاء أمر شراء جديد'"
-                @close="closeDialog" />
+    <BaseModal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)"
+        icon="mdi-clipboard-list"
+        :title="editedPurchaseOrderId ? 'تعديل أمر الشراء' : 'إضافة أمر شراء جديد'"
+        :subtitle="editedPurchaseOrderId ? 'تحديث بيانات أمر الشراء' : 'إنشاء أمر شراء جديد'"
+        :primary-text="editedPurchaseOrderId ? 'تحديث الأمر' : 'حفظ الأمر'"
+        :primary-icon="editedPurchaseOrderId ? 'mdi-content-save' : 'mdi-plus'" :loading="loading"
+        :primary-disabled="loading || formData.items.length === 0" @close="closeDialog" @save="saveOrder">
+        <template #content="{ formValid }">
+            <FormSection title="المعلومات الأساسية" icon="mdi-information" :color="SECTION_COLORS.basic">
 
-            <!-- Content -->
-            <div class="modal-body">
-                <v-form ref="form" v-model="formValid" lazy-validation>
-                    <v-row>
-                        <!-- Basic Information Section -->
-                        <v-col cols="12">
-                            <FormSection title="المعلومات الأساسية" icon="mdi-information"
-                                :color="SECTION_COLORS.basic">
+                <v-row>
+                    <!-- Order Number -->
+                    <v-col cols="12" md="6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                رقم الفاتورة <span class="required">*</span>
+                            </label>
+                            <v-text-field v-model="formData.invoiceNumber" :rules="fieldValidations.invoiceNumber"
+                                variant="outlined" density="comfortable" placeholder="أدخل رقم الفاتورة"
+                                hide-details="auto" prepend-inner-icon="mdi-pound" class="modern-field"></v-text-field>
+                        </div>
+                    </v-col>
 
-                                <v-row>
-                                    <!-- Order Number -->
-                                    <v-col cols="12" md="6">
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                رقم الفاتورة <span class="required">*</span>
-                                            </label>
-                                            <v-text-field v-model="formData.invoiceNumber"
-                                                :rules="fieldValidations.invoiceNumber" variant="outlined"
-                                                density="comfortable" placeholder="أدخل رقم الفاتورة"
-                                                hide-details="auto" prepend-inner-icon="mdi-pound"
-                                                class="modern-field"></v-text-field>
-                                        </div>
-                                    </v-col>
+                    <!-- Order Date -->
+                    <v-col cols="12" md="6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                تاريخ الأمر <span class="required">*</span>
+                            </label>
+                            <v-text-field v-model="formData.purchaseDate" :rules="fieldValidations.purchaseDate"
+                                variant="outlined" density="comfortable" type="date" hide-details="auto"
+                                prepend-inner-icon="mdi-calendar" class="modern-field"></v-text-field>
+                        </div>
+                    </v-col>
 
-                                    <!-- Order Date -->
-                                    <v-col cols="12" md="6">
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                تاريخ الأمر <span class="required">*</span>
-                                            </label>
-                                            <v-text-field v-model="formData.purchaseDate"
-                                                :rules="fieldValidations.purchaseDate" variant="outlined"
-                                                density="comfortable" type="date" hide-details="auto"
-                                                prepend-inner-icon="mdi-calendar" class="modern-field"></v-text-field>
-                                        </div>
-                                    </v-col>
+                    <v-col cols="12" md="6">
+                        <div class="form-group">
+                            <label class="form-label">تاريخ التسليم المتوقع</label>
+                            <v-text-field v-model="formData.expectedDeliveryAt" variant="outlined" density="comfortable"
+                                type="datetime-local" hide-details="auto" prepend-inner-icon="mdi-truck-delivery"
+                                class="modern-field"></v-text-field>
+                        </div>
+                    </v-col>
 
-                                    <v-col cols="12" md="6">
-                                        <div class="form-group">
-                                            <label class="form-label">تاريخ التسليم المتوقع</label>
-                                            <v-text-field v-model="formData.expectedDeliveryAt" variant="outlined"
-                                                density="comfortable" type="datetime-local" hide-details="auto"
-                                                prepend-inner-icon="mdi-truck-delivery"
-                                                class="modern-field"></v-text-field>
-                                        </div>
-                                    </v-col>
+                    <!-- Delivered At (only for edit and when status is RECEIVED) -->
+                    <v-col cols="12" md="6" v-if="editedPurchaseOrderId && formData.status === 'RECEIVED'">
+                        <div class="form-group">
+                            <label class="form-label">تاريخ التسليم الفعلي</label>
+                            <v-text-field v-model="formData.deliveredAt" variant="outlined" density="comfortable"
+                                type="datetime-local" hide-details="auto" prepend-inner-icon="mdi-check-circle"
+                                class="modern-field"></v-text-field>
+                        </div>
+                    </v-col>
 
-                                    <!-- Delivered At (only for edit and when status is RECEIVED) -->
-                                    <v-col cols="12" md="6"
-                                        v-if="editedPurchaseOrderId && formData.status === 'RECEIVED'">
-                                        <div class="form-group">
-                                            <label class="form-label">تاريخ التسليم الفعلي</label>
-                                            <v-text-field v-model="formData.deliveredAt" variant="outlined"
-                                                density="comfortable" type="datetime-local" hide-details="auto"
-                                                prepend-inner-icon="mdi-check-circle"
-                                                class="modern-field"></v-text-field>
-                                        </div>
-                                    </v-col>
+                    <!-- Confirmed At (only for edit) -->
+                    <v-col cols="12" md="6" v-if="editedPurchaseOrderId">
+                        <div class="form-group">
+                            <label class="form-label">تاريخ التأكيد</label>
+                            <v-text-field v-model="formData.confirmedAt" variant="outlined" density="comfortable"
+                                type="date" hide-details="auto" prepend-inner-icon="mdi-calendar-check"
+                                class="modern-field"></v-text-field>
+                        </div>
+                    </v-col>
 
-                                    <!-- Confirmed At (only for edit) -->
-                                    <v-col cols="12" md="6" v-if="editedPurchaseOrderId">
-                                        <div class="form-group">
-                                            <label class="form-label">تاريخ التأكيد</label>
-                                            <v-text-field v-model="formData.confirmedAt" variant="outlined"
-                                                density="comfortable" type="date" hide-details="auto"
-                                                prepend-inner-icon="mdi-calendar-check"
-                                                class="modern-field"></v-text-field>
-                                        </div>
-                                    </v-col>
+                    <!-- Supplier -->
+                    <v-col cols="12" md="6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                المورد <span class="required">*</span>
+                            </label>
 
-                                    <!-- Supplier -->
-                                    <v-col cols="12" md="6">
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                المورد <span class="required">*</span>
-                                            </label>
+                            <SearchableSelect v-model="formData.supplierId" :api-service="getSuppliers"
+                                :current-item="purchaseOrder?.supplier || null" :rules="fieldValidations.supplier"
+                                placeholder="ابحث عن المورد..." class="modern-field">
 
-                                            <SearchableSelect v-model="formData.supplierId" :api-service="getSuppliers"
-                                                :current-item="purchaseOrder?.supplier || null"
-                                                :rules="fieldValidations.supplier" placeholder="ابحث عن المورد..."
-                                                class="modern-field">
+                                <template v-slot:item="{ props, item }">
+                                    <v-list-item v-bind="props">
+                                        <template v-slot:prepend>
+                                            <v-icon>mdi-truck</v-icon>
+                                        </template>
+                                        <v-list-item-title>{{ item.raw.name }}</v-list-item-title>
+                                        <v-list-item-subtitle v-if="item.raw.phone">{{ item.raw.phone
+                                        }}</v-list-item-subtitle>
+                                    </v-list-item>
+                                </template>
 
-                                                <template v-slot:item="{ props, item }">
+                                <template v-slot:prepend-inner>
+                                    <v-icon color="primary" size="20">mdi-truck</v-icon>
+                                </template>
+                            </SearchableSelect>
+                        </div>
+                    </v-col>
+
+                    <!-- Status (only for edit) -->
+                    <v-col cols="12" md="6" v-if="editedPurchaseOrderId">
+                        <div class="form-group">
+                            <label class="form-label">حالة الأمر</label>
+                            <v-select v-model="formData.status" :items="statusOptions" variant="outlined"
+                                density="comfortable" hide-details="auto" prepend-inner-icon="mdi-flag"
+                                item-title="text" item-value="value" class="modern-field"></v-select>
+                        </div>
+                    </v-col>
+                </v-row>
+            </FormSection>
+            <FormSection title="المنتجات" icon="mdi-package-variant" :icon-color="SECTION_COLORS.products"
+                :action-button="{ text: 'إضافة منتج', icon: 'mdi-plus', action: 'add' }" @action="addProductItem">
+                <v-row>
+                    <!-- Product Items List -->
+                    <v-col cols="12">
+                        <div v-if="formData.items.length === 0" class="empty-products">
+                            <v-icon size="48" color="grey">mdi-package-variant-closed</v-icon>
+                            <p class="text-body-2 text-medium-emphasis mt-2">لم يتم إضافة أي منتجات بعد
+                            </p>
+                            <v-btn color="primary" size="small" prepend-icon="mdi-plus" @click="addProductItem">
+                                إضافة المنتج الأول
+                            </v-btn>
+                        </div>
+
+                        <div v-else class="products-list">
+                            <v-card v-for="(item, index) in formData.items" :key="index" class="product-item mb-3"
+                                elevation="2">
+                                <v-card-text class="pa-4">
+                                    <v-row align="center">
+                                        <!-- Product Selection -->
+                                        <v-col cols="12" md="4">
+                                            <v-select v-model="item.productId" :items="productOptions" label="المنتج"
+                                                variant="outlined" density="compact"
+                                                :rules="fieldValidations.orderItems" hide-details="auto"
+                                                item-title="name" item-value="id"
+                                                @update:model-value="updateProductPrice(item, $event)">
+                                                <template v-slot:item="{ props, item: product }">
                                                     <v-list-item v-bind="props">
-                                                        <template v-slot:prepend>
-                                                            <v-icon>mdi-truck</v-icon>
-                                                        </template>
-                                                        <v-list-item-title>{{ item.raw.name }}</v-list-item-title>
-                                                        <v-list-item-subtitle v-if="item.raw.phone">{{ item.raw.phone
-                                                            }}</v-list-item-subtitle>
+                                                        <v-list-item-title>{{ product.raw.name
+                                                        }}</v-list-item-title>
+                                                        <v-list-item-subtitle>{{
+                                                            formatCurrency(product.raw.purchasePrice ||
+                                                                0)
+                                                        }}</v-list-item-subtitle>
                                                     </v-list-item>
                                                 </template>
+                                            </v-select>
+                                        </v-col>
 
-                                                <template v-slot:prepend-inner>
-                                                    <v-icon color="primary" size="20">mdi-truck</v-icon>
-                                                </template>
-                                            </SearchableSelect>
-                                        </div>
-                                    </v-col>
+                                        <!-- Quantity -->
+                                        <v-col cols="12" md="2">
+                                            <v-text-field v-model.number="item.quantity" label="الكمية"
+                                                variant="outlined" density="compact" type="number" min="1"
+                                                :rules="fieldValidations.nonNegativeNumber" hide-details="auto"
+                                                @input="calculateItemTotal(item)"></v-text-field>
+                                        </v-col>
 
-                                    <!-- Status (only for edit) -->
-                                    <v-col cols="12" md="6" v-if="editedPurchaseOrderId">
-                                        <div class="form-group">
-                                            <label class="form-label">حالة الأمر</label>
-                                            <v-select v-model="formData.status" :items="statusOptions"
-                                                variant="outlined" density="comfortable" hide-details="auto"
-                                                prepend-inner-icon="mdi-flag" item-title="text" item-value="value"
-                                                class="modern-field"></v-select>
-                                        </div>
-                                    </v-col>
-                                </v-row>
-                            </FormSection>
-                        </v-col>
+                                        <!-- Unit Price -->
+                                        <v-col cols="12" md="2">
+                                            <v-text-field v-model.number="item.unitPrice" label="سعر الوحدة"
+                                                variant="outlined" density="compact" type="number" min="0" step="0.01"
+                                                :rules="fieldValidations.nonNegativeNumber" hide-details="auto"
+                                                @input="calculateItemTotal(item)"></v-text-field>
+                                        </v-col>
 
-                        <!-- Products Section -->
-                        <v-col cols="12">
-                            <FormSection title="المنتجات" icon="mdi-package-variant"
-                                :icon-color="SECTION_COLORS.products"
-                                :action-button="{ text: 'إضافة منتج', icon: 'mdi-plus', action: 'add' }"
-                                @action="addProductItem">
-                                <v-row>
-                                    <!-- Product Items List -->
-                                    <v-col cols="12">
-                                        <div v-if="formData.items.length === 0" class="empty-products">
-                                            <v-icon size="48" color="grey">mdi-package-variant-closed</v-icon>
-                                            <p class="text-body-2 text-medium-emphasis mt-2">لم يتم إضافة أي منتجات بعد
-                                            </p>
-                                            <v-btn color="primary" size="small" prepend-icon="mdi-plus"
-                                                @click="addProductItem">
-                                                إضافة المنتج الأول
-                                            </v-btn>
-                                        </div>
+                                        <!-- Total Price -->
+                                        <v-col cols="12" md="2">
+                                            <v-text-field :model-value="formatCurrency(item.totalPrice || 0)"
+                                                label="الإجمالي" variant="outlined" density="compact" readonly
+                                                hide-details="auto"></v-text-field>
+                                        </v-col>
 
-                                        <div v-else class="products-list">
-                                            <v-card v-for="(item, index) in formData.items" :key="index"
-                                                class="product-item mb-3" elevation="2">
-                                                <v-card-text class="pa-4">
-                                                    <v-row align="center">
-                                                        <!-- Product Selection -->
-                                                        <v-col cols="12" md="4">
-                                                            <v-select v-model="item.productId" :items="productOptions"
-                                                                label="المنتج" variant="outlined" density="compact"
-                                                                :rules="fieldValidations.orderItems" hide-details="auto"
-                                                                item-title="name" item-value="id"
-                                                                @update:model-value="updateProductPrice(item, $event)">
-                                                                <template v-slot:item="{ props, item: product }">
-                                                                    <v-list-item v-bind="props">
-                                                                        <v-list-item-title>{{ product.raw.name
-                                                                            }}</v-list-item-title>
-                                                                        <v-list-item-subtitle>{{
-                                                                            formatCurrency(product.raw.purchasePrice ||
-                                                                                0)
-                                                                        }}</v-list-item-subtitle>
-                                                                    </v-list-item>
-                                                                </template>
-                                                            </v-select>
-                                                        </v-col>
+                                        <!-- Remove Button -->
+                                        <v-col cols="12" md="2">
+                                            <v-btn icon="mdi-delete" size="small" color="error"
+                                                @click="removeProductItem(index)" v-tooltip="'حذف المنتج'"></v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </div>
+                    </v-col>
 
-                                                        <!-- Quantity -->
-                                                        <v-col cols="12" md="2">
-                                                            <v-text-field v-model.number="item.quantity" label="الكمية"
-                                                                variant="outlined" density="compact" type="number"
-                                                                min="1" :rules="fieldValidations.nonNegativeNumber"
-                                                                hide-details="auto"
-                                                                @input="calculateItemTotal(item)"></v-text-field>
-                                                        </v-col>
-
-                                                        <!-- Unit Price -->
-                                                        <v-col cols="12" md="2">
-                                                            <v-text-field v-model.number="item.unitPrice"
-                                                                label="سعر الوحدة" variant="outlined" density="compact"
-                                                                type="number" min="0" step="0.01"
-                                                                :rules="fieldValidations.nonNegativeNumber"
-                                                                hide-details="auto"
-                                                                @input="calculateItemTotal(item)"></v-text-field>
-                                                        </v-col>
-
-                                                        <!-- Total Price -->
-                                                        <v-col cols="12" md="2">
-                                                            <v-text-field
-                                                                :model-value="formatCurrency(item.totalPrice || 0)"
-                                                                label="الإجمالي" variant="outlined" density="compact"
-                                                                readonly hide-details="auto"></v-text-field>
-                                                        </v-col>
-
-                                                        <!-- Remove Button -->
-                                                        <v-col cols="12" md="2">
-                                                            <v-btn icon="mdi-delete" size="small" color="error"
-                                                                @click="removeProductItem(index)"
-                                                                v-tooltip="'حذف المنتج'"></v-btn>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-card-text>
-                                            </v-card>
-                                        </div>
-                                    </v-col>
-
-                                    <!-- Total Amount Section -->
-                                    <v-col cols="12" v-if="formData.items.length > 0">
-                                        <div class="total-section">
-                                            <v-card class="total-card" elevation="2">
-                                                <v-card-text class="pa-4">
-                                                    <div class="d-flex justify-space-between align-center">
-                                                        <span class="text-h6">المبلغ الإجمالي:</span>
-                                                        <span class="text-h4 text-primary font-weight-bold">{{
-                                                            formatCurrency(totalAmount) }}</span>
-                                                    </div>
-                                                </v-card-text>
-                                            </v-card>
-                                        </div>
-                                    </v-col>
-                                </v-row>
-                            </FormSection>
-                        </v-col>
-
-                        <!-- File Upload Section -->
-                        <!-- Enhanced File Upload Section -->
-                        <v-col cols="12">
-                            <FormSection title="المرفقات" icon="mdi-image" :icon-color="SECTION_COLORS.media"
-                                info-text="يمكن رفع ملفات متعددة (PDF, JPG, PNG) - حد أقصى 10 ميجابايت لكل ملف">
-                                <v-row>
-                                    <v-col cols="12">
-                                        <FileUploadList v-model="formData.attachments" label="رفع الفواتير أو المستندات"
-                                            :rules="fieldValidations.attachments"
-                                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx,.xls,image/*"
-                                            placeholder="اختر الملفات..." file-list-title="الملفات المرفقة"
-                                            :show-url-input="true" url-input-label="رابط الملف"
-                                            url-placeholder="https://example.com/file.pdf" :show-url-download="true"
-                                            url-validation-message="اضغط على زر التحميل لإضافة الملف للقائمة"
-                                            :url-validation-pattern="/\.(pdf|jpg|jpeg|png|gif|webp|bmp|svg|doc|docx|xlsx|xls)$/i"
-                                            @preview="previewFile" @file-removed="onFileRemoved"
-                                            @file-added="onFileAdded" />
-                                    </v-col>
-                                </v-row>
-                            </FormSection>
-                        </v-col>
-                    </v-row>
-                    <!-- Notes -->
-                    <v-col cols="12">
-                        <FormSection title="معلومات إضافية" icon="mdi-text" :icon-color="SECTION_COLORS.additional">
-
-                            <v-row>
-                                <v-col cols="12">
-                                    <div class="form-group">
-                                        <label class="form-label">ملاحظات (اختياري)</label>
-                                        <v-textarea v-model="formData.notes" variant="outlined" density="comfortable"
-                                            placeholder="أدخل أي ملاحظات..." rows="3" hide-details="auto"
-                                            prepend-inner-icon="mdi-note-text" class="modern-field"></v-textarea>
+                    <!-- Total Amount Section -->
+                    <v-col cols="12" v-if="formData.items.length > 0">
+                        <div class="total-section">
+                            <v-card class="total-card" elevation="2">
+                                <v-card-text class="pa-4">
+                                    <div class="d-flex justify-space-between align-center">
+                                        <span class="text-h6">المبلغ الإجمالي:</span>
+                                        <span class="text-h4 text-primary font-weight-bold">{{
+                                            formatCurrency(totalAmount) }}</span>
                                     </div>
-                                </v-col>
-                            </v-row>
-                        </FormSection>
+                                </v-card-text>
+                            </v-card>
+                        </div>
                     </v-col>
-                    <v-col cols="12" v-if="formData.invoiceNumber || formData.items.length > 0">
-                        <FormSection title="معاينة الأمر" icon="mdi-eye" :icon-color="SECTION_COLORS.preview">
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-card elevation="2" rounded="lg" class="pa-4 bg-grey-lighten-5">
-                                        <div class="d-flex align-center justify-space-between mb-3">
-                                            <div>
-                                                <div class="text-h6 font-weight-bold">{{ formData.invoiceNumber || 'رقم الأمر' }}</div>
-                                                <div class="text-body-2 text-grey-darken-1">{{ formData.purchaseDate ||
-                                                    'تاريخ الأمر' }}</div>
-                                            </div>
-                                            <v-chip :color="getStatusColor(formData.status)" size="small">
-                                                {{ getStatusText(formData.status) }}
-                                            </v-chip>
-                                        </div>
-                                        <div v-if="formData.items.length > 0" class="mt-3">
-                                            <div class="text-subtitle-2 mb-2">المنتجات: {{ formData.items.length }}
-                                            </div>
-                                            <div class="text-h6 text-primary">المجموع: {{ formatCurrency(totalAmount) }}
-                                            </div>
-                                        </div>
-                                    </v-card>
-                                </v-col>
-                            </v-row>
-                        </FormSection>
+                </v-row>
+            </FormSection>
+            <FormSection title="المرفقات" icon="mdi-image" :icon-color="SECTION_COLORS.media"
+                info-text="يمكن رفع ملفات متعددة (PDF, JPG, PNG) - حد أقصى 10 ميجابايت لكل ملف">
+                <v-row>
+                    <v-col cols="12">
+                        <FileUploadList v-model="formData.attachments" label="رفع الفواتير أو المستندات"
+                            :rules="fieldValidations.attachments"
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx,.xls,image/*" placeholder="اختر الملفات..."
+                            file-list-title="الملفات المرفقة" :show-url-input="true" url-input-label="رابط الملف"
+                            url-placeholder="https://example.com/file.pdf" :show-url-download="true"
+                            url-validation-message="اضغط على زر التحميل لإضافة الملف للقائمة"
+                            :url-validation-pattern="/\.(pdf|jpg|jpeg|png|gif|webp|bmp|svg|doc|docx|xlsx|xls)$/i"
+                            @preview="previewFile" @file-removed="onFileRemoved" @file-added="onFileAdded" />
                     </v-col>
-                </v-form>
-            </div>
-            <!-- Actions -->
-            <ModalActions :form-valid="formValid" :loading="loading"
-                :primary-text="editedPurchaseOrderId ? 'تحديث الأمر' : 'حفظ الأمر'"
-                :primary-icon="editedPurchaseOrderId ? 'mdi-content-save' : 'mdi-plus'"
-                :primary-disabled="!formValid || formData.items.length === 0" :cancel-disabled="loading"
-                @cancel="closeDialog" @primary-action="saveOrder" />
-        </v-card>
-    </v-dialog>
+                </v-row>
+            </FormSection>
+            <FormSection title="معلومات إضافية" icon="mdi-text" :icon-color="SECTION_COLORS.additional">
+
+                <v-row>
+                    <v-col cols="12">
+                        <div class="form-group">
+                            <label class="form-label">ملاحظات (اختياري)</label>
+                            <v-textarea v-model="formData.notes" variant="outlined" density="comfortable"
+                                placeholder="أدخل أي ملاحظات..." rows="3" hide-details="auto"
+                                prepend-inner-icon="mdi-note-text" class="modern-field"></v-textarea>
+                        </div>
+                    </v-col>
+                </v-row>
+            </FormSection>
+            <FormSection title="معاينة الأمر" icon="mdi-eye" :icon-color="SECTION_COLORS.preview">
+                <v-row>
+                    <v-col cols="12">
+                        <v-card elevation="2" rounded="lg" class="pa-4 bg-grey-lighten-5">
+                            <div class="d-flex align-center justify-space-between mb-3">
+                                <div>
+                                    <div class="text-h6 font-weight-bold">{{ formData.invoiceNumber || 'رقم الأمر' }}
+                                    </div>
+                                    <div class="text-body-2 text-grey-darken-1">{{ formData.purchaseDate ||
+                                        'تاريخ الأمر' }}</div>
+                                </div>
+                                <v-chip :color="getStatusColor(formData.status)" size="small">
+                                    {{ getStatusText(formData.status) }}
+                                </v-chip>
+                            </div>
+                            <div v-if="formData.items.length > 0" class="mt-3">
+                                <div class="text-subtitle-2 mb-2">المنتجات: {{ formData.items.length }}
+                                </div>
+                                <div class="text-h6 text-primary">المجموع: {{ formatCurrency(totalAmount) }}
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </FormSection>
+        </template>
+    </BaseModal>
     <!-- Image Preview Dialog -->
     <FilePreviewDialog v-model="previewDialog" :file="selectedFile" />
 </template>
@@ -313,6 +264,7 @@ import FilePreviewDialog from '@/components/common/FilePreviewDialog.vue'
 import { SECTION_COLORS } from '@/constants/colors'
 import FormSection from '@/components/common/FormSection.vue'
 import FileUploadList from '@/components/common/FileUploadList.vue'
+import BaseModal from '@/components/common/BaseModal.vue'
 
 export default {
     name: 'PurchaseOrderModal',
@@ -322,7 +274,8 @@ export default {
         ModalActions,
         FilePreviewDialog,
         FormSection,
-        FileUploadList
+        FileUploadList,
+        BaseModal
     },
     props: {
         modelValue: {
@@ -340,7 +293,6 @@ export default {
             fieldValidations,
             loadingProducts: false,
             productOptions: [],
-            formValid: false,
             loading: false,
             editedPurchaseOrderId: null,
             previewDialog: false,
@@ -365,14 +317,6 @@ export default {
         };
     },
     computed: {
-        dialogVisible: {
-            get() {
-                return this.modelValue;
-            },
-            set(value) {
-                this.$emit('update:modelValue', value);
-            }
-        },
         totalAmount() {
             return this.formData.items.reduce((total, item) => {
                 return total + (item.totalPrice || 0);
@@ -455,9 +399,6 @@ export default {
                 confirmedAt: ''
             };
 
-            if (this.$refs.form) {
-                this.$refs.form.resetValidation();
-            }
         },
 
         previewFile(file) {
@@ -527,10 +468,6 @@ export default {
         },
 
         async saveOrder() {
-            if (!this.$refs.form.validate()) {
-                return;
-            }
-
             if (this.formData.items.length === 0) {
                 error('يجب إضافة منتج واحد على الأقل');
                 return;
@@ -568,7 +505,7 @@ export default {
         },
 
         closeDialog() {
-            this.dialogVisible = false;
+            this.$emit('update:modelValue', false);
         }
     }
 };
