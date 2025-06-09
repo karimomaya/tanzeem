@@ -1,30 +1,17 @@
 <template>
     <div class="table-container">
         <!-- Table Header Controls -->
-        <div class="table-controls">
-            <div class="d-flex align-center justify-space-between">
-                <div class="table-info">
-                    <h3 class="table-title">قائمة المنتجات</h3>
-                    <p class="table-subtitle">{{ products.length }} منتج متاح</p>
+        <BaseTableHeader title="قائمة المنتجات" :total-items="totalItems" item-label="منتج" add-button-text="إضافة منتج"
+            @export="exportData" @add="$emit('add')">
+            <template #controls>
+                <div class="items-per-page">
+                    <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined" density="compact"
+                        hide-details style="width: 80px;" class="items-select"
+                        @update:model-value="$emit('update:items-per-page', $event)" />
                 </div>
-
-                <div class="d-flex align-center ga-3">
-                    <!-- Items per page -->
-                    <div class="items-per-page">
-                        <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
-                        <v-select :model-value="itemsPerPage" @update:model-value="$emit('update:items-per-page', $event)"
-                            :items="[10, 25, 50, 100]" variant="outlined" density="compact" hide-details
-                            style="width: 80px;" class="items-select"></v-select>
-                    </div>
-
-                    <!-- Export button -->
-                    <v-btn variant="outlined" color="primary" prepend-icon="mdi-download" class="export-btn"
-                        @click="exportData">
-                        تصدير
-                    </v-btn>
-                </div>
-            </div>
-        </div>
+            </template>
+        </BaseTableHeader>
 
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
@@ -56,6 +43,12 @@
                             <div v-if="item.description" class="product-list-description">
                                 {{ truncateText(item.description, 50) }}
                             </div>
+                            <MetaDataDisplay 
+                                :created-at="item.createdAt"
+                                :created-by="item.createdBy"
+                                :updated-at="item.updatedAt"
+                                :updated-by="item.updatedBy"
+                            />
 
                         </div>
                     </div>
@@ -110,45 +103,7 @@
                 </template>
                 <!-- Enhanced Actions Column -->
                 <template v-slot:item.actions="{ item }">
-                    <div>
-                        <v-menu>
-                            <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small"
-                                    class="actions-trigger"></v-btn>
-                            </template>
-                            <v-list density="compact" class="actions-menu">
-                                <v-list-item @click="$emit('view', item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="info">mdi-eye</v-icon>
-                                    </template>
-                                    <v-list-item-title>عرض التفاصيل</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="$emit('edit', item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="primary">mdi-pencil</v-icon>
-                                    </template>
-                                    <v-list-item-title>تعديل المنتج</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="duplicateProduct(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="success">mdi-content-copy</v-icon>
-                                    </template>
-                                    <v-list-item-title>نسخ المنتج</v-list-item-title>
-                                </v-list-item>
-
-                                <v-divider></v-divider>
-
-                                <v-list-item @click="$emit('delete', item)" class="action-item action-danger">
-                                    <template v-slot:prepend>
-                                        <v-icon color="error">mdi-delete</v-icon>
-                                    </template>
-                                    <v-list-item-title class="text-error">حذف المنتج</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </div>
+                    <StandardTableActions :actions="productActions" :item="item" @action="handleTableAction" />
                 </template>
 
                 <!-- Enhanced Headers -->
@@ -185,48 +140,25 @@
 
                 <!-- Enhanced No Data -->
                 <template v-slot:no-data>
-                    <div class="no-data-state">
-                        <div class="no-data-content">
-                            <div class="empty-icon">
-                                <v-icon size="60" color="grey-lighten-2">mdi-package-variant-closed</v-icon>
-                            </div>
-                            <h4 class="no-data-title">لا توجد منتجات</h4>
-                            <p class="no-data-subtitle">لم يتم العثور على منتجات مطابقة لمعايير البحث الحالية</p>
-                            <v-btn color="primary" variant="tonal" prepend-icon="mdi-refresh" class="mt-4"
-                                @click="refreshData">
-                                تحديث القائمة
-                            </v-btn>
-                        </div>
-                    </div>
+                    <NoDataState icon="mdi-package-variant-closed" title="لا توجد منتجات"
+                        subtitle="لم يتم العثور على منتجات مطابقة لمعايير البحث الحالية" add-button-text="تحديث القائمة"
+                        @add-item="refreshData" />
                 </template>
-
-                <!-- Enhanced Footer -->
-                <template v-slot:bottom>
-                    <div class="table-footer">
-                        <div class="footer-info">
-                            <span class="text-body-2 text-medium-emphasis">
-                                عرض {{ (page - 1) * itemsPerPage + 1 }} - {{ Math.min(page * itemsPerPage, totalItems) }} من
-                                أصل {{ totalItems }} تصنيف
-                            </span>
-                        </div>
-                        <v-pagination v-if="Math.ceil(totalItems / itemsPerPage) > 1" :model-value="page"
-                            :length="Math.ceil(totalItems / itemsPerPage)" :total-visible="5"
-                            @update:model-value="$emit('update:page', $event)" color="primary" size="small"
-                            class="table-pagination"></v-pagination>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
-                            variant="outlined" density="compact" hide-details style="max-width: 120px;"
-                            class="items-per-page-select"
-                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
-                    </div>
-                </template>
-
             </v-data-table-server>
+            <TablePagination :page="page" :items-per-page="itemsPerPage" :total-items="totalItems" item-label="منتج"
+                :items-per-page-options="itemsPerPageOptions" @update:page="$emit('update:page', $event)"
+                @update:items-per-page="$emit('update:items-per-page', $event)" />
         </v-card>
     </div>
 </template>
 
 <script>
 import { formatCurrency } from '@/utils/currency-util'
+import TablePagination from '@/components/common/TablePagination.vue';
+import NoDataState from '@/components/common/NoDataState.vue';
+import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
+import StandardTableActions from '@/components/common/StandardTableActions.vue';
+import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
 import {
     getStockMeta,
     getStockLevel,
@@ -241,6 +173,13 @@ import {
 
 export default {
     name: 'ProductList',
+    components: {
+        TablePagination,
+        NoDataState,
+        BaseTableHeader,
+        StandardTableActions,
+        MetaDataDisplay
+    },
     props: {
         products: {
             type: Array,
@@ -267,40 +206,25 @@ export default {
             default: () => []
         }
     },
-    mounted() {
-        // Debug logging
-        console.log('ProductList mounted:', {
-            products: this.products,
-            totalItems: this.totalItems,
-            loading: this.loading,
-            itemsPerPage: this.itemsPerPage,
-            headers: this.headers
-        });
-    },
     watch: {
         products: {
             handler(newProducts) {
-                console.log('ProductList products changed:', {
-                    length: newProducts?.length,
-                    firstProduct: newProducts?.[0],
-                    data: newProducts
-                });
+
             },
             immediate: true
         },
-        totalItems(newTotal) {
-            console.log('ProductList totalItems changed:', newTotal);
-        },
-        loading(newLoading) {
-            console.log('ProductList loading changed:', newLoading);
-        }
-
-
     },
-    emits: ['view', 'edit', 'delete', 'duplicate', 'refresh', 'update:options'],
+    emits: ['view', 'edit', 'delete', 'duplicate', 'refresh', 'update:options', 'add', 'update:page', 'update:items-per-page'],
     data() {
         return {
             itemsPerPageOptions: [10, 25, 50, 100],
+            productActions: [
+                { key: 'view', icon: 'mdi-eye', color: 'info', text: 'عرض التفاصيل' },
+                { key: 'edit', icon: 'mdi-pencil', color: 'primary', text: 'تعديل المنتج' },
+                { key: 'duplicate', icon: 'mdi-content-copy', color: 'success', text: 'نسخ المنتج' },
+                { divider: true },
+                { key: 'delete', icon: 'mdi-delete', color: 'error', text: 'حذف المنتج', danger: true }
+            ],
             headers: [
                 {
                     title: 'المنتج',
@@ -358,6 +282,24 @@ export default {
         getProductStatusColor,
         getProductStatusIcon,
         // Action methods
+        handleTableAction(payload) {
+            const { type, item } = payload;
+
+            switch (type) {
+                case 'view':
+                    this.$emit('view', item);
+                    break;
+                case 'edit':
+                    this.$emit('edit', item);
+                    break;
+                case 'duplicate':
+                    this.duplicateProduct(item);
+                    break;
+                case 'delete':
+                    this.$emit('delete', item);
+                    break;
+            }
+        },
         duplicateProduct(item) {
             const duplicatedProduct = createDuplicateProduct(item);
             this.$emit('duplicate', duplicatedProduct);

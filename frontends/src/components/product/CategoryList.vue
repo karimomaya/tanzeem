@@ -1,41 +1,22 @@
 <template>
     <div class="table-container">
         <!-- Table Header Controls -->
-        <div class="table-controls">
-            <div class="d-flex align-center justify-space-between">
-                <div class="table-info">
-                    <h3 class="table-title">قائمة التصنيفات</h3>
-                    <p class="table-subtitle">{{ totalItems }} تصنيف متاح</p>
+        <BaseTableHeader title="قائمة التصنيفات" :total-items="totalItems" item-label="تصنيف" add-button-text="إضافة تصنيف"
+            @export="exportData" @add="$emit('add')">
+            <template #controls>
+                <div class="items-per-page">
+                    <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined" density="compact"
+                        hide-details style="width: 80px;" class="items-select"
+                        @update:model-value="$emit('update:items-per-page', $event)" />
                 </div>
-
-                <div class="d-flex align-center ga-3">
-                    <!-- Items per page -->
-                    <div class="items-per-page">
-                        <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
-                            density="compact" hide-details style="width: 80px;" class="items-select"
-                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
-                    </div>
-
-                    <!-- Export button -->
-                    <v-btn variant="outlined" color="primary" prepend-icon="mdi-download" class="export-btn"
-                        @click="exportData">
-                        تصدير
-                    </v-btn>
-
-                    <!-- Add Category button -->
-                    <v-btn color="primary" prepend-icon="mdi-plus" class="modern-add-btn" @click="$emit('add-category')">
-                        إضافة تصنيف
-                    </v-btn>
-                </div>
-            </div>
-        </div>
-
+            </template>
+        </BaseTableHeader>
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
             <v-data-table-server :headers="categoryHeaders" :items="categories" :items-per-page="itemsPerPage" :page="page"
                 :items-length="totalItems" :loading="loading" loading-text="جاري التحميل... يرجى الانتظار"
-                no-data-text="لا توجد تصنيفات للعرض" @update:options="updateTableOptions" class="modern-table" hover
+                no-data-text="لا توجد تصنيفات للعرض" @update:options="updateOptions" class="modern-table" hover
                 show-current-page>
                 <!-- Enhanced Icon Display -->
                 <template v-slot:item.icon="{ item }">
@@ -55,21 +36,12 @@
                         <div v-if="item.description" class="category-preview">
                             {{ truncateText(item.description, 40) }}
                         </div>
-                        <div class="meta-data">
-                            <div class="meta-item">
-                                <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
-                                <span class="meta-text">{{ formatDate(item.createdAt, 'created') }}</span>
-                                <span v-if="item.createdBy" class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy
-                                }}</span>
-                            </div>
-                            <div v-if="item.updatedAt && isUpdatedRecently(item.createdAt, item.updatedAt)"
-                                class="meta-item">
-                                <v-icon size="12" class="me-1">mdi-calendar-edit</v-icon>
-                                <span class="meta-text">{{ formatDate(item.updatedAt, 'updated') }}</span>
-                                <span v-if="item.updatedBy" class="meta-by"> بواسطة {{ item.updatedBy.name || item.updatedBy
-                                }}</span>
-                            </div>
-                        </div>
+                        <MetaDataDisplay 
+                            :created-at="item.createdAt"
+                            :created-by="item.createdBy"
+                            :updated-at="item.updatedAt"
+                            :updated-by="item.updatedBy"
+                        />
                     </div>
                 </template>
 
@@ -117,56 +89,7 @@
 
                 <!-- Enhanced Actions -->
                 <template v-slot:item.actions="{ item }">
-                    <div>
-                        <v-menu>
-                            <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small"
-                                    class="actions-trigger"></v-btn>
-                            </template>
-                            <v-list density="compact" class="actions-menu">
-                                <v-list-item @click="viewCategory(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="info">mdi-eye</v-icon>
-                                    </template>
-                                    <v-list-item-title>عرض التفاصيل</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="$emit('edit-category', item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="primary">mdi-pencil</v-icon>
-                                    </template>
-                                    <v-list-item-title>تعديل التصنيف</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="duplicateCategory(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="success">mdi-content-copy</v-icon>
-                                    </template>
-                                    <v-list-item-title>نسخ التصنيف</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="toggleCategoryStatus(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon :color="item.active ? 'warning' : 'success'">
-                                            {{ item.active ? 'mdi-pause' : 'mdi-play' }}
-                                        </v-icon>
-                                    </template>
-                                    <v-list-item-title>
-                                        {{ item.active ? 'إلغاء تفعيل' : 'تفعيل' }}
-                                    </v-list-item-title>
-                                </v-list-item>
-
-                                <v-divider></v-divider>
-
-                                <v-list-item @click="$emit('delete-confirmation', item)" class="action-item action-danger">
-                                    <template v-slot:prepend>
-                                        <v-icon color="error">mdi-delete</v-icon>
-                                    </template>
-                                    <v-list-item-title class="text-error">حذف التصنيف</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </div>
+                    <StandardTableActions :actions="categoryActions" :item="item" @action="handleTableAction" />
                 </template>
 
                 <!-- Enhanced Headers -->
@@ -203,53 +126,38 @@
 
                 <!-- Enhanced No Data -->
                 <template v-slot:no-data>
-                    <div class="no-data-state">
-                        <div class="no-data-content">
-                            <div class="no-data-icon">
-                                <v-icon size="60" color="grey-lighten-2">mdi-tag-multiple</v-icon>
-                            </div>
-                            <h4 class="no-data-title">لا توجد تصنيفات</h4>
-                            <p class="no-data-subtitle">لم يتم العثور على تصنيفات مطابقة لمعايير البحث الحالية</p>
-                            <v-btn color="primary" variant="tonal" prepend-icon="mdi-plus" class="mt-4"
-                                @click="$emit('add-category')">
-                                إضافة تصنيف جديد
-                            </v-btn>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Enhanced Footer -->
-                <template v-slot:bottom>
-                    <div class="table-footer">
-                        <div class="footer-info">
-                            <span class="text-body-2 text-medium-emphasis">
-                                عرض {{ (page - 1) * itemsPerPage + 1 }} - {{ Math.min(page * itemsPerPage, totalItems) }} من
-                                أصل {{ totalItems }} تصنيف
-                            </span>
-                        </div>
-                        <v-pagination v-if="Math.ceil(totalItems / itemsPerPage) > 1" :model-value="page"
-                            :length="Math.ceil(totalItems / itemsPerPage)" :total-visible="5"
-                            @update:model-value="$emit('update:page', $event)" color="primary" size="small"
-                            class="table-pagination"></v-pagination>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
-                            variant="outlined" density="compact" hide-details style="max-width: 120px;"
-                            class="items-per-page-select"
-                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
-                    </div>
+                    <NoDataState icon="mdi-tag-multiple" title="لا توجد تصنيفات"
+                        subtitle="لم يتم العثور على تصنيفات مطابقة لمعايير البحث الحالية" add-button-text="إضافة تصنيف جديد"
+                        @add-item="$emit('add')" />
                 </template>
             </v-data-table-server>
+            <TablePagination :page="page" :items-per-page="itemsPerPage" :total-items="totalItems" item-label="تصنيف"
+                :items-per-page-options="itemsPerPageOptions" @update:page="$emit('update:page', $event)"
+                @update:items-per-page="$emit('update:items-per-page', $event)" />
         </v-card>
     </div>
 </template>
 
 <script>
-import { 
-    isUpdatedRecently,
+
+import TablePagination from '@/components/common/TablePagination.vue';
+import NoDataState from '@/components/common/NoDataState.vue';
+import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
+import StandardTableActions from '@/components/common/StandardTableActions.vue';
+import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
+import {
     truncateText,
 } from '@/utils/product-util';
-import { formatDate } from '@/utils/date-util';
+import { formatDate, isUpdatedRecently } from '@/utils/date-util';
 export default {
     name: 'CategoryList',
+    components: {
+        TablePagination,
+        NoDataState,
+        BaseTableHeader,
+        StandardTableActions,
+        MetaDataDisplay
+    },
     props: {
         categories: {
             type: Array,
@@ -284,23 +192,44 @@ export default {
             default: 'name-asc'
         }
     },
-    emits: [
-        'add-category',
-        'edit-category',
-        'delete-confirmation',
-        'update:page',
-        'update:items-per-page',
-        'update:search-term',
-        'update:status-filter',
-        'update:sort-option',
-        'refresh',
-        'update:options',
-        'view',
-        'duplicate',
-        'toggle-status'
-    ],
+    emits: [ 'add', 'edit', 'delete', 'update:page', 'update:items-per-page', 'update:search-term', 'update:status-filter', 'update:sort-option', 'refresh', 'update:options', 'view', 'duplicate', 'toggle-status' ],
     data() {
         return {
+            categoryActions: [
+                {
+                    key: 'view',
+                    icon: 'mdi-eye',
+                    color: 'info',
+                    text: 'عرض التفاصيل'
+                },
+                {
+                    key: 'edit',
+                    icon: 'mdi-pencil',
+                    color: 'primary',
+                    text: 'تعديل التصنيف'
+                },
+                {
+                    key: 'duplicate',
+                    icon: 'mdi-content-copy',
+                    color: 'success',
+                    text: 'نسخ التصنيف'
+                },
+                {
+                    key: 'toggle-status',
+                    icon: 'mdi-pause',
+                    color: 'warning',
+                    text: 'تغيير الحالة',
+                    condition: (item) => item.active // Only show for active items
+                },
+                { divider: true },
+                {
+                    key: 'delete',
+                    icon: 'mdi-delete',
+                    color: 'error',
+                    text: 'حذف التصنيف',
+                    danger: true
+                }
+            ],
             categoryHeaders: [
                 { title: 'الأيقونة', key: 'icon', sortable: false, align: 'start', width: '10%' },
                 { title: 'الاسم', key: 'name', sortable: true, width: '25%' },
@@ -325,12 +254,31 @@ export default {
         };
     },
     methods: {
-
         truncateText,
         isUpdatedRecently,
         formatDate,
-        updateTableOptions(options) {
-            // Handle table updates (pagination, sorting, etc.)
+        handleTableAction(payload) {
+            const { type, item } = payload;
+
+            switch (type) {
+                case 'view':
+                    this.$emit('view', item);
+                    break;
+                case 'edit':
+                    this.$emit('edit', item);  // ✅ Changed from 'edit-category'
+                    break;
+                case 'duplicate':
+                    this.duplicateCategory(item);
+                    break;
+                case 'toggle-status':
+                    this.toggleCategoryStatus(item);
+                    break;
+                case 'delete':
+                    this.$emit('delete', item);  // ✅ Changed from 'delete-confirmation'
+                    break;
+            }
+        },
+        updateOptions(options) {
             this.$emit('update:options', options);
         },
 
@@ -393,7 +341,7 @@ export default {
             link.click();
             document.body.removeChild(link);
         },
-        
+
         getCategoryActivityColor(activity) {
             if (activity >= 80) return 'success';
             if (activity >= 50) return 'info';
@@ -406,6 +354,7 @@ export default {
 
 <style scoped>
 @import '@/styles/product.css';
+@import '@/styles/table.css';
 
 /* Table Controls */
 .items-per-page {
@@ -685,11 +634,11 @@ export default {
         flex-direction: column;
         gap: 2px;
     }
-    
+
     .activity-percentage {
         font-size: 12px;
     }
-    
+
     .activity-label {
         font-size: 9px;
     }
@@ -699,7 +648,7 @@ export default {
     .activity-progress-container {
         min-width: 80px;
     }
-    
+
     .activity-percentage {
         font-size: 11px;
     }

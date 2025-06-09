@@ -11,7 +11,7 @@
 
         <!-- Suppliers Grid -->
         <v-row v-else>
-            <v-col v-for="supplier in paginatedSuppliers" :key="supplier.id" cols="12" sm="6" md="4" lg="3" xl="2">
+            <v-col v-for="supplier in paginatedItems" :key="supplier.id" cols="12" sm="6" md="4" lg="3" xl="2">
                 <v-card class="supplier-card card-base grid-card" elevation="0" @click="viewSupplierDetails(supplier)">
                     <!-- Supplier Icon Section -->
                     <div class="image-section">
@@ -26,7 +26,8 @@
                             <div class="overlay">
                                 <!-- Status Badge -->
                                 <div class="status-badge">
-                                    <v-chip :color="supplier.isActive ? 'success' : 'error'" size="small" class="status-chip">
+                                    <v-chip :color="supplier.isActive ? 'success' : 'error'" size="small"
+                                        class="status-chip">
                                         <v-icon start size="12">
                                             {{ supplier.isActive ? 'mdi-check-circle' : 'mdi-close-circle' }}
                                         </v-icon>
@@ -37,8 +38,7 @@
                                 <!-- Quick Actions -->
                                 <div class="quick-actions">
                                     <v-btn icon="mdi-heart-outline" size="small" variant="elevated" color="white"
-                                        class="action-btn favorite-btn"
-                                        @click.stop="toggleFavorite(supplier)"></v-btn>
+                                        class="action-btn favorite-btn" @click.stop="toggleFavorite(supplier)"></v-btn>
 
                                     <v-menu>
                                         <template v-slot:activator="{ props }">
@@ -208,7 +208,7 @@
         </v-row>
 
         <!-- Empty State -->
-        <div v-if="!loading && filteredSuppliers.length === 0" class="empty-state no-data-state">
+        <div v-if="!loading && filteredItems.length === 0" class="empty-state no-data-state">
             <div class="empty-content no-data-content">
                 <div class="empty-icon">
                     <v-icon size="80" color="grey-lighten-2">mdi-truck</v-icon>
@@ -222,16 +222,9 @@
         </div>
 
         <!-- Enhanced Pagination Card -->
-        <TablePagination
-            v-if="!loading && totalItems > 0"
-            :page="page"
-            :items-per-page="itemsPerPage"
-            :total-items="totalItems"
-            item-label="مورد"
-            :items-per-page-options="itemsPerPageOptions"
-            @update:page="handlePageChange"
-            @update:items-per-page="handleItemsPerPageChange"
-        />
+        <TablePagination v-if="!loading && totalItems > 0" :page="page" :items-per-page="itemsPerPage"
+            :total-items="totalItems" item-label="مورد" :items-per-page-options="itemsPerPageOptions"
+            @update:page="handlePageChange" @update:items-per-page="handleItemsPerPageChange" />
         <!-- Floating Refresh Button -->
         <v-btn v-if="!loading" icon="mdi-refresh" color="primary" size="large" class="refresh-fab" elevation="8"
             @click="$emit('refresh')" :loading="loading">
@@ -250,10 +243,9 @@
 
 <script>
 import { formatCurrency } from '@/utils/currency-util';
-import { formatDate } from '@/utils/date-util';
+import { formatDate, isUpdatedRecently } from '@/utils/date-util';
 import TablePagination from '@/components/common/TablePagination.vue';
-import { 
-    isUpdatedRecently,
+import {
     truncateText
 } from '@/utils/product-util';
 
@@ -279,9 +271,9 @@ export default {
             type: Number,
             default: 12
         },
-        sortBy: {
-            type: Array,
-            default: () => []
+        totalItems: {
+            type: Number,
+            default: 0
         },
         searchTerm: {
             type: String,
@@ -291,31 +283,26 @@ export default {
             type: String,
             default: 'all'
         },
-        totalItems: {
-            type: Number,
-            default: 0
+        sortBy: {
+            type: Array,
+            default: () => []
         }
     },
     emits: ['edit', 'delete', 'update:page', 'update:items-per-page', 'update:sort-by', 'refresh', 'view', 'duplicate', 'favorite', 'toggle-status'],
 
     data() {
         return {
-            jumpToPage: null,
             itemsPerPageOptions: [12, 24, 48, 96]
         };
     },
 
     computed: {
-        filteredSuppliers() {
-            // Since filtering is now handled on the backend, 
-            // we just return the suppliers as received
-            return this.suppliers;
+        filteredItems() {
+            return this[this.itemsProperty];
         },
 
-        paginatedSuppliers() {
-            // Since pagination is handled on the backend,
-            // we just return the suppliers as received
-            return this.suppliers;
+        paginatedItems() {
+            return this[this.itemsProperty];
         },
 
         totalPages() {
@@ -328,25 +315,17 @@ export default {
 
         endItem() {
             return Math.min(this.page * this.itemsPerPage, this.totalItems);
+        },
+
+        itemsProperty() {
+            return 'suppliers'; 
         }
     },
-
-    watch: {
-        page(newPage) {
-            this.jumpToPage = newPage;
-        }
-    },
-
-    mounted() {
-        this.jumpToPage = this.page;
-    },
-
     methods: {
         formatCurrency,
         isUpdatedRecently,
         formatDate,
         truncateText,
-
         getSupplierRatingColor(rating) {
             if (rating >= 90) return 'success';
             if (rating >= 75) return 'info';
@@ -389,16 +368,6 @@ export default {
                 this.$emit('update:page', 1);
             }
         },
-
-        handleQuickJump() {
-            const pageNum = parseInt(this.jumpToPage);
-            if (pageNum && pageNum >= 1 && pageNum <= this.totalPages && pageNum !== this.page) {
-                this.handlePageChange(pageNum);
-            } else {
-                // Reset to current page if invalid
-                this.jumpToPage = this.page;
-            }
-        }
     }
 };
 </script>

@@ -120,10 +120,13 @@
 
                                 <!-- Search -->
                                 <v-col>
-                                    <v-text-field v-model="searchTerm"
+                                    <AdvancedSearch :entity-type="activeTab"
                                         :placeholder="`البحث في ${activeTab === 'products' ? 'المنتجات' : 'التصنيفات'}...`"
-                                        prepend-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details
-                                        class="modern-search" style="max-width: 300px;"></v-text-field>
+                                        :status-options="statusOptions" :category-options="categoryOptions"
+                                        :search-term="searchTerm" :search-fields="searchFieldsConfig"
+                                        @update:search-term="searchTerm = $event" @apply-filters="handleAdvancedFilters"
+                                        @clear-filters="handleClearFilters" @filter-change="handleFilterChange"
+                                        style="max-width: 400px;" />
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -222,11 +225,11 @@
                                     <CategoryList v-else :categories="categories" :loading="loading"
                                         :page="categoryPagination.page" :items-per-page="categoryPagination.itemsPerPage"
                                         :total-items="categoryPagination.totalItems" :search-term="searchTerm"
-                                        :status-filter="statusFilter" @add-category="openAddDialog"
-                                        @edit-category="editCategory" @delete-confirmation="confirmDeleteCategory"
-                                        @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:sort-option="updateSortOption" @refresh="loadCategories"
-                                        @update:options="updateTableOptions" @toggle-status="updateCategoryStatus" />
+                                        :status-filter="statusFilter" @add="openAddDialog" @edit="editCategory"
+                                        @delete="confirmDeleteCategory" @update:page="updatePage"
+                                        @update:items-per-page="updateItemsPerPage" @update:sort-option="updateSortOption"
+                                        @refresh="loadCategories" @update:options="updateTableOptions"
+                                        @toggle-status="updateCategoryStatus" />
                                 </div>
                             </v-window-item>
                         </v-window>
@@ -260,6 +263,7 @@ import CategoryList from '@/components/product/CategoryList.vue';
 import { getBusinessType, getTenantInfo } from '@/utils/auth-util';
 import ProductStats from '@/components/product/ProductStats.vue';
 import CategoryStats from '@/components/product/CategoryStats.vue';
+import AdvancedSearch from '@/components/common/AdvancedSearch.vue';
 
 export default {
     name: 'ProductsPage',
@@ -273,6 +277,7 @@ export default {
         DeleteModal,
         ProductStats,
         CategoryStats,
+        AdvancedSearch
     },
     data() {
         return {
@@ -290,13 +295,13 @@ export default {
                 pendingTasks: 15,
                 monthlyRevenue: 125000
             },
-
+            activeFilters: {},
             productDialog: false,
             categoryDialog: false,
             deleteDialog: false,
             selectedProduct: null,
             selectedCategory: null,
-
+            categoryOptions: [],
             categoryStatusOptions: [
                 { title: 'الكل', value: 'all' },
                 { title: 'نشط', value: 'true' },
@@ -336,7 +341,27 @@ export default {
     },
 
     computed: {
-
+        searchFieldsConfig() {
+            if (this.activeTab === 'products') {
+                return {
+                    text: true,
+                    status: true,
+                    category: true,
+                    dateRange: true,
+                    stock: true,
+                    rating: false
+                };
+            } else {
+                return {
+                    text: true,
+                    status: true,
+                    category: false,
+                    dateRange: true,
+                    stock: false,
+                    rating: false
+                };
+            }
+        },
         addButtonLabel() {
             return this.activeTab === 'products' ? 'إضافة منتج' : 'إضافة تصنيف';
         },
@@ -346,9 +371,7 @@ export default {
         currentPagination() {
             return this.activeTab === 'products' ? this.productPagination : this.categoryPagination;
         }
-
     },
-
     created() {
         this.businessType = getBusinessType();
         this.tenantInfo = getTenantInfo();
@@ -356,6 +379,7 @@ export default {
         if (this.businessType === 'PRODUCT') {
             this.loadCategories();
             this.loadProducts();
+            this.loadCategoryOptionsForSearch();
         }
     },
 
@@ -397,6 +421,63 @@ export default {
         formatCurrency,
         notifyWhenReady() {
             success('سيتم إشعارك عند إطلاق ميزات إدارة الخدمات');
+        },
+        handleClearFilters() {
+            console.log('Filters cleared');
+            this.activeFilters = {};
+            this.searchTerm = '';
+
+            // Reset to load all data
+            if (this.activeTab === 'products') {
+                this.loadProducts();
+            } else {
+                this.loadCategories();
+            }
+        },
+        handleFilterChange(filters) {
+            // Handle real-time filter changes (like text search)
+            if (filters.text !== undefined) {
+                this.searchTerm = filters.text;
+            }
+        },
+        async loadCategoryOptionsForSearch() {
+            try {
+                // Load categories for search dropdown
+                const response = await getCategories(new URLSearchParams({ size: 100 }));
+                if (response && response.content) {
+                    this.categoryOptions = response.content.map(cat => ({
+                        title: cat.name,
+                        value: cat.id
+                    }));
+                }
+            } catch (error) {
+                console.error('Error loading categories for search:', error);
+            }
+        },
+        handleAdvancedFilters(filters) {
+            console.log('Advanced filters applied:', filters);
+            this.activeFilters = filters;
+
+            // Apply filters based on active tab
+            if (this.activeTab === 'products') {
+                this.applyProductFilters(filters);
+            } else {
+                this.applyCategoryFilters(filters);
+            }
+        },
+        applyProductFilters(filters) {
+            // Update product pagination with filters
+            this.productPagination.page = 1; // Reset to first page
+
+            // Add filter logic to buildSearchParameter method
+            this.loadProducts();
+        },
+        applyCategoryFilters(filters) {
+            // Update category pagination with filters
+            this.categoryPagination.page = 1; // Reset to first page
+
+            // Add filter logic to buildSearchParameter method  
+            this.loadCategories();
         },
         async updateCategoryStatus(categoryData) {
             // Updating existing category
@@ -456,34 +537,73 @@ export default {
             const pagination = type === 'products' ? this.productPagination : this.categoryPagination;
 
             const params = new URLSearchParams({
-                page: pagination.page - 1, // Convert to 0-based index
+                page: pagination.page - 1,
                 size: pagination.itemsPerPage
             });
 
-            // Add search filter
+            // Basic search text
             if (this.searchTerm) {
                 params.append('search', this.searchTerm);
             }
 
-            // Add different status filters based on tab
-            // Use the single statusFilter for both
-            if (type === 'products') {
+            // ✅ Add advanced filters
+            if (this.activeFilters && Object.keys(this.activeFilters).length > 0) {
+                // Status filter
+                if (this.activeFilters.status) {
+                    params.append('isActive', this.activeFilters.status);
+                } else if (this.statusFilter && this.statusFilter !== 'all') {
+                    params.append('isActive', this.statusFilter);
+                } else {
+                    params.append('isActive', 'all');
+                }
+
+                // Category filter
+                if (this.activeFilters.category) {
+                    params.append('categoryId', this.activeFilters.category);
+                }
+
+                // Product-specific filters
+                if (type === 'products') {
+                    if (this.activeFilters.priceFrom) {
+                        params.append('priceFrom', this.activeFilters.priceFrom);
+                    }
+                    if (this.activeFilters.priceTo) {
+                        params.append('priceTo', this.activeFilters.priceTo);
+                    }
+                    if (this.activeFilters.stockFrom) {
+                        params.append('stockFrom', this.activeFilters.stockFrom);
+                    }
+                    if (this.activeFilters.stockTo) {
+                        params.append('stockTo', this.activeFilters.stockTo);
+                    }
+                }
+
+                // Date range filter
+                if (this.activeFilters.dateRange && this.activeFilters.dateRange.length === 2) {
+                    params.append('startDate', this.activeFilters.dateRange[0]);
+                    params.append('endDate', this.activeFilters.dateRange[1]);
+                }
+            } else {
+                // Fallback to basic status filter
                 if (this.statusFilter && this.statusFilter !== 'all') {
-                    if (['ACTIVE', 'LOW_STOCK', 'OUT_OF_STOCK', 'DISABLED'].includes(this.statusFilter)) {
-                        params.append('productStatus', this.statusFilter);
-                        params.append('isActive', 'all');
+                    if (type === 'products') {
+                        if (['ACTIVE', 'LOW_STOCK', 'OUT_OF_STOCK', 'DISABLED'].includes(this.statusFilter)) {
+                            params.append('productStatus', this.statusFilter);
+                            params.append('isActive', 'all');
+                        } else {
+                            params.append('isActive', this.statusFilter);
+                            params.append('productStatus', 'all');
+                        }
                     } else {
                         params.append('isActive', this.statusFilter);
-                        params.append('productStatus', 'all');
                     }
                 } else {
                     params.append('isActive', 'all');
-                    params.append('productStatus', 'all');
+                    if (type === 'products') {
+                        params.append('productStatus', 'all');
+                    }
                 }
-            } else {
-                params.append('isActive', this.statusFilter);
             }
-
 
             // Add sorting if available
             if (pagination.sortBy && pagination.sortBy.length > 0) {
@@ -503,6 +623,7 @@ export default {
                     params.append('sort', `${key},${order}`);
                 });
             }
+
             return params;
         },
 

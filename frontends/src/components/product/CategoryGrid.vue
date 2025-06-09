@@ -11,7 +11,7 @@
 
         <!-- Categories Grid -->
         <v-row v-else>
-            <v-col v-for="category in paginatedCategories" :key="category.id" cols="12" sm="6" md="4" lg="3" xl="2">
+            <v-col v-for="category in paginatedItems" :key="category.id" cols="12" sm="6" md="4" lg="3" xl="2">
                 <v-card class="category-card card-base grid-card" elevation="0" @click="viewCategoryDetails(category)">
                     <!-- Category Icon Section -->
                     <div class="image-section">
@@ -112,21 +112,8 @@
                         </p>
 
                         <!-- Category Metadata -->
-                        <div class="meta-section">
-                            <div class="meta-item">
-                                <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
-                                <span class="meta-text">{{ formatDate(category.createdAt, 'created') }}</span>
-                                <span v-if="category.createdBy" class="meta-by"> بواسطة {{ category.createdBy.name ||
-                                    category.createdBy }}</span>
-                            </div>
-                            <div v-if="category.updatedAt && isUpdatedRecently(category.createdAt, category.updatedAt)"
-                                class="meta-item">
-                                <v-icon size="12" class="me-1">mdi-calendar-edit</v-icon>
-                                <span class="meta-text">{{ formatDate(category.updatedAt, 'updated') }}</span>
-                                <span v-if="category.updatedBy" class="meta-by"> بواسطة {{ category.updatedBy.name ||
-                                    category.updatedBy }}</span>
-                            </div>
-                        </div>
+                        <MetaDataDisplay :created-at="category.createdAt" :created-by="category.createdBy"
+                            :show-updated="false" />
 
                         <!-- Category Stats -->
                         <div class="category-stats">
@@ -189,7 +176,7 @@
         </v-row>
 
         <!-- Empty State -->
-        <div v-if="!loading && filteredCategories.length === 0" class="empty-state no-data-state">
+        <div v-if="!loading && filteredItems.length === 0" class="empty-state no-data-state">
             <div class="empty-content no-data-content">
                 <div class="empty-icon">
                     <v-icon size="80" color="grey-lighten-2">mdi-tag-multiple</v-icon>
@@ -203,85 +190,16 @@
         </div>
 
         <!-- Enhanced Pagination Card -->
-        <v-card v-if="!loading && totalItems > 0" class="pagination-card" elevation="0">
-            <v-card-text class="pagination-content pagination-content">
-                <!-- Pagination Info -->
-                <div class="pagination-info pagination-info">
-                    <div class="info-section pagination-info-section">
-                        <span class="text-body-2 text-large-emphasis">
-                            عرض {{ startItem }} - {{ endItem }} من أصل {{ totalItems }} تصنيف
-                        </span>
-                        <div class="pagination-stats">
-                            <v-chip size="x-small" color="primary" variant="tonal" class="me-2">
-                                <v-icon start size="12">mdi-layers</v-icon>
-                                صفحة {{ page }} من {{ totalPages }}
-                            </v-chip>
-                            <v-chip size="x-small" color="info" variant="tonal">
-                                <v-icon start size="12">mdi-grid</v-icon>
-                                {{ itemsPerPage }} عنصر/صفحة
-                            </v-chip>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Pagination Controls -->
-                <div class="pagination-controls">
-                    <v-pagination :model-value="page" :length="totalPages" :total-visible="getPaginationVisible"
-                        @update:model-value="handlePageChange" color="primary" size="small" class="pagination-control"
-                        :disabled="loading" show-first-last-page></v-pagination>
-                </div>
-
-                <!-- Items Per Page & Actions -->
-                <div class="pagination-actions">
-                    <div class="items-per-page">
-                        <span class="text-body-2 text-large-emphasis me-2">عرض:</span>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
-                            density="compact" hide-details style="width: 90px;" class="items-select"
-                            @update:model-value="handleItemsPerPageChange" :disabled="loading"></v-select>
-                    </div>
-
-                    <!-- Quick Jump -->
-                    <div class="quick-jump">
-                        <span class="text-body-2 text-large-emphasis me-2">انتقال لصفحة:</span>
-                        <v-text-field v-model="jumpToPage" type="number" :min="1" :max="totalPages" variant="outlined"
-                            density="compact" hide-details style="width: 80px;" class="jump-input"
-                            @keyup.enter="handleQuickJump" @blur="handleQuickJump"
-                            :disabled="loading || totalPages <= 1"></v-text-field>
-                    </div>
-                </div>
-            </v-card-text>
-
-            <!-- Mobile Pagination -->
-            <div class="mobile-pagination d-md-none">
-                <v-card-text class="mobile-pagination-content">
-                    <div class="mobile-info">
-                        <span class="text-body-2 text-large-emphasis">
-                            {{ startItem }} - {{ endItem }} من {{ totalItems }}
-                        </span>
-                    </div>
-
-                    <div class="mobile-controls">
-                        <v-btn icon="mdi-chevron-right" size="small" variant="outlined" color="primary"
-                            :disabled="page >= totalPages || loading" @click="handlePageChange(page + 1)"></v-btn>
-
-                        <div class="mobile-page-info">
-                            <span class="text-body-2 font-weight-large">
-                                {{ page }} / {{ totalPages }}
-                            </span>
-                        </div>
-
-                        <v-btn icon="mdi-chevron-left" size="small" variant="outlined" color="primary"
-                            :disabled="page <= 1 || loading" @click="handlePageChange(page - 1)"></v-btn>
-                    </div>
-
-                    <div class="mobile-items-per-page">
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
-                            variant="outlined" density="compact" hide-details class="mobile-items-select"
-                            @update:model-value="handleItemsPerPageChange" :disabled="loading"></v-select>
-                    </div>
-                </v-card-text>
-            </div>
-        </v-card>
+        <TablePagination
+    v-if="!loading && totalItems > 0"
+    :page="page"
+    :items-per-page="itemsPerPage"
+    :total-items="totalItems"
+    item-label="تصنيف"
+    :items-per-page-options="itemsPerPageOptions"
+    @update:page="handlePageChange"
+    @update:items-per-page="handleItemsPerPageChange"
+/>
 
         <!-- Floating Refresh Button -->
         <v-btn v-if="!loading" icon="mdi-refresh" color="primary" size="large" class="refresh-fab" elevation="8"
@@ -295,15 +213,19 @@
 </template>
 
 <script>
-import { 
-    isUpdatedRecently,
-    getPaginationVisible,
+import {
     truncateText
 } from '@/utils/product-util';
-import { formatDate } from '@/utils/date-util'
+import { formatDate, isUpdatedRecently } from '@/utils/date-util'
+import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
+import TablePagination from '@/components/common/TablePagination.vue';
 
 export default {
     name: 'CategoryGrid',
+    components: {
+        MetaDataDisplay,
+        TablePagination
+    },
     props: {
         categories: {
             type: Array,
@@ -319,7 +241,7 @@ export default {
         },
         itemsPerPage: {
             type: Number,
-            default: 10
+            default: 12
         },
         totalItems: {
             type: Number,
@@ -341,21 +263,16 @@ export default {
     emits: ['edit', 'delete', 'update:page', 'update:items-per-page', 'update:sort-by', 'refresh', 'view', 'duplicate', 'favorite', 'toggle-status'],
     data() {
         return {
-            jumpToPage: null,
-            itemsPerPageOptions: [10, 25, 50, 100]
+            itemsPerPageOptions: [12, 24, 48, 96]
         };
     },
     computed: {
-        filteredCategories() {
-            // Since filtering is now handled on the backend, 
-            // we just return the categories as received
-            return this.categories;
+        filteredItems() {
+            return this[this.itemsProperty];
         },
 
-        paginatedCategories() {
-            // Since pagination is handled on the backend,
-            // we just return the categories as received
-            return this.categories;
+        paginatedItems() {
+            return this[this.itemsProperty];
         },
 
         totalPages() {
@@ -370,27 +287,13 @@ export default {
             return Math.min(this.page * this.itemsPerPage, this.totalItems);
         },
 
-
-        activeCount() {
-            return this.categories.filter(cat => cat.active).length;
-        },
-
-        inactiveCount() {
-            return this.categories.filter(cat => !cat.active).length;
+        itemsProperty() {
+            return 'categories'; 
         }
-    },
-    watch: {
-        page(newPage) {
-            this.jumpToPage = newPage;
-        }
-    },
-    mounted() {
-        this.jumpToPage = this.page;
     },
     methods: {
         isUpdatedRecently,
         formatDate,
-        getPaginationVisible,
         truncateText,
 
         getCategoryActivityColor(activity) {
@@ -427,7 +330,6 @@ export default {
                 this.$emit('update:page', newPage);
             }
         },
-
         handleItemsPerPageChange(newItemsPerPage) {
             this.$emit('update:items-per-page', newItemsPerPage);
             // Reset to first page when changing items per page
@@ -435,16 +337,6 @@ export default {
                 this.$emit('update:page', 1);
             }
         },
-
-        handleQuickJump() {
-            const pageNum = parseInt(this.jumpToPage);
-            if (pageNum && pageNum >= 1 && pageNum <= this.totalPages && pageNum !== this.page) {
-                this.handlePageChange(pageNum);
-            } else {
-                // Reset to current page if invalid
-                this.jumpToPage = this.page;
-            }
-        }
     }
 };
 </script>
@@ -589,12 +481,4 @@ export default {
     padding: 8px 12px !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
-
-
-
-
-
-
-
-
 </style>

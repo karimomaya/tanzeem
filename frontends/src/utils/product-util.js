@@ -137,17 +137,6 @@ export function validateImageFile(file) {
 // System Functions
 // ===========================================
 
-
-export function isUpdatedRecently(createdAt, updatedAt) {
-    if (!createdAt || !updatedAt) return false;
-
-    const created = new Date(createdAt);
-    const updated = new Date(updatedAt);
-
-    // Show update info if updated more than 1 minute after creation
-    return (updated - created) > (1000 * 60);
-}
-
 export function truncateText(text, maxLength) {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;

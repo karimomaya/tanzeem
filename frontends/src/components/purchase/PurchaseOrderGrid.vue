@@ -11,7 +11,7 @@
 
         <!-- Purchase Orders Grid -->
         <v-row v-else>
-            <v-col v-for="order in paginatedOrders" :key="order.id" cols="12" sm="6" md="4" lg="3" xl="3">
+            <v-col v-for="order in paginatedItems" :key="order.id" cols="12" sm="6" md="4" lg="3" xl="3">
                 <v-card class="order-card card-base grid-card" elevation="0" @click="viewOrderDetails(order)">
                     <!-- Order Icon Section -->
                     <div class="image-section">
@@ -36,10 +36,9 @@
 
                                 <!-- Quick Actions -->
                                 <div class="quick-actions">
-                                    <v-btn v-if="order.status === 'PENDING'" icon="mdi-check" size="small" 
+                                    <v-btn v-if="order.status === 'PENDING'" icon="mdi-check" size="small"
                                         variant="elevated" color="white" class="action-btn favorite-btn"
-                                        @click.stop="$emit('mark-received', order)" 
-                                        v-tooltip="'تسليم الأمر'"></v-btn>
+                                        @click.stop="$emit('mark-received', order)" v-tooltip="'تسليم الأمر'"></v-btn>
 
                                     <v-menu>
                                         <template v-slot:activator="{ props }">
@@ -54,7 +53,7 @@
                                                 <v-list-item-title>عرض التفاصيل</v-list-item-title>
                                             </v-list-item>
 
-                                            <v-list-item v-if="order.status === 'PENDING'" @click="$emit('edit', order)" 
+                                            <v-list-item v-if="order.status === 'PENDING'" @click="$emit('edit', order)"
                                                 class="menu-item action-item">
                                                 <template v-slot:prepend>
                                                     <v-icon color="primary" size="16">mdi-pencil</v-icon>
@@ -69,7 +68,7 @@
                                                 <v-list-item-title>نسخ الأمر</v-list-item-title>
                                             </v-list-item>
 
-                                            <v-list-item v-if="order.status === 'PENDING'" 
+                                            <v-list-item v-if="order.status === 'PENDING'"
                                                 @click="$emit('mark-received', order)" class="menu-item action-item">
                                                 <template v-slot:prepend>
                                                     <v-icon color="success" size="16">mdi-check</v-icon>
@@ -174,27 +173,26 @@
                             عرض
                         </v-btn>
 
-                        <v-btn v-if="order.status === 'PENDING'" variant="tonal" color="success" size="small" 
+                        <v-btn v-if="order.status === 'PENDING'" variant="tonal" color="success" size="small"
                             class="action-button" prepend-icon="mdi-pencil" @click.stop="$emit('edit', order)">
                             تعديل
                         </v-btn>
 
                         <v-spacer></v-spacer>
 
-                        <v-btn v-if="order.status === 'PENDING'" icon="mdi-check" size="small" variant="text" 
+                        <v-btn v-if="order.status === 'PENDING'" icon="mdi-check" size="small" variant="text"
                             color="success" class="receive-button" @click.stop="$emit('mark-received', order)"
                             v-tooltip="'تسليم الأمر'"></v-btn>
 
-                        <v-btn v-if="order.status === 'PENDING'" icon="mdi-delete" size="small" variant="text" 
-                            color="error" class="delete-button" @click.stop="$emit('delete', order)"
-                            v-tooltip="'حذف الأمر'"></v-btn>
+                        <v-btn v-if="order.status === 'PENDING'" icon="mdi-delete" size="small" variant="text" color="error"
+                            class="delete-button" @click.stop="$emit('delete', order)" v-tooltip="'حذف الأمر'"></v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
         </v-row>
 
         <!-- Empty State -->
-        <div v-if="!loading && filteredOrders.length === 0" class="empty-state no-data-state">
+        <div v-if="!loading && filteredItems.length === 0" class="empty-state no-data-state">
             <div class="empty-content no-data-content">
                 <div class="empty-icon">
                     <v-icon size="80" color="grey-lighten-2">mdi-clipboard-list</v-icon>
@@ -208,85 +206,9 @@
         </div>
 
         <!-- Enhanced Pagination Card -->
-        <v-card v-if="!loading && totalItems > 0" class="pagination-card" elevation="0">
-            <v-card-text class="pagination-content">
-                <!-- Pagination Info -->
-                <div class="pagination-info">
-                    <div class="info-section pagination-info-section">
-                        <span class="text-body-2 text-large-emphasis">
-                            عرض {{ startItem }} - {{ endItem }} من أصل {{ totalItems }} أمر شراء
-                        </span>
-                        <div class="pagination-stats">
-                            <v-chip size="x-small" color="primary" variant="tonal" class="me-2">
-                                <v-icon start size="12">mdi-layers</v-icon>
-                                صفحة {{ page }} من {{ totalPages }}
-                            </v-chip>
-                            <v-chip size="x-small" color="info" variant="tonal">
-                                <v-icon start size="12">mdi-grid</v-icon>
-                                {{ itemsPerPage }} عنصر/صفحة
-                            </v-chip>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Pagination Controls -->
-                <div class="pagination-controls">
-                    <v-pagination :model-value="page" :length="totalPages" :total-visible="getPaginationVisible"
-                        @update:model-value="handlePageChange" color="primary" size="small" class="pagination-control"
-                        :disabled="loading" show-first-last-page></v-pagination>
-                </div>
-
-                <!-- Items Per Page & Actions -->
-                <div class="pagination-actions">
-                    <div class="items-per-page">
-                        <span class="text-body-2 text-large-emphasis me-2">عرض:</span>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
-                            density="compact" hide-details style="width: 90px;" class="items-select"
-                            @update:model-value="handleItemsPerPageChange" :disabled="loading"></v-select>
-                    </div>
-
-                    <!-- Quick Jump -->
-                    <div class="quick-jump">
-                        <span class="text-body-2 text-large-emphasis me-2">انتقال لصفحة:</span>
-                        <v-text-field v-model="jumpToPage" type="number" :min="1" :max="totalPages" variant="outlined"
-                            density="compact" hide-details style="width: 80px;" class="jump-input"
-                            @keyup.enter="handleQuickJump" @blur="handleQuickJump"
-                            :disabled="loading || totalPages <= 1"></v-text-field>
-                    </div>
-                </div>
-            </v-card-text>
-
-            <!-- Mobile Pagination -->
-            <div class="mobile-pagination d-md-none">
-                <v-card-text class="mobile-pagination-content">
-                    <div class="mobile-info">
-                        <span class="text-body-2 text-large-emphasis">
-                            {{ startItem }} - {{ endItem }} من {{ totalItems }}
-                        </span>
-                    </div>
-
-                    <div class="mobile-controls">
-                        <v-btn icon="mdi-chevron-right" size="small" variant="outlined" color="primary"
-                            :disabled="page >= totalPages || loading" @click="handlePageChange(page + 1)"></v-btn>
-
-                        <div class="mobile-page-info">
-                            <span class="text-body-2 font-weight-large">
-                                {{ page }} / {{ totalPages }}
-                            </span>
-                        </div>
-
-                        <v-btn icon="mdi-chevron-left" size="small" variant="outlined" color="primary"
-                            :disabled="page <= 1 || loading" @click="handlePageChange(page - 1)"></v-btn>
-                    </div>
-
-                    <div class="mobile-items-per-page">
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" label="عدد العناصر"
-                            variant="outlined" density="compact" hide-details class="mobile-items-select"
-                            @update:model-value="handleItemsPerPageChange" :disabled="loading"></v-select>
-                    </div>
-                </v-card-text>
-            </div>
-        </v-card>
+        <TablePagination v-if="!loading && totalItems > 0" :page="page" :items-per-page="itemsPerPage"
+            :total-items="totalItems" item-label="أمر شراء" :items-per-page-options="itemsPerPageOptions"
+            @update:page="handlePageChange" @update:items-per-page="handleItemsPerPageChange" />
 
         <!-- Floating Refresh Button -->
         <v-btn v-if="!loading" icon="mdi-refresh" color="primary" size="large" class="refresh-fab" elevation="8"
@@ -301,16 +223,19 @@
 
 <script>
 import { formatCurrency } from '@/utils/currency-util';
-import { 
+import {
     formatDate
 } from '@/utils/date-util';
-import { 
-    getPaginationVisible,
+import {
     truncateText
 } from '@/utils/product-util';
+import TablePagination from '@/components/common/TablePagination.vue';
 
 export default {
     name: 'PurchaseOrderGrid',
+    components: {
+        TablePagination
+    },
     props: {
         purchaseOrders: {
             type: Array,
@@ -326,7 +251,7 @@ export default {
         },
         itemsPerPage: {
             type: Number,
-            default: 10
+            default: 12
         },
         totalItems: {
             type: Number,
@@ -346,33 +271,28 @@ export default {
         }
     },
     emits: [
-        'edit', 
-        'delete', 
+        'edit',
+        'delete',
         'view',
         'mark-received',
         'duplicate',
-        'update:page', 
-        'update:items-per-page', 
-        'update:sort-by', 
+        'update:page',
+        'update:items-per-page',
+        'update:sort-by',
         'refresh'
     ],
     data() {
         return {
-            jumpToPage: null,
-            itemsPerPageOptions: [10, 25, 50, 100]
+            itemsPerPageOptions: [12, 24, 48, 96]
         };
     },
     computed: {
-        filteredOrders() {
-            // Since filtering is now handled on the backend, 
-            // we just return the orders as received
-            return this.purchaseOrders;
+        filteredItems() {
+            return this[this.itemsProperty];
         },
 
-        paginatedOrders() {
-            // Since pagination is handled on the backend,
-            // we just return the orders as received
-            return this.purchaseOrders;
+        paginatedItems() {
+            return this[this.itemsProperty];
         },
 
         totalPages() {
@@ -385,22 +305,16 @@ export default {
 
         endItem() {
             return Math.min(this.page * this.itemsPerPage, this.totalItems);
+        },
+
+        itemsProperty() {
+            return 'purchaseOrders'; 
         }
-    },
-    watch: {
-        page(newPage) {
-            this.jumpToPage = newPage;
-        }
-    },
-    mounted() {
-        this.jumpToPage = this.page;
     },
     methods: {
         formatCurrency,
         formatDate,
-        getPaginationVisible,
         truncateText,
-
         getStatusColor(status) {
             const statusColors = {
                 'PENDING': 'warning',
@@ -409,7 +323,6 @@ export default {
             };
             return statusColors[status] || 'grey';
         },
-
         getStatusText(status) {
             const statusTexts = {
                 'PENDING': 'في الانتظار',
@@ -464,7 +377,6 @@ export default {
                 this.$emit('update:page', newPage);
             }
         },
-
         handleItemsPerPageChange(newItemsPerPage) {
             this.$emit('update:items-per-page', newItemsPerPage);
             // Reset to first page when changing items per page
@@ -472,16 +384,6 @@ export default {
                 this.$emit('update:page', 1);
             }
         },
-
-        handleQuickJump() {
-            const pageNum = parseInt(this.jumpToPage);
-            if (pageNum && pageNum >= 1 && pageNum <= this.totalPages && pageNum !== this.page) {
-                this.handlePageChange(pageNum);
-            } else {
-                // Reset to current page if invalid
-                this.jumpToPage = this.page;
-            }
-        }
     }
 };
 </script>
@@ -665,7 +567,7 @@ export default {
     .order-stats {
         gap: 8px;
     }
-    
+
     .supplier-info {
         margin: 8px 0;
     }

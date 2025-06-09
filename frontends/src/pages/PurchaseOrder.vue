@@ -55,10 +55,13 @@
 
                                 <!-- Search -->
                                 <v-col>
-                                    <v-text-field v-model="searchTerm"
+                                    <AdvancedSearch :entity-type="activeTab"
                                         :placeholder="`البحث في ${activeTab === 'orders' ? 'أوامر الشراء' : 'الموردين'}...`"
-                                        prepend-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details
-                                        class="modern-search" style="max-width: 300px;"></v-text-field>
+                                        :status-options="statusOptions" :supplier-options="supplierOptionsForSearch"
+                                        :business-type-options="businessTypeOptionsForSearch" :search-term="searchTerm"
+                                        :search-fields="searchFieldsConfig" @update:search-term="searchTerm = $event"
+                                        @apply-filters="handleAdvancedFilters" @clear-filters="handleClearFilters"
+                                        @filter-change="handleFilterChange" style="max-width: 400px;" />
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -133,24 +136,20 @@
                                 <div v-else>
                                     <PurchaseOrderGrid v-if="viewMode === 'grid'" :purchase-orders="purchaseOrders"
                                         :loading="loading" :page="orderPagination.page"
-                                        :items-per-page="orderPagination.itemsPerPage"
-                                        :sort-by="orderPagination.sortBy" :search-term="searchTerm"
-                                        :status-filter="statusFilter" :total-items="orderPagination.totalItems"
-                                        @edit="editPurchaseOrder" @delete="confirmDeletePurchaseOrder"
-                                        @view="viewPurchaseOrder" @mark-received="markAsReceived"
-                                        @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:sort-by="updateSorting" @refresh="loadPurchaseOrders" />
-                                        <PurchaseOrderList v-else :purchase-orders="purchaseOrders" :loading="loading"
+                                        :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
+                                        :search-term="searchTerm" :status-filter="statusFilter"
+                                        :total-items="orderPagination.totalItems" @edit="editPurchaseOrder"
+                                        @delete="confirmDeletePurchaseOrder" @view="viewPurchaseOrder"
+                                        @mark-received="markAsReceived" @update:page="updatePage"
+                                        @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
+                                        @refresh="loadPurchaseOrders" />
+                                    <PurchaseOrderList v-else :purchase-orders="purchaseOrders" :loading="loading"
                                         :total-items="orderPagination.totalItems" :page="orderPagination.page"
                                         :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
-                                        @edit="editPurchaseOrder" 
-                                        @delete="confirmDeletePurchaseOrder"
-                                        @view="viewPurchaseOrder" 
-                                        @mark-received="markAsReceived"
-                                        @duplicate="handleDuplicatePurchaseOrder"
-                                        @add-purchase="openAddDialog"
-                                        @update:page="updatePage"
-                                        @update:items-per-page="updateItemsPerPage"
+                                        @edit="editPurchaseOrder" @delete="confirmDeletePurchaseOrder"
+                                        @view="viewPurchaseOrder" @mark-received="markAsReceived"
+                                        @duplicate="handleDuplicatePurchaseOrder" @add="openAddDialog"
+                                        @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
                                         @update:options="updateTableOptions" />
                                 </div>
                             </v-window-item>
@@ -181,12 +180,11 @@
                                     <SupplierList v-else :suppliers="suppliers" :loading="loading"
                                         :page="supplierPagination.page" :items-per-page="supplierPagination.itemsPerPage"
                                         :total-items="supplierPagination.totalItems" :search-term="searchTerm"
-                                        :status-filter="statusFilter" @add-supplier="openAddDialog"
-                                        @edit-supplier="editSupplier" @delete-confirmation="confirmDeleteSupplier"
-                                        @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:search-term="updateSearchTerm" @update:status-filter="updateStatusFilter"
-                                        @update:sort-option="updateSortOption" @refresh="loadSuppliers"
-                                        @toggle-status="updateSupplierStatus" />
+                                        :status-filter="statusFilter" @add="openAddDialog" @edit="editSupplier"
+                                        @delete="confirmDeleteSupplier" @update:page="updatePage"
+                                        @update:items-per-page="updateItemsPerPage" @update:search-term="updateSearchTerm"
+                                        @update:status-filter="updateStatusFilter" @update:sort-option="updateSortOption"
+                                        @refresh="loadSuppliers" @toggle-status="updateSupplierStatus" />
                                 </div>
                             </v-window-item>
                         </v-window>
@@ -196,7 +194,8 @@
         </v-main>
 
         <!-- Purchase Order Dialog -->
-        <PurchaseOrderModal v-model="purchaseOrderDialog" :purchase-order="selectedPurchaseOrder" @save="handlePurchaseOrderSave" />
+        <PurchaseOrderModal v-model="purchaseOrderDialog" :purchase-order="selectedPurchaseOrder"
+            @save="handlePurchaseOrderSave" />
 
         <!-- Supplier Dialog -->
         <SupplierModal v-model="supplierDialog" :supplier-to-edit="selectedSupplier" @save="handleSupplierSave" />
@@ -223,6 +222,7 @@ import PurchaseStats from '@/components/purchase/PurchaseStats.vue';
 import { getPurchaseOrders, deletePurchaseOrder, getSuppliers, deleteSupplier, updateSupplier, markPurchaseOrderAsReceived } from '@/services/purchase-service';
 import { success, error } from '@/utils/system-util';
 import { formatCurrency } from '@/utils/currency-util';
+import AdvancedSearch from '@/components/common/AdvancedSearch.vue';
 
 export default {
     name: 'PurchaseOrderPage',
@@ -237,6 +237,7 @@ export default {
         DeleteModal,
         PurchaseStats,
         SupplierStats,
+        AdvancedSearch
     },
     data() {
         return {
@@ -286,9 +287,17 @@ export default {
             purchaseOrders: [],
             suppliers: [],
             loading: false,
-
             totalOrders: 0,
-            totalSuppliers: 0
+            totalSuppliers: 0,
+            activeFilters: {},
+            supplierOptionsForSearch: [],
+            businessTypeOptionsForSearch: [
+                { title: 'تاجر تجزئة', value: 'RETAIL' },
+                { title: 'تاجر جملة', value: 'WHOLESALE' },
+                { title: 'مصنع', value: 'MANUFACTURER' },
+                { title: 'موزع', value: 'DISTRIBUTOR' },
+                { title: 'أخرى', value: 'OTHER' }
+            ]
         };
     },
 
@@ -301,12 +310,34 @@ export default {
         },
         currentPagination() {
             return this.activeTab === 'orders' ? this.orderPagination : this.supplierPagination;
+        },
+        searchFieldsConfig() {
+            if (this.activeTab === 'orders') {
+                return {
+                    text: true,
+                    status: true,
+                    category: false,
+                    dateRange: true,
+                    stock: false,
+                    rating: false
+                };
+            } else { // suppliers
+                return {
+                    text: true,
+                    status: true,
+                    category: false,
+                    dateRange: true,
+                    stock: false,
+                    rating: true
+                };
+            }
         }
     },
 
     created() {
         this.loadSuppliers();
         this.loadPurchaseOrders();
+        this.loadSupplierOptionsForSearch();
     },
 
     watch: {
@@ -344,14 +375,61 @@ export default {
 
     methods: {
         formatCurrency,
+        handleAdvancedFilters(filters) {
+            console.log('Advanced filters applied:', filters);
+            this.activeFilters = filters;
+
+            if (this.activeTab === 'orders') {
+                this.applyOrderFilters(filters);
+            } else {
+                this.applySupplierFilters(filters);
+            }
+        },
+        handleClearFilters() {
+            console.log('Filters cleared');
+            this.activeFilters = {};
+            this.searchTerm = '';
+
+            if (this.activeTab === 'orders') {
+                this.loadPurchaseOrders();
+            } else {
+                this.loadSuppliers();
+            }
+        },
+        handleFilterChange(filters) {
+            if (filters.text !== undefined) {
+                this.searchTerm = filters.text;
+            }
+        },
+        applyOrderFilters(filters) {
+            this.orderPagination.page = 1;
+            this.loadPurchaseOrders();
+        },
         handleDuplicatePurchaseOrder(duplicatedOrder) {
             this.selectedPurchaseOrder = duplicatedOrder;
             this.purchaseOrderDialog = true;
         },
+        applySupplierFilters(filters) {
+            this.supplierPagination.page = 1;
+            this.loadSuppliers();
+        },
+        async loadSupplierOptionsForSearch() {
+            try {
+                const response = await getSuppliers(new URLSearchParams({ size: 100 }));
+                if (response && response.content) {
+                    this.supplierOptionsForSearch = response.content.map(supplier => ({
+                        title: supplier.name,
+                        value: supplier.id
+                    }));
+                }
+            } catch (error) {
+                console.error('Error loading suppliers for search:', error);
+            }
+        },
         async updateSupplierStatus(supplierData) {
             console.log(supplierData)
-            let data = { 
-                ...supplierData, 
+            let data = {
+                ...supplierData,
                 country: supplierData.country.code || supplierData.country,
                 governorate: supplierData.governorate?.code || supplierData.governorate,
                 businessType: supplierData.businessType?.code || supplierData.businessType,
@@ -454,7 +532,6 @@ export default {
                 this.loading = false;
             }
         },
-
         buildSearchParameter(type = null) {
             const pagination = type === 'orders' ? this.orderPagination : this.supplierPagination;
 
@@ -463,18 +540,53 @@ export default {
                 size: pagination.itemsPerPage
             });
 
+            // Basic search
             if (this.searchTerm) {
                 params.append('search', this.searchTerm);
             }
 
-            params.append('isActive', this.statusFilter);
+            // ✅ Add advanced filters
+            if (this.activeFilters && Object.keys(this.activeFilters).length > 0) {
+                // Status filter
+                if (this.activeFilters.status) {
+                    params.append('isActive', this.activeFilters.status);
+                } else {
+                    params.append('isActive', this.statusFilter);
+                }
 
-            // Add date range filter for orders
-            if (type === 'orders' && this.dateRange && this.dateRange.length === 2) {
-                params.append('startDate', this.dateRange[0]);
-                params.append('endDate', this.dateRange[1]);
+                // Order-specific filters
+                if (type === 'orders') {
+                    if (this.activeFilters.supplier) {
+                        params.append('supplierId', this.activeFilters.supplier);
+                    }
+                    if (this.activeFilters.orderStatus) {
+                        params.append('orderStatus', this.activeFilters.orderStatus);
+                    }
+                }
+
+                // Supplier-specific filters
+                if (type === 'suppliers') {
+                    if (this.activeFilters.businessType) {
+                        params.append('businessType', this.activeFilters.businessType);
+                    }
+                    if (this.activeFilters.ratingRange &&
+                        (this.activeFilters.ratingRange[0] !== 0 || this.activeFilters.ratingRange[1] !== 100)) {
+                        params.append('ratingFrom', this.activeFilters.ratingRange[0]);
+                        params.append('ratingTo', this.activeFilters.ratingRange[1]);
+                    }
+                }
+
+                // Date range filter
+                if (this.activeFilters.dateRange && this.activeFilters.dateRange.length === 2) {
+                    params.append('startDate', this.activeFilters.dateRange[0]);
+                    params.append('endDate', this.activeFilters.dateRange[1]);
+                }
+            } else {
+                // Fallback to basic status filter
+                params.append('isActive', this.statusFilter);
             }
 
+            // Add sorting
             if (pagination.sortBy && pagination.sortBy.length > 0) {
                 pagination.sortBy.forEach((sortItem) => {
                     let key, order;
@@ -494,7 +606,6 @@ export default {
             }
             return params;
         },
-
         updatePage(newPage) {
             if (this.activeTab === 'orders') {
                 this.orderPagination.page = newPage;

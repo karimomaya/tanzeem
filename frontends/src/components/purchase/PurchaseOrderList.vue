@@ -1,32 +1,13 @@
 <template>
     <div class="table-container">
         <!-- Table Controls -->
-        <div class="table-controls">
-            <div class="d-flex align-center justify-space-between">
-                <div class="table-info">
-                    <h3 class="table-title">أوامر الشراء</h3>
-                    <p class="table-subtitle">{{ totalItems }} أمر شراء متاح</p>
-                </div>
-
-                <div class="d-flex align-center ga-3">
-                    <!-- Export button -->
-                    <v-btn variant="outlined" color="primary" prepend-icon="mdi-download" class="export-btn"
-                        @click="exportData">
-                        تصدير
-                    </v-btn>
-
-                    <!-- Add Purchase Order button -->
-                    <v-btn color="primary" prepend-icon="mdi-plus" class="modern-add-btn" @click="$emit('add-purchase')">
-                        إضافة أمر شراء
-                    </v-btn>
-                </div>
-            </div>
-        </div>
+        <BaseTableHeader title="أوامر الشراء" :total-items="totalItems" item-label="أمر شراء"
+            add-button-text="إضافة أمر شراء" @export="exportData" @add="$emit('add')" />
         <v-card class="table-card" elevation="0">
 
             <!-- Data Table -->
-            <v-data-table-server :headers="headers" :items="purchaseOrders" :items-per-page="currentItemsPerPage"
-                :page="currentPage" :items-length="totalItems" :loading="loading"
+            <v-data-table-server :headers="headers" :items="purchaseOrders" :items-per-page="itemsPerPage" :page="page"
+                :items-length="totalItems" :loading="loading" @update:options="updateOptions"
                 loading-text="جاري التحميل... يرجى الانتظار" no-data-text="لا توجد أوامر شراء للعرض" class="modern-table"
                 hover show-current-page hide-default-footer>
 
@@ -48,13 +29,7 @@
                         <div class="order-date">
                             تاريخ الأمر: {{ formatDate(item.purchaseDate) }}
                         </div>
-                        <div class="meta-data">
-                            <div class="meta-item" v-if="item.createdBy">
-                                <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
-                                <span class="meta-text">{{ formatDate(item.createdAt, 'created') }}</span>
-                                <span class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy }}</span>
-                            </div>
-                        </div>
+                        <MetaDataDisplay :created-at="item.createdAt" :created-by="item.createdBy" :show-updated="false" />
                     </div>
                 </template>
 
@@ -121,7 +96,7 @@
 
                 <!-- Items Summary Column -->
                 <template v-slot:item.items="{ item }">
-                    <div >
+                    <div>
                         <div class="font-weight-bold text-body-2">{{ getTotalQuantity(item.items) }} قطعة</div>
                     </div>
                 </template>
@@ -129,7 +104,7 @@
                 <!-- Status Column -->
                 <template v-slot:item.status="{ item }">
                     <div class="status-cell">
-                        
+
                         <div class="status-badge">
                             <v-chip :color="getStatusColor(item.status)" variant="tonal" size="x-small"
                                 class="mini-status-chip">
@@ -141,56 +116,7 @@
 
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
-                    <div>
-                        <v-menu>
-                            <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small"
-                                    class="actions-trigger"></v-btn>
-                            </template>
-                            <v-list density="compact" class="actions-menu">
-                                <v-list-item @click="viewPurchaseOrder(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="info">mdi-eye</v-icon>
-                                    </template>
-                                    <v-list-item-title>عرض التفاصيل</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item v-if="item.status === 'PENDING'" @click="$emit('edit', item)"
-                                    class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="primary">mdi-pencil</v-icon>
-                                    </template>
-                                    <v-list-item-title>تعديل الأمر</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item v-if="item.status === 'PENDING'" @click="duplicatePurchaseOrder(item)"
-                                    class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="success">mdi-content-copy</v-icon>
-                                    </template>
-                                    <v-list-item-title>نسخ الأمر</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item v-if="item.status === 'PENDING'" @click="$emit('mark-received', item)"
-                                    class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="success">mdi-check</v-icon>
-                                    </template>
-                                    <v-list-item-title>تسليم الأمر</v-list-item-title>
-                                </v-list-item>
-
-                                <v-divider v-if="item.status === 'PENDING'"></v-divider>
-
-                                <v-list-item v-if="item.status === 'PENDING'" @click="$emit('delete', item)"
-                                    class="action-item action-danger">
-                                    <template v-slot:prepend>
-                                        <v-icon color="error">mdi-delete</v-icon>
-                                    </template>
-                                    <v-list-item-title class="text-error">حذف الأمر</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </div>
+                    <StandardTableActions :actions="purchaseOrderActions" :item="item" @action="handleTableAction" />
                 </template>
 
                 <!-- Enhanced Headers -->
@@ -235,8 +161,8 @@
             </v-data-table-server>
 
             <!-- Table Footer -->
-            <TablePagination :page="currentPage" :items-per-page="currentItemsPerPage" :total-items="totalItems"
-                item-label="أمر شراء" :items-per-page-options="itemsPerPageOptions" @update:page="updatePage"
+            <TablePagination :page="page" :items-per-page="itemsPerPage" :total-items="totalItems" item-label="أمر شراء"
+                :items-per-page-options="itemsPerPageOptions" @update:page="updatePage"
                 @update:items-per-page="updateItemsPerPage" />
         </v-card>
     </div>
@@ -248,13 +174,19 @@ import { formatDate } from '@/utils/date-util';
 import TablePagination from '@/components/common/TablePagination.vue';
 import NoDataState from '@/components/common/NoDataState.vue';
 import { formatCurrency, getCurrencyIcon } from '@/utils/currency-util';
-import { isUpdatedRecently, truncateText } from '@/utils/product-util';
+import { truncateText } from '@/utils/product-util';
+import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
+import StandardTableActions from '@/components/common/StandardTableActions.vue';
+import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
 
 export default {
     name: 'PurchaseOrderList',
     components: {
         TablePagination,
-        NoDataState
+        NoDataState,
+        BaseTableHeader,
+        StandardTableActions,
+        MetaDataDisplay
     },
     props: {
         purchaseOrders: {
@@ -282,22 +214,17 @@ export default {
             default: () => []
         }
     },
-    emits: [
-        'add-purchase',
-        'edit',
-        'delete',
-        'view',
-        'duplicate',
-        'mark-received',
-        'update:page',
-        'update:items-per-page',
-        'update:options',
-        'refresh'
-    ],
+    emits: ['add', 'edit', 'delete', 'view', 'duplicate', 'mark-received', 'update:page', 'update:items-per-page', 'update:options', 'refresh'],
     data() {
         return {
-            currentPage: this.page,
-            currentItemsPerPage: this.itemsPerPage,
+            purchaseOrderActions: [
+                { key: 'view', icon: 'mdi-eye', color: 'info', text: 'عرض التفاصيل' },
+                { key: 'edit', icon: 'mdi-pencil', color: 'primary', text: 'تعديل الأمر', condition: (item) => item.status === 'PENDING' },
+                { key: 'duplicate', icon: 'mdi-content-copy', color: 'success', text: 'نسخ الأمر', condition: (item) => item.status === 'PENDING' },
+                { key: 'mark-received', icon: 'mdi-check', color: 'success', text: 'تسليم الأمر', condition: (item) => item.status === 'PENDING' },
+                { divider: true, condition: (item) => item.status === 'PENDING' },
+                { key: 'delete', icon: 'mdi-delete', color: 'error', text: 'حذف الأمر', danger: true, condition: (item) => item.status === 'PENDING' }
+            ],
             headers: [
                 { title: 'الأيقونة', key: 'icon', sortable: false, align: 'start', width: '8%' },
                 { title: 'معلومات الأمر', key: 'orderInfo', sortable: true, width: '20%' },
@@ -312,37 +239,34 @@ export default {
         };
     },
 
-    computed: {
-        totalPages() {
-            return Math.ceil(this.totalItems / this.currentItemsPerPage);
-        },
-
-        startItem() {
-            return (this.currentPage - 1) * this.currentItemsPerPage + 1;
-        },
-
-        endItem() {
-            const end = this.currentPage * this.currentItemsPerPage;
-            return Math.min(end, this.totalItems);
-        }
-    },
-
-    watch: {
-        page(newPage) {
-            this.currentPage = newPage;
-        },
-
-        itemsPerPage(newItemsPerPage) {
-            this.currentItemsPerPage = newItemsPerPage;
-        }
-    },
-
     methods: {
         getCurrencyIcon,
         truncateText,
-        isUpdatedRecently,
         formatCurrency,
         formatDate,
+        handleTableAction(payload) {
+            const { type, item } = payload;
+            switch (type) {
+                case 'view':
+                    this.viewPurchaseOrder(item);
+                    break;
+                case 'edit':
+                    this.$emit('edit', item);
+                    break;
+                case 'duplicate':
+                    this.duplicatePurchaseOrder(item);
+                    break;
+                case 'mark-received':
+                    this.$emit('mark-received', item);
+                    break;
+                case 'delete':
+                    this.$emit('delete', item);
+                    break;
+            }
+        },
+        updateOptions(options) {
+            this.$emit('update:options', options);
+        },
         viewPurchaseOrder(purchaseOrder) {
             this.$emit('view', purchaseOrder);
         },
@@ -426,22 +350,11 @@ export default {
         },
 
         updatePage(newPage) {
-            this.currentPage = newPage;
-            this.$emit('update:options', {
-                page: newPage,
-                itemsPerPage: this.currentItemsPerPage,
-                sortBy: this.sortBy
-            });
+            this.$emit('update:page', newPage);
         },
 
         updateItemsPerPage(newItemsPerPage) {
-            this.currentItemsPerPage = newItemsPerPage;
-            this.currentPage = 1;
-            this.$emit('update:options', {
-                page: 1,
-                itemsPerPage: newItemsPerPage,
-                sortBy: this.sortBy
-            });
+            this.$emit('update:items-per-page', newItemsPerPage);
         },
 
         handleOptionsUpdate(options) {
@@ -464,9 +377,6 @@ export default {
     text-align: center;
 }
 
-.meta-data {
-    min-width: 160px;
-}
 
 .icon-cell {
     display: flex;
@@ -598,64 +508,16 @@ export default {
 
 .status-badge {
     display: flex;
-    align-items: start!important;;
-    justify-content: start!important;;
+    align-items: start !important;
+    ;
+    justify-content: start !important;
+    ;
 }
 
 .mini-status-chip {
     font-size: 10px !important;
     height: 18px !important;
     font-weight: 600 !important;
-}
-
-.meta-data {
-    margin-top: 4px;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 2px;
-    font-size: 11px;
-    color: #718096;
-}
-
-.meta-text {
-    font-weight: 500;
-}
-
-.meta-by {
-    margin-left: 4px;
-}
-
-/* Add these missing classes */
-.actions-trigger {
-    color: #718096 !important;
-}
-
-.actions-trigger:hover {
-    color: #366091 !important;
-    background: rgba(54, 96, 145, 0.1) !important;
-}
-
-.actions-menu {
-    border-radius: 12px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-.action-item {
-    border-radius: 8px !important;
-    margin: 4px !important;
-    transition: background-color 0.2s ease;
-}
-
-.action-item:hover {
-    background: rgba(54, 96, 145, 0.05) !important;
-}
-
-.action-item.action-danger:hover {
-    background: rgba(229, 62, 62, 0.05) !important;
 }
 
 /* Row Hover Effect */
@@ -665,45 +527,6 @@ export default {
 
 .modern-table :deep(.v-data-table__tr) {
     transition: background-color 0.2s ease;
-}
-
-/* Table Header Styling */
-.table-header {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-bottom: 2px solid #cbd5e0;
-}
-
-.header-cell {
-    padding: 16px 12px !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
-    color: #2d3748 !important;
-    border-bottom: none !important;
-    position: relative;
-}
-
-.header-cell.sortable {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.header-cell.sortable:hover {
-    background: rgba(54, 96, 145, 0.05);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.header-title {
-    font-weight: 600;
-    color: #2d3748;
-}
-
-.sort-icon {
-    transition: all 0.2s ease;
 }
 
 /* Hover Effects */
@@ -725,23 +548,5 @@ export default {
 
 .purchase-avatar:hover {
     transform: scale(1.1);
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-    .table-controls {
-        padding: 16px 20px 12px;
-    }
-
-    .table-controls .d-flex {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start !important;
-    }
-
-    .items-per-page {
-        width: 100%;
-        justify-content: space-between;
-    }
 }
 </style>

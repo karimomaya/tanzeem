@@ -1,44 +1,25 @@
 <template>
     <div class="table-container">
         <!-- Table Header Controls -->
-        <div class="table-controls">
-            <div class="d-flex align-center justify-space-between">
-                <div class="table-info">
-                    <h3 class="table-title">قائمة الموردين</h3>
-                    <p class="table-subtitle">{{ totalItems }} مورد متاح</p>
+        <BaseTableHeader title="قائمة الموردين" :total-items="totalItems" item-label="مورد" add-button-text="إضافة مورد"
+            @export="exportData" @add="$emit('add')">
+            <template #controls>
+                <div class="items-per-page">
+                    <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined" density="compact"
+                        hide-details style="width: 80px;" class="items-select"
+                        @update:model-value="$emit('update:items-per-page', $event)" />
                 </div>
-
-                <div class="d-flex align-center ga-3">
-                    <!-- Items per page -->
-                    <!--<div class="items-per-page">
-                        <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
-                        <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
-                            density="compact" hide-details style="width: 80px;" class="items-select"
-                            @update:model-value="$emit('update:items-per-page', $event)"></v-select>
-                    </div>-->
-
-                    <!-- Export button -->
-                    <v-btn variant="outlined" color="primary" prepend-icon="mdi-download" class="export-btn"
-                        @click="exportData">
-                        تصدير
-                    </v-btn>
-
-                    <!-- Add Supplier button -->
-                    <v-btn color="primary" prepend-icon="mdi-plus" class="modern-add-btn" @click="$emit('add-supplier')">
-                        إضافة مورد
-                    </v-btn>
-                </div>
-            </div>
-        </div>
+            </template>
+        </BaseTableHeader>
 
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
             <v-data-table-server :headers="supplierHeaders" :items="suppliers" :items-per-page="itemsPerPage" :page="page"
                 :items-length="totalItems" :loading="loading" loading-text="جاري التحميل... يرجى الانتظار"
-                no-data-text="لا توجد موردين للعرض" 
-                class="modern-table" hover
+                @update:options="updateOptions" no-data-text="لا توجد موردين للعرض" class="modern-table" hover
                 show-current-page hide-default-footer>
-                
+
                 <!-- Enhanced Icon Display -->
                 <template v-slot:item.icon="{ item }">
                     <div class="icon-cell">
@@ -57,19 +38,8 @@
                         <div v-if="item.code" class="supplier-code">
                             كود المورد: {{ item.code }}
                         </div>
-                        <div class="meta-data">
-                            <div class="meta-item" v-if="item.createdBy">
-                                <v-icon size="12" class="me-1">mdi-calendar-plus</v-icon>
-                                <span class="meta-text">{{ formatDate(item.createdAt, 'created') }}</span>
-                                <span class="meta-by"> بواسطة {{ item.createdBy.name || item.createdBy }}</span>
-                            </div>
-                            <div v-if="item.updatedAt && isUpdatedRecently(item.createdAt, item.updatedAt)"
-                                class="meta-item">
-                                <v-icon size="12" class="me-1">mdi-calendar-edit</v-icon>
-                                <span class="meta-text">{{ formatDate(item.updatedAt, 'updated') }}</span>
-                                <span v-if="item.updatedBy" class="meta-by"> بواسطة {{ item.updatedBy.name || item.updatedBy }}</span>
-                            </div>
-                        </div>
+                        <MetaDataDisplay :created-at="item.createdAt" :created-by="item.createdBy"
+                            :updated-at="item.updatedAt" :updated-by="item.updatedBy" />
                     </div>
                 </template>
 
@@ -134,8 +104,9 @@
                                 <span class="rating-percentage">{{ item.rating || 85 }}%</span>
                                 <span class="rating-label">تقييم المورد</span>
                             </div>
-                            <v-progress-linear :model-value="item.rating || 85" :color="getSupplierRatingColor(item.rating || 85)"
-                                height="6" rounded class="rating-progress-bar"></v-progress-linear>
+                            <v-progress-linear :model-value="item.rating || 85"
+                                :color="getSupplierRatingColor(item.rating || 85)" height="6" rounded
+                                class="rating-progress-bar"></v-progress-linear>
                         </div>
                     </div>
                 </template>
@@ -158,56 +129,7 @@
 
                 <!-- Enhanced Actions -->
                 <template v-slot:item.actions="{ item }">
-                    <div>
-                        <v-menu>
-                            <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small"
-                                    class="actions-trigger"></v-btn>
-                            </template>
-                            <v-list density="compact" class="actions-menu">
-                                <v-list-item @click="viewSupplier(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="info">mdi-eye</v-icon>
-                                    </template>
-                                    <v-list-item-title>عرض التفاصيل</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="$emit('edit-supplier', item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="primary">mdi-pencil</v-icon>
-                                    </template>
-                                    <v-list-item-title>تعديل المورد</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="duplicateSupplier(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon color="success">mdi-content-copy</v-icon>
-                                    </template>
-                                    <v-list-item-title>نسخ المورد</v-list-item-title>
-                                </v-list-item>
-
-                                <v-list-item @click="toggleSupplierStatus(item)" class="action-item">
-                                    <template v-slot:prepend>
-                                        <v-icon :color="item.isActive ? 'warning' : 'success'">
-                                            {{ item.isActive ? 'mdi-pause' : 'mdi-play' }}
-                                        </v-icon>
-                                    </template>
-                                    <v-list-item-title>
-                                        {{ item.isActive ? 'إلغاء تفعيل' : 'تفعيل' }}
-                                    </v-list-item-title>
-                                </v-list-item>
-
-                                <v-divider></v-divider>
-
-                                <v-list-item @click="$emit('delete-confirmation', item)" class="action-item action-danger">
-                                    <template v-slot:prepend>
-                                        <v-icon color="error">mdi-delete</v-icon>
-                                    </template>
-                                    <v-list-item-title class="text-error">حذف المورد</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </div>
+                    <StandardTableActions :actions="supplierActions" :item="item" @action="handleTableAction" />
                 </template>
 
                 <!-- Enhanced Headers -->
@@ -244,40 +166,35 @@
 
                 <!-- Enhanced No Data -->
                 <template v-slot:no-data>
-                    <NoDataState
-                        icon="mdi-truck"
-                        title="لا توجد موردين"
-                        subtitle="لم يتم العثور على موردين مطابقين لمعايير البحث الحالية"
-                        add-button-text="إضافة مورد جديد"
-                        @add-item="$emit('add-supplier')"
-                    />
+                    <NoDataState icon="mdi-truck" title="لا توجد موردين"
+                        subtitle="لم يتم العثور على موردين مطابقين لمعايير البحث الحالية" add-button-text="إضافة مورد جديد"
+                        @add-item="$emit('add')" />
                 </template>
             </v-data-table-server>
-            <TablePagination
-                :page="page"
-                :items-per-page="itemsPerPage"
-                :total-items="totalItems"
-                item-label="مورد"
-                :items-per-page-options="itemsPerPageOptions"
-                @update:page="$emit('update:page', $event)"
-                @update:items-per-page="$emit('update:items-per-page', $event)"
-            />
+            <TablePagination :page="page" :items-per-page="itemsPerPage" :total-items="totalItems" item-label="مورد"
+                :items-per-page-options="itemsPerPageOptions" @update:page="$emit('update:page', $event)"
+                @update:items-per-page="$emit('update:items-per-page', $event)" />
         </v-card>
     </div>
 </template>
 
 <script>
 import { formatCurrency, getCurrencyIcon } from '@/utils/currency-util';
-import { formatDate } from '@/utils/date-util';
-import { isUpdatedRecently, truncateText } from '@/utils/product-util';
+import { truncateText } from '@/utils/product-util';
 import TablePagination from '@/components/common/TablePagination.vue';
 import NoDataState from '@/components/common/NoDataState.vue';
+import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
+import StandardTableActions from '@/components/common/StandardTableActions.vue';
+import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
 
 export default {
     name: 'SupplierList',
     components: {
         TablePagination,
-        NoDataState
+        NoDataState,
+        BaseTableHeader,
+        StandardTableActions,
+        MetaDataDisplay
     },
     props: {
         suppliers: {
@@ -313,22 +230,17 @@ export default {
             default: 'name-asc'
         }
     },
-    emits: [
-        'add-supplier',
-        'edit-supplier',
-        'delete-confirmation',
-        'update:page',
-        'update:items-per-page',
-        'update:search-term',
-        'update:status-filter',
-        'update:sort-option',
-        'refresh',
-        'view',
-        'duplicate',
-        'toggle-status'
-    ],
+    emits: ['add', 'edit', 'delete', 'update:page', 'update:items-per-page', 'update:search-term', 'update:status-filter', 'update:sort-option', 'refresh', 'view', 'duplicate', 'toggle-status', 'update:options'],
     data() {
         return {
+            supplierActions: [
+                { key: 'view', icon: 'mdi-eye', color: 'info', text: 'عرض التفاصيل' },
+                { key: 'edit', icon: 'mdi-pencil', color: 'primary', text: 'تعديل المورد' },
+                { key: 'duplicate', icon: 'mdi-content-copy', color: 'success', text: 'نسخ المورد' },
+                { key: 'toggle-status', icon: 'mdi-pause', color: 'warning', text: 'تغيير الحالة' },
+                { divider: true },
+                { key: 'delete', icon: 'mdi-delete', color: 'error', text: 'حذف المورد', danger: true }
+            ],
             supplierHeaders: [
                 { title: 'الأيقونة', key: 'icon', sortable: false, align: 'start', width: '8%' },
                 { title: 'الاسم', key: 'name', sortable: true, width: '20%' },
@@ -359,9 +271,30 @@ export default {
         formatCurrency,
         getCurrencyIcon,
         truncateText,
-        isUpdatedRecently,
-        formatDate,
+        handleTableAction(payload) {
+            const { type, item } = payload;
 
+            switch (type) {
+                case 'view':
+                    this.viewSupplier(item);
+                    break;
+                case 'edit':
+                    this.$emit('edit', item);
+                    break;
+                case 'duplicate':
+                    this.duplicateSupplier(item);
+                    break;
+                case 'toggle-status':
+                    this.toggleSupplierStatus(item);
+                    break;
+                case 'delete':
+                    this.$emit('delete', item);
+                    break;
+            }
+        },
+        updateOptions(options) {
+            this.$emit('update:options', options);
+        },
         getOrderCountColor(count) {
             if (count === 0) return 'grey';
             if (count < 5) return 'warning';
@@ -397,19 +330,19 @@ export default {
         exportData() {
             // Create CSV content
             const headers = [
-                'الاسم', 
-                'كود المورد', 
-                'جهة الاتصال', 
-                'الهاتف', 
-                'البريد الإلكتروني', 
+                'الاسم',
+                'كود المورد',
+                'جهة الاتصال',
+                'الهاتف',
+                'البريد الإلكتروني',
                 'العنوان',
                 'إجمالي الأوامر',
                 'إجمالي المبلغ',
                 'التقييم',
-                'الحالة', 
+                'الحالة',
                 'تاريخ الإنشاء'
             ];
-            
+
             const csvContent = [
                 headers.join(','),
                 ...this.suppliers.map(supplier => [
@@ -681,11 +614,11 @@ export default {
         flex-direction: column;
         gap: 2px;
     }
-    
+
     .rating-percentage {
         font-size: 12px;
     }
-    
+
     .rating-label {
         font-size: 9px;
     }
@@ -716,7 +649,7 @@ export default {
     .rating-progress-container {
         min-width: 80px;
     }
-    
+
     .rating-percentage {
         font-size: 11px;
     }
@@ -724,6 +657,7 @@ export default {
 
 /* Print Styles */
 @media print {
+
     .actions-cell,
     .table-card {
         box-shadow: none !important;

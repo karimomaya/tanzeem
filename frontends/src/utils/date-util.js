@@ -309,6 +309,16 @@ export const formatDateTimeExamples = {
     })
 };
 
+export function isUpdatedRecently(createdAt, updatedAt) {
+    if (!createdAt || !updatedAt) return false;
+
+    const created = new Date(createdAt);
+    const updated = new Date(updatedAt);
+
+    // Show update info if updated more than 1 minute after creation
+    return (updated - created) > (1000 * 60);
+}
+
 // Export default configuration for common use cases
 export default {
     formatDateTime,
@@ -319,5 +329,7 @@ export default {
     isToday,
     isYesterday,
     isThisWeek,
+    isUpdatedRecently,
     examples: formatDateTimeExamples
 };
+
