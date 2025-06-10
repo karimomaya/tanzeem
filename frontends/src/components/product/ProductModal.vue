@@ -1,6 +1,5 @@
 <template>
-    <BaseModal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)"
-        icon="mdi-clipboard-list"
+    <BaseModal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" icon="mdi-clipboard-list"
         :title="editedProductId ? 'تعديل المنتج' : 'إضافة منتج جديد'"
         :subtitle="editedProductId ? 'تحديث بيانات المنتج الحالي' : 'أدخل بيانات المنتج الجديد'"
         :primary-text="editedProductId ? 'تحديث المنتج' : 'حفظ المنتج'"
@@ -17,8 +16,8 @@
                                 اسم المنتج <span class="required">*</span>
                             </label>
                             <v-text-field v-model="editedProduct.name" :rules="fieldValidations.productName"
-                                variant="outlined" density="comfortable" placeholder="أدخل اسم المنتج"
-                                hide-details="auto" class="modern-field"></v-text-field>
+                                variant="outlined" density="comfortable" placeholder="أدخل اسم المنتج" hide-details="auto"
+                                class="modern-field"></v-text-field>
                         </div>
                     </v-col>
 
@@ -39,8 +38,8 @@
                         <div class="form-group">
                             <label class="form-label">الباركود</label>
                             <v-text-field v-model="editedProduct.barcode" :rules="fieldValidations.productBarcode"
-                                variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود"
-                                hide-details="auto" class="modern-field">
+                                variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود" hide-details="auto"
+                                class="modern-field">
                                 <template v-slot:prepend-inner>
                                     <v-icon color="info" size="20">mdi-barcode</v-icon>
                                 </template>
@@ -153,8 +152,8 @@
                                 الكمية في المخزون <span class="required">*</span>
                             </label>
                             <v-text-field v-model.number="editedProduct.stock" :rules="fieldValidations.productStock"
-                                type="number" variant="outlined" density="comfortable" placeholder="0"
-                                hide-details="auto" class="modern-field">
+                                type="number" variant="outlined" density="comfortable" placeholder="0" hide-details="auto"
+                                class="modern-field">
                                 <template v-slot:prepend-inner>
                                     <v-icon color="info" size="20">mdi-package-variant</v-icon>
                                 </template>
@@ -190,16 +189,15 @@
             <FormSection title="صورة المنتج" icon="mdi-image" :color="SECTION_COLORS.media">
                 <v-row>
                     <v-col cols="12">
-                        <FileUploadList ref="imageUpload" v-model="selectedImageFiles" label="صور المنتج"
-                            :multiple="true" accept="image/*" :rules="fieldValidations.productImage"
-                            placeholder="اختر صور المنتج..." file-list-title="الصور المختارة" :show-download="false"
-                            :show-url-input="true" url-input-label="رابط الصورة"
-                            url-placeholder="https://example.com/image.jpg" url-icon="mdi-link" url-icon-color="warning"
-                            :url-rules="fieldValidations.url" :show-url-download="true" :show-url-preview="true"
+                        <FileUploadList ref="imageUpload" v-model="selectedImageFiles" label="صور المنتج" :multiple="true"
+                            accept="image/*" :rules="fieldValidations.productImage" placeholder="اختر صور المنتج..."
+                            file-list-title="الصور المختارة" :show-download="false" :show-url-input="true"
+                            url-input-label="رابط الصورة" url-placeholder="https://example.com/image.jpg"
+                            url-icon="mdi-link" url-icon-color="warning" :url-rules="fieldValidations.url"
+                            :show-url-download="true" :show-url-preview="true"
                             url-validation-message="اضغط على زر التحميل لإضافة الصورة للقائمة"
-                            :url-validation-pattern="/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i"
-                            @file-added="handleFileSelect" @url-change="handleUrlChange"
-                            @url-preview="previewImageFromUrl" @preview="previewImageFile" />
+                            :url-validation-pattern="/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i" @file-added="handleFileSelect"
+                            @url-change="handleUrlChange" @url-preview="previewImageFromUrl" @preview="previewImageFile" />
                     </v-col>
                 </v-row>
             </FormSection>
@@ -245,8 +243,7 @@
                                         </div>
                                     </div>
                                     <div class="text-center">
-                                        <v-chip
-                                            :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
+                                        <v-chip :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
                                             size="small">
                                             {{ getStockMeta(editedProduct.stock,
                                                 editedProduct.minimumStock).text }}
@@ -345,9 +342,13 @@ export default {
                     return URL.createObjectURL(firstFile); // Regular file
                 }
             }
-            // Check for existing product images
+
+            // Check for existing product images (handle both formats)
+            if (this.editedProduct.imageUrl) {
+                return this.editedProduct.imageUrl; // Single image
+            }
             if (this.editedProduct.imageUrls && this.editedProduct.imageUrls.length > 0) {
-                return this.editedProduct.imageUrls[0];
+                return this.editedProduct.imageUrls[0]; // Multiple images
             }
             return null;
         },
@@ -360,9 +361,15 @@ export default {
                     this.editedProduct = { ...newProduct };
                     this.editedProductId = newProduct.id;
 
-                    // Convert existing images to file list format
-                    if (newProduct.imageUrls && newProduct.imageUrls.length > 0) {
-                        this.selectedImageFiles = newProduct.imageUrls.map((url, index) => ({
+                    let imageUrls = [];
+                    if (newProduct.imageUrl) {
+                        imageUrls = [newProduct.imageUrl]; // Convert single to array
+                    } else if (newProduct.imageUrls && newProduct.imageUrls.length > 0) {
+                        imageUrls = newProduct.imageUrls; // Use existing array
+                    }
+
+                    if (imageUrls.length > 0) {
+                        this.selectedImageFiles = imageUrls.map((url, index) => ({
                             name: `existing-image-${index + 1}.jpg`,
                             type: 'image/jpeg',
                             size: 0,
@@ -377,6 +384,7 @@ export default {
                             }
                         });
                     }
+
                 } else {
                     this.resetForm();
                 }
@@ -419,7 +427,7 @@ export default {
             this.previewDialog = true
         },
         closeDialog() {
-        this.$emit('update:modelValue', false);
+            this.$emit('update:modelValue', false);
         },
 
         isValidImageUrl(url) {
@@ -484,6 +492,9 @@ export default {
                 }
 
                 productData.imageUrls = uploadedImageUrls;
+                if (uploadedImageUrls.length > 0) {
+                    productData.imageUrl = uploadedImageUrls[0]; // Set first image as primary
+                }
 
                 const response = this.editedProductId
                     ? await updateProduct(productData)

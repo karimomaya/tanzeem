@@ -502,8 +502,8 @@ export default {
                 const response = await getProducts(params);
                 if (response && response.content) {
                     this.products = response.content;
-                    this.productPagination.totalItems = response.totalElements;
-                    this.totalProducts = response.totalElements; // Backward compatibility
+                    this.productPagination.totalItems = response.page.totalElements; 
+                    this.totalProducts = response.page.totalElements; 
                 } else {
                     console.warn('No data received from getProducts');
                     this.products = [];
@@ -624,8 +624,8 @@ export default {
                 const response = await getCategories(params);
                 if (response && response.content) {
                     this.categories = response.content;
-                    this.categoryPagination.totalItems = response.totalElements;
-                    this.totalCategories = response.totalElements; // Backward compatibility
+                    this.categoryPagination.totalItems = response.page.totalElements;
+                    this.totalCategories = response.page.totalElements; // Backward compatibility
                 } else {
                     console.warn('No data received from getCategories');
                     this.categories = [];

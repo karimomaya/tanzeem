@@ -15,7 +15,7 @@
 
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
-            <v-data-table-server :headers="headers" :items="products" :items-per-page="itemsPerPage" :page="page"
+            <v-data-table-server :headers="headers" :items="items" :items-per-page="itemsPerPage" :page="page"
                 :items-length="totalItems" :loading="loading" :sort-by="sortBy" loading-text="جاري التحميل... يرجى الانتظار"
                 no-data-text="لا توجد تصنيفات للعرض" @update:options="updateOptions" class="modern-table" hover
                 show-current-page>
@@ -183,7 +183,7 @@ export default {
         MetaDataDisplay
     },
     props: {
-        products: {
+        items: {
             type: Array,
             default: () => []
         },
@@ -207,14 +207,6 @@ export default {
             type: Array,
             default: () => []
         }
-    },
-    watch: {
-        products: {
-            handler(newProducts) {
-
-            },
-            immediate: true
-        },
     },
     emits: ['view', 'edit', 'delete', 'duplicate', 'refresh', 'update:options', 'add', 'update:page', 'update:items-per-page'],
     data() {
@@ -308,7 +300,7 @@ export default {
         },
 
         exportData() {
-            exportProductsToCSV(this.products);
+            exportProductsToCSV(this.items);
         },
 
         refreshData() {
