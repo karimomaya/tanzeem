@@ -184,14 +184,14 @@
                                 </div>
 
                                 <div v-else>
-                                    <ProductGrid v-if="viewMode === 'grid'" :products="products" :loading="loading"
+                                    <ProductGrid v-if="viewMode === 'grid'" :items="products" :loading="loading"
                                         :page="productPagination.page" :items-per-page="productPagination.itemsPerPage"
                                         :sort-by="productPagination.sortBy" :search-term="searchTerm"
                                         :status-filter="statusFilter" :total-items="productPagination.totalItems"
                                         @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
                                         @update:sort-by="updateSorting" @refresh="loadProducts" />
-                                    <ProductList v-else :products="products" :loading="loading"
+                                    <ProductList v-else :items="products" :loading="loading"
                                         :total-items="productPagination.totalItems" :page="productPagination.page"
                                         :items-per-page="productPagination.itemsPerPage" :sort-by="productPagination.sortBy"
                                         @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
@@ -214,7 +214,7 @@
                                 </div>
 
                                 <div v-else>
-                                    <CategoryGrid v-if="categoryViewMode === 'grid'" :categories="categories"
+                                    <CategoryGrid v-if="categoryViewMode === 'grid'" :items="categories"
                                         :loading="loading" :page="categoryPagination.page"
                                         :items-per-page="categoryPagination.itemsPerPage"
                                         :total-items="categoryPagination.totalItems" :sort-by="categoryPagination.sortBy"
@@ -222,7 +222,7 @@
                                         @delete="confirmDeleteCategory" @update:page="updatePage"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
                                         @refresh="loadCategories" @toggle-status="updateCategoryStatus" />
-                                    <CategoryList v-else :categories="categories" :loading="loading"
+                                    <CategoryList v-else :items="categories" :loading="loading"
                                         :page="categoryPagination.page" :items-per-page="categoryPagination.itemsPerPage"
                                         :total-items="categoryPagination.totalItems" :search-term="searchTerm"
                                         :status-filter="statusFilter" @add="openAddDialog" @edit="editCategory"
@@ -239,10 +239,10 @@
         </v-main>
 
         <!-- Product Dialog -->
-        <ProductModal v-model="productDialog" :product="selectedProduct" @save="handleProductSave" />
+        <ProductModal v-model="productDialog" :item-to-edit="selectedProduct" @save="handleProductSave" />
 
         <!-- Category Dialog -->
-        <CategoryModal v-model="categoryDialog" :category-to-edit="selectedCategory" @save="handleCategorySave" />
+        <CategoryModal v-model="categoryDialog" :item-to-edit="selectedCategory" @save="handleCategorySave" />
 
         <!-- Delete Confirmation Dialog -->
         <DeleteModal v-model="deleteDialog" ref="deleteModal" @delete-confirmed="handleDeleteConfirmed" />
@@ -264,6 +264,7 @@ import { getBusinessType, getTenantInfo } from '@/utils/auth-util';
 import ProductStats from '@/components/product/ProductStats.vue';
 import CategoryStats from '@/components/product/CategoryStats.vue';
 import AdvancedSearch from '@/components/common/AdvancedSearch.vue';
+import { STATUS_FILTER_OPTIONS } from '@/utils/status-util'
 
 export default {
     name: 'ProductsPage',
@@ -302,19 +303,6 @@ export default {
             selectedProduct: null,
             selectedCategory: null,
             categoryOptions: [],
-            categoryStatusOptions: [
-                { title: 'الكل', value: 'all' },
-                { title: 'نشط', value: 'true' },
-                { title: 'غير نشط', value: 'false' }
-            ],
-            productStatusOptions: [
-                { title: 'الكل', value: 'all' },
-                { title: 'نشط', value: 'ACTIVE' },
-                { title: 'مخزون منخفض', value: 'LOW_STOCK' },
-                { title: 'نفد المخزون', value: 'OUT_OF_STOCK' },
-                { title: 'معطل', value: 'DISABLED' }
-            ],
-
             productPagination: {
                 page: 1,
                 itemsPerPage: 10,
@@ -366,7 +354,7 @@ export default {
             return this.activeTab === 'products' ? 'إضافة منتج' : 'إضافة تصنيف';
         },
         statusOptions() {
-            return this.activeTab === 'products' ? this.productStatusOptions : this.categoryStatusOptions;
+            return this.activeTab === 'products' ? STATUS_FILTER_OPTIONS.product : STATUS_FILTER_OPTIONS.entity;
         },
         currentPagination() {
             return this.activeTab === 'products' ? this.productPagination : this.categoryPagination;

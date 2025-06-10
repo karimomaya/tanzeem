@@ -165,11 +165,13 @@ import {
     truncateText,
     createDuplicateProduct,
     exportProductsToCSV,
-    getProductStatus,
-    getProductStatusText,
-    getProductStatusColor,
-    getProductStatusIcon
 } from '@/utils/product-util';
+import { 
+  getProductStatusText, 
+  getProductStatusColor, 
+  getProductStatusIcon,
+  getProductStatus
+} from '@/utils/status-util'
 
 export default {
     name: 'ProductList',

@@ -147,7 +147,7 @@ export default {
             type: Boolean,
             default: false
         },
-        categoryToEdit: {
+        itemToEdit: {
             type: Object,
             default: null
         }
@@ -176,7 +176,7 @@ export default {
         };
     },
     watch: {
-        categoryToEdit: {
+        itemToEdit: {
             immediate: true,
             handler(newCategory) {
                 if (newCategory) {

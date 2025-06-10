@@ -395,8 +395,6 @@ export default {
     line-height: 1.3;
 }
 
-
-
 .meta-text {
     font-weight: 500;
 }

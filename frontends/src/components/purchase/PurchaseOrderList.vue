@@ -106,9 +106,9 @@
                     <div class="status-cell">
 
                         <div class="status-badge">
-                            <v-chip :color="getStatusColor(item.status)" variant="tonal" size="x-small"
+                            <v-chip :color="getOrderStatusColor(item.status)" variant="tonal" size="x-small"
                                 class="mini-status-chip">
-                                {{ getStatusText(item.status) }}
+                                {{ getOrderStatusText(item.status) }}
                             </v-chip>
                         </div>
                     </div>
@@ -178,7 +178,7 @@ import { truncateText } from '@/utils/product-util';
 import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
 import StandardTableActions from '@/components/common/StandardTableActions.vue';
 import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
-
+import { getOrderStatusText, getOrderStatusColor } from '@/utils/status-util';
 export default {
     name: 'PurchaseOrderList',
     components: {
@@ -244,6 +244,7 @@ export default {
         truncateText,
         formatCurrency,
         formatDate,
+        getOrderStatusText, getOrderStatusColor,
         handleTableAction(payload) {
             const { type, item } = payload;
             switch (type) {
@@ -302,7 +303,7 @@ export default {
                     order.supplier?.name || 'غير محدد',
                     order.totalAmount || 0,
                     order.items?.length || 0,
-                    this.getStatusText(order.status || 'PENDING'), // Fix here
+                    this.getOrderStatusText(order.status || 'PENDING'), // Fix here
                     order.expectedDeliveryAt || '',
                     order.createdAt ? new Date(order.createdAt).toLocaleDateString('ar-EG') : ''
                 ].map(field => `"${field}"`).join(','))
@@ -321,27 +322,6 @@ export default {
         },
         getStatusClass(status) {
             return status?.toLowerCase() || 'pending';
-        },
-        getStatusColor(status) {
-            const statusColors = {
-                'PENDING': 'warning',
-                'CONFIRMED': 'info',
-                'DELIVERED': 'success',
-                'COMPLETED': 'success',
-                'CANCELLED': 'error'
-            };
-            return statusColors[status] || 'grey';
-        },
-
-        getStatusText(status) {
-            const statusTexts = {
-                'PENDING': 'في الانتظار',
-                'CONFIRMED': 'مؤكد',
-                'DELIVERED': 'تم التسليم',
-                'COMPLETED': 'تم الاستلام',
-                'CANCELLED': 'ملغي'
-            };
-            return statusTexts[status] || status;
         },
 
         getTotalQuantity(items) {

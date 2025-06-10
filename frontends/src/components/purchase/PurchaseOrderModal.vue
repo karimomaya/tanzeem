@@ -71,7 +71,7 @@
                             </label>
 
                             <SearchableSelect v-model="formData.supplierId" :api-service="getSuppliers"
-                                :current-item="purchaseOrder?.supplier || null" :rules="fieldValidations.supplier"
+                                :current-item="itemToEdit?.supplier || null" :rules="fieldValidations.supplier"
                                 placeholder="ابحث عن المورد..." class="modern-field">
 
                                 <template v-slot:item="{ props, item }">
@@ -282,7 +282,7 @@ export default {
             type: Boolean,
             default: false
         },
-        purchaseOrder: {
+        itemToEdit: {
             type: Object,
             default: null
         }
@@ -325,7 +325,7 @@ export default {
     },
     emits: ['update:modelValue', 'save'],
     watch: {
-        purchaseOrder: {
+        itemToEdit: {
             immediate: true,
             handler(newPurchaseOrder) {
                 if (newPurchaseOrder) {

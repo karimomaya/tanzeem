@@ -301,7 +301,7 @@ export default {
             type: Boolean,
             default: false
         },
-        product: {
+        itemToEdit: {
             type: Object,
             default: null
         }
@@ -353,7 +353,7 @@ export default {
         },
     },
     watch: {
-        product: {
+        itemToEdit: {
             immediate: true,
             async handler(newProduct) {
                 if (newProduct) {

@@ -331,7 +331,7 @@ export default {
             default: false
         },
 
-        supplierToEdit: {
+        itemToEdit: {
             type: Object,
             default: null
         }
@@ -414,7 +414,7 @@ export default {
             this.editedSupplier.governorate = null;
         },
 
-        supplierToEdit: {
+        itemToEdit: {
             immediate: true,
             async handler(newSupplier) {
                 if (newSupplier) {

@@ -134,7 +134,7 @@
                                 </div>
 
                                 <div v-else>
-                                    <PurchaseOrderGrid v-if="viewMode === 'grid'" :purchase-orders="purchaseOrders"
+                                    <PurchaseOrderGrid v-if="viewMode === 'grid'" :items="purchaseOrders"
                                         :loading="loading" :page="orderPagination.page"
                                         :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
                                         :search-term="searchTerm" :status-filter="statusFilter"
@@ -143,7 +143,7 @@
                                         @mark-received="markAsReceived" @update:page="updatePage"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
                                         @refresh="loadPurchaseOrders" />
-                                    <PurchaseOrderList v-else :purchase-orders="purchaseOrders" :loading="loading"
+                                    <PurchaseOrderList v-else :items="purchaseOrders" :loading="loading"
                                         :total-items="orderPagination.totalItems" :page="orderPagination.page"
                                         :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
                                         @edit="editPurchaseOrder" @delete="confirmDeletePurchaseOrder"
@@ -169,7 +169,7 @@
                                 </div>
 
                                 <div v-else>
-                                    <SupplierGrid v-if="supplierViewMode === 'grid'" :suppliers="suppliers"
+                                    <SupplierGrid v-if="supplierViewMode === 'grid'" :items="suppliers"
                                         :loading="loading" :page="supplierPagination.page"
                                         :items-per-page="supplierPagination.itemsPerPage"
                                         :total-items="supplierPagination.totalItems" :sort-by="supplierPagination.sortBy"
@@ -177,7 +177,7 @@
                                         @delete="confirmDeleteSupplier" @update:page="updatePage"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
                                         @refresh="loadSuppliers" @toggle-status="updateSupplierStatus" />
-                                    <SupplierList v-else :suppliers="suppliers" :loading="loading"
+                                    <SupplierList v-else :items="suppliers" :loading="loading"
                                         :page="supplierPagination.page" :items-per-page="supplierPagination.itemsPerPage"
                                         :total-items="supplierPagination.totalItems" :search-term="searchTerm"
                                         :status-filter="statusFilter" @add="openAddDialog" @edit="editSupplier"
@@ -194,11 +194,11 @@
         </v-main>
 
         <!-- Purchase Order Dialog -->
-        <PurchaseOrderModal v-model="purchaseOrderDialog" :purchase-order="selectedPurchaseOrder"
+        <PurchaseOrderModal v-model="purchaseOrderDialog" :item-to-edit="selectedPurchaseOrder"
             @save="handlePurchaseOrderSave" />
 
         <!-- Supplier Dialog -->
-        <SupplierModal v-model="supplierDialog" :supplier-to-edit="selectedSupplier" @save="handleSupplierSave" />
+        <SupplierModal v-model="supplierDialog" :item-to-edit="selectedSupplier" @save="handleSupplierSave" />
 
         <!-- Delete Confirmation Dialog -->
         <DeleteModal v-model="deleteDialog" ref="deleteModal" @delete-confirmed="handleDeleteConfirmed" />
@@ -223,6 +223,7 @@ import { getPurchaseOrders, deletePurchaseOrder, getSuppliers, deleteSupplier, u
 import { success, error } from '@/utils/system-util';
 import { formatCurrency } from '@/utils/currency-util';
 import AdvancedSearch from '@/components/common/AdvancedSearch.vue';
+import { STATUS_FILTER_OPTIONS } from '@/utils/status-util';
 
 export default {
     name: 'PurchaseOrderPage',
@@ -249,26 +250,12 @@ export default {
             supplierViewMode: 'list',
             dateMenu: false,
             dateRange: null,
-
             purchaseOrderDialog: false,
             supplierDialog: false,
             deleteDialog: false,
             viewDialog: false,
             selectedPurchaseOrder: null,
             selectedSupplier: null,
-
-            orderStatusOptions: [
-                { title: 'الكل', value: 'all' },
-                { title: 'في الانتظار', value: 'PENDING' },
-                { title: 'تم الاستلام', value: 'RECEIVED' },
-                { title: 'ملغي', value: 'CANCELLED' }
-            ],
-            supplierStatusOptions: [
-                { title: 'الكل', value: 'all' },
-                { title: 'نشط', value: 'true' },
-                { title: 'غير نشط', value: 'false' }
-            ],
-
             orderPagination: {
                 page: 1,
                 itemsPerPage: 10,
@@ -306,7 +293,7 @@ export default {
             return this.activeTab === 'orders' ? 'إضافة أمر شراء' : 'إضافة مورد';
         },
         statusOptions() {
-            return this.activeTab === 'orders' ? this.orderStatusOptions : this.supplierStatusOptions;
+            return this.activeTab === 'orders' ? STATUS_FILTER_OPTIONS.order : STATUS_FILTER_OPTIONS.entity;
         },
         currentPagination() {
             return this.activeTab === 'orders' ? this.orderPagination : this.supplierPagination;

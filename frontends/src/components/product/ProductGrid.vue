@@ -200,11 +200,15 @@ import {
     getStockPercentage,
     truncateText,
     createDuplicateProduct,
-    getProductStatus,
-    getProductStatusText,
-    getProductStatusColor,
-    getProductStatusIcon
 } from '@/utils/product-util';
+
+import { 
+  getProductStatusText, 
+  getProductStatusColor, 
+  getProductStatusIcon,
+  getProductStatus 
+} from '@/utils/status-util'
+
 import TablePagination from '@/components/common/TablePagination.vue';
 
 export default {
@@ -213,7 +217,7 @@ export default {
         TablePagination
     },
     props: {
-        products: {
+        items: {
             type: Array,
             default: () => []
         },
@@ -274,7 +278,7 @@ export default {
         },
 
         itemsProperty() {
-            return 'products'; 
+            return 'items'; 
         }
     },
     methods: {

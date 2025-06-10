@@ -227,7 +227,7 @@ export default {
         TablePagination
     },
     props: {
-        categories: {
+        items: {
             type: Array,
             default: () => []
         },
@@ -288,7 +288,7 @@ export default {
         },
 
         itemsProperty() {
-            return 'categories'; 
+            return 'items'; 
         }
     },
     methods: {
