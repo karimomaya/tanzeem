@@ -1,6 +1,6 @@
 <template>
-    <BaseModal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" icon="mdi-clipboard-list"
-        :title="editedProductId ? 'تعديل المنتج' : 'إضافة منتج جديد'"
+    <BaseModal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)"
+        icon="mdi-clipboard-list" :title="editedProductId ? 'تعديل المنتج' : 'إضافة منتج جديد'"
         :subtitle="editedProductId ? 'تحديث بيانات المنتج الحالي' : 'أدخل بيانات المنتج الجديد'"
         :primary-text="editedProductId ? 'تحديث المنتج' : 'حفظ المنتج'"
         :primary-icon="editedProductId ? 'mdi-content-save' : 'mdi-plus'" :loading="loading"
@@ -16,8 +16,8 @@
                                 اسم المنتج <span class="required">*</span>
                             </label>
                             <v-text-field v-model="editedProduct.name" :rules="fieldValidations.productName"
-                                variant="outlined" density="comfortable" placeholder="أدخل اسم المنتج" hide-details="auto"
-                                class="modern-field"></v-text-field>
+                                variant="outlined" density="comfortable" placeholder="أدخل اسم المنتج"
+                                hide-details="auto" class="modern-field"></v-text-field>
                         </div>
                     </v-col>
 
@@ -38,8 +38,8 @@
                         <div class="form-group">
                             <label class="form-label">الباركود</label>
                             <v-text-field v-model="editedProduct.barcode" :rules="fieldValidations.productBarcode"
-                                variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود" hide-details="auto"
-                                class="modern-field">
+                                variant="outlined" density="comfortable" placeholder="أدخل رقم الباركود"
+                                hide-details="auto" class="modern-field">
                                 <template v-slot:prepend-inner>
                                     <v-icon color="info" size="20">mdi-barcode</v-icon>
                                 </template>
@@ -84,15 +84,16 @@
                                 التصنيف <span class="required">*</span>
                             </label>
                             <SearchableSelect v-model="editedProduct.category.id" :api-service="getCategories"
-                                :current-item="product?.category || null" :rules="fieldValidations.required('التصنيف')"
-                                placeholder="ابحث عن التصنيف..." class="modern-field">
+                                :current-item="itemToEdit?.category || null"
+                                :rules="fieldValidations.required('التصنيف')" placeholder="ابحث عن التصنيف..."
+                                class="modern-field">
 
                                 <template v-slot:item="{ props, item }">
                                     <v-list-item v-bind="props" class="category-item">
                                         <template v-slot:prepend>
                                             <v-avatar size="32" :color="item.raw.color || 'primary'" class="me-3">
                                                 <v-icon color="white" size="16">{{ item.raw.icon || 'mdi-folder'
-                                                }}</v-icon>
+                                                    }}</v-icon>
                                             </v-avatar>
                                         </template>
                                         <v-list-item-subtitle v-if="item.raw.description">
@@ -152,8 +153,8 @@
                                 الكمية في المخزون <span class="required">*</span>
                             </label>
                             <v-text-field v-model.number="editedProduct.stock" :rules="fieldValidations.productStock"
-                                type="number" variant="outlined" density="comfortable" placeholder="0" hide-details="auto"
-                                class="modern-field">
+                                type="number" variant="outlined" density="comfortable" placeholder="0"
+                                hide-details="auto" class="modern-field">
                                 <template v-slot:prepend-inner>
                                     <v-icon color="info" size="20">mdi-package-variant</v-icon>
                                 </template>
@@ -189,15 +190,15 @@
             <FormSection title="صورة المنتج" icon="mdi-image" :color="SECTION_COLORS.media">
                 <v-row>
                     <v-col cols="12">
-                        <FileUploadList ref="imageUpload" v-model="selectedImageFiles" label="صور المنتج" :multiple="true"
-                            accept="image/*" :rules="fieldValidations.productImage" placeholder="اختر صور المنتج..."
-                            file-list-title="الصور المختارة" :show-download="false" :show-url-input="true"
-                            url-input-label="رابط الصورة" url-placeholder="https://example.com/image.jpg"
-                            url-icon="mdi-link" url-icon-color="warning" :url-rules="fieldValidations.url"
-                            :show-url-download="true" :show-url-preview="true"
-                            url-validation-message="اضغط على زر التحميل لإضافة الصورة للقائمة"
-                            :url-validation-pattern="/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i" @file-added="handleFileSelect"
-                            @url-change="handleUrlChange" @url-preview="previewImageFromUrl" @preview="previewImageFile" />
+                        <FileUploadList ref="imageUpload" v-model="selectedImageFiles" label="صور المنتج"
+                            :multiple="true" accept="image/*" :rules="fieldValidations.productImage"
+                            placeholder="اختر صور المنتج..." file-list-title="الصور المختارة" :show-download="false"
+                            :show-url-input="true" url-input-label="رابط الملف"
+                            url-placeholder="https://example.com/file.jpg" url-icon="mdi-link" url-icon-color="warning"
+                            :url-rules="fieldValidations.url" :show-url-download="true" :show-url-preview="true"
+                            url-validation-message="اضغط على زر التحميل لإضافة الملف للقائمة"
+                            @file-added="handleFileSelect" @url-change="handleUrlChange"
+                            @url-preview="previewImageFromUrl" @preview="handleFilePreview" />
                     </v-col>
                 </v-row>
             </FormSection>
@@ -222,9 +223,19 @@
                         <v-col cols="12">
                             <v-card elevation="2" rounded="lg" class="pa-4 bg-grey-lighten-5">
                                 <div class="d-flex align-center">
-                                    <div v-if="imagePreviewUrl" class="me-3">
-                                        <v-img :src="imagePreviewUrl" width="60" height="60" contain
-                                            class="rounded"></v-img>
+                                    <div v-if="allImageUrls.length > 0" class="me-3">
+                                        <div class="image-gallery-preview" @click="openImageGallery">
+                                            <!-- Main Image -->
+                                            <v-img :src="allImageUrls[0]" width="60" height="60" cover
+                                                class="main-preview-image">
+                                            </v-img>
+
+                                            <!-- Image Counter Badge -->
+                                            <div v-if="allImageUrls.length > 1" class="image-counter-badge">
+                                                <v-icon size="12" class="me-1">mdi-image-multiple</v-icon>
+                                                {{ allImageUrls.length }}
+                                            </div>
+                                        </div>
                                     </div>
                                     <div v-else class="me-3">
                                         <v-avatar size="60" color="grey-lighten-3">
@@ -243,7 +254,8 @@
                                         </div>
                                     </div>
                                     <div class="text-center">
-                                        <v-chip :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
+                                        <v-chip
+                                            :color="getStockMeta(editedProduct.stock, editedProduct.minimumStock).color"
                                             size="small">
                                             {{ getStockMeta(editedProduct.stock,
                                                 editedProduct.minimumStock).text }}
@@ -262,7 +274,10 @@
     </BaseModal>
 
     <!-- Image Preview Dialog -->
-    <FilePreviewDialog v-model="previewDialog" :file="selectedFile" />
+    <FilePreviewDialog v-model="previewDialog" :file="selectedFile"
+        :files="previewFiles.length > 0 ? previewFiles : previewableFiles" :initial-index="previewIndex"
+        :show-thumbnails="true" :show-counter="true" :allow-download="true" :allow-share="false"
+        @file-change="onImageChange" @download="onImageDownload" @close="onGalleryClose" />
 </template>
 
 <script>
@@ -291,7 +306,7 @@ export default {
         FilePreviewDialog,
         FormSection,
         FileUploadList,
-        BaseModal
+        BaseModal,
     },
     props: {
         modelValue: {
@@ -310,11 +325,13 @@ export default {
             UNIT_ICON_OPTIONS,
             fieldValidations,
             loading: false,
+            previewDialog: false,
+            selectedFile: null,
+            previewFiles: [],
+            previewIndex: 0,
             uploadLoading: false,
             selectedImageFiles: [],
             editedProductId: null,
-            previewDialog: false,
-            selectedFile: null,
             editedProduct: {
                 name: '',
                 sku: '',
@@ -332,6 +349,28 @@ export default {
         };
     },
     computed: {
+        previewableFiles() {
+            return this.selectedImageFiles.map((file, index) => {
+                if (file.url) {
+                    return {
+                        name: file.name || `image-${index + 1}.jpg`,
+                        type: file.type || 'image/jpeg',
+                        size: file.size || 0,
+                        url: file.url,
+                        isUrlFile: file.isUrlFile || false
+                    };
+                } else if (file instanceof File) {
+                    return {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        url: URL.createObjectURL(file),
+                        isUrlFile: false
+                    };
+                }
+                return file;
+            });
+        },
         imagePreviewUrl() {
             // Show the first image for preview
             if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
@@ -352,6 +391,32 @@ export default {
             }
             return null;
         },
+        allImageUrls() {
+            const urls = [];
+
+            // Add from selected files
+            if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
+                this.selectedImageFiles.forEach(file => {
+                    if (file.url) {
+                        urls.push(file.url);
+                    } else if (file instanceof File) {
+                        urls.push(URL.createObjectURL(file));
+                    }
+                });
+            }
+
+            // Add from existing product images if no selected files
+            if (urls.length === 0) {
+                if (this.editedProduct.imageUrl) {
+                    urls.push(this.editedProduct.imageUrl);
+                }
+                if (this.editedProduct.imageUrls && this.editedProduct.imageUrls.length > 0) {
+                    urls.push(...this.editedProduct.imageUrls);
+                }
+            }
+
+            return urls;
+        }
     },
     watch: {
         itemToEdit: {
@@ -400,6 +465,26 @@ export default {
         getCategories,
         getStockMeta,
         formatCurrency,
+        handleFilePreview(file, index) {
+            if (this.selectedImageFiles.length > 1) {
+                // Multiple files - show gallery
+                this.previewFiles = this.selectedImageFiles.map((f, i) => ({
+                    name: f.name || `image-${i + 1}.jpg`,
+                    type: f.type || 'image/jpeg',
+                    size: f.size || 0,
+                    url: f.url || (f instanceof File ? URL.createObjectURL(f) : null),
+                    isUrlFile: f.isUrlFile || false
+                }));
+                this.previewIndex = index;
+                this.selectedFile = null; // Use files array for gallery
+            } else {
+                // Single file - show single preview
+                this.selectedFile = file;
+                this.previewFiles = [];
+                this.previewIndex = 0;
+            }
+            this.previewDialog = true;
+        },
         resetForm() {
             this.editedProductId = null;
             this.editedProduct = {
@@ -436,8 +521,43 @@ export default {
             return pattern.test(url);
         },
 
+        openImageGallery() {
+            // Convert image URLs to file objects for the enhanced dialog
+            if (this.allImageUrls.length > 0) {
+                // Convert image URLs to file objects for the enhanced dialog
+                this.previewFiles = this.allImageUrls.map((url, index) => ({
+                    name: `product-image-${index + 1}.jpg`,
+                    type: 'image/jpeg',
+                    size: 0,
+                    url: url,
+                    isUrlFile: true
+                }));
+                this.previewIndex = 0;
+                this.selectedFile = null; // Use files array instead
+                this.previewDialog = true;
+            }
+        },
+
+        onImageChange(data) {
+            console.log('Image changed:', data);
+            this.previewIndex = data.index;
+        },
+
+        onImageDownload(data) {
+            console.log('Download image:', data);
+        },
+
+        onGalleryClose() {
+            console.log('Gallery closed');
+            this.previewFiles = [];
+            this.previewIndex = 0;
+        },
+
         previewImageFile(file) {
+            // For single file preview
             this.selectedFile = file;
+            this.previewFiles = [];
+            this.previewIndex = 0;
             this.previewDialog = true;
         },
 
@@ -447,9 +567,12 @@ export default {
                     name: url.split('/').pop() || 'image.jpg',
                     type: 'image/jpeg',
                     size: 0,
-                    url: url
+                    url: url,
+                    isUrlFile: true
                 };
                 this.selectedFile = urlFile;
+                this.previewFiles = [];
+                this.previewIndex = 0;
                 this.previewDialog = true;
             }
         },
@@ -464,7 +587,6 @@ export default {
             // URL changes are handled by the FileUploadList component
         },
         async saveProduct() {
-
             this.loading = true;
             try {
                 const productData = { ...this.editedProduct, id: this.editedProductId };
@@ -473,29 +595,81 @@ export default {
                     productData.sku = productData.name.replace(/\s+/g, '-').toUpperCase().substring(0, 10);
                 }
 
-                // Handle image uploads
-                const uploadedImageUrls = [];
+                // Handle content uploads using bulk operations
+                const uploadedContentUrls = [];
                 this.uploadLoading = true;
 
-                for (const file of this.selectedImageFiles) {
+                // Separate files and URLs for different handling
+                const filesToUpload = [];
+                const urlsToDownload = [];
+                const existingUrls = [];
+
+                this.selectedImageFiles.forEach((file, index) => {
                     if (file.isUrlFile) {
-                        uploadedImageUrls.push(file.url);
-                    } else if (file instanceof File) {
-                        try {
-                            const uploadResponse = await this.imageServiceClient.uploadImage(file, 'product');
-                            uploadedImageUrls.push(uploadResponse.url);
-                        } catch (uploadError) {
-                            console.error('Image upload failed:', uploadError);
-                            error('فشل رفع الصورة: ' + uploadError.message);
+                        if (file.contentId) {
+                            // Existing content - keep the URL
+                            existingUrls.push(file.url);
+                        } else {
+                            // New URL to download and store
+                            urlsToDownload.push({ url: file.url, order: index });
                         }
+                    } else if (file instanceof File) {
+                        // New file to upload
+                        filesToUpload.push({ file: file, order: index });
+                    }
+                });
+
+                // 1. Bulk upload new files
+                if (filesToUpload.length > 0) {
+                    try {
+                        const files = filesToUpload.map(item => item.file);
+                        const uploadResponses = await this.contentServiceClient.uploadMultipleContents(
+                            files,
+                            'product',           // context
+                            'Product',           // entityType
+                            this.editedProductId // entityId
+                        );
+
+                        // Add uploaded URLs to the result
+                        uploadedContentUrls.push(...uploadResponses.map(response => response.url));
+                    } catch (uploadError) {
+                        console.error('Bulk file upload failed:', uploadError);
+                        error('فشل رفع الملفات: ' + uploadError.message);
+                        throw uploadError;
                     }
                 }
 
-                productData.imageUrls = uploadedImageUrls;
-                if (uploadedImageUrls.length > 0) {
-                    productData.imageUrl = uploadedImageUrls[0]; // Set first image as primary
+                // 2. Bulk download URLs
+                if (urlsToDownload.length > 0) {
+                    try {
+                        const urls = urlsToDownload.map(item => item.url);
+                        const downloadResponses = await this.contentServiceClient.downloadAndStoreMultipleContents(
+                            urls,
+                            'product',           // context
+                            'Product',           // entityType
+                            this.editedProductId // entityId
+                        );
+
+                        // Add downloaded URLs to the result
+                        uploadedContentUrls.push(...downloadResponses.map(response => response.url));
+                    } catch (downloadError) {
+                        console.error('Bulk URL download failed:', downloadError);
+                        error('فشل تحميل الروابط: ' + downloadError.message);
+                        // For URLs that can't be downloaded, keep original URLs as fallback
+                        uploadedContentUrls.push(...urlsToDownload.map(item => item.url));
+                    }
                 }
 
+                // 3. Add existing URLs
+                uploadedContentUrls.push(...existingUrls);
+
+                // Set the content URLs to product data
+                productData.imageUrls = uploadedContentUrls;
+                if (uploadedContentUrls.length > 0) {
+                    productData.imageUrl = uploadedContentUrls[0]; // Set first image as primary
+                }
+
+                // Save the product
                 const response = this.editedProductId
                     ? await updateProduct(productData)
                     : await saveProduct(productData);

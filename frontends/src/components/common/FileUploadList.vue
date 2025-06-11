@@ -230,11 +230,11 @@ export default {
         },
         urlValidationMessage: {
             type: String,
-            default: 'سيتم تحميل الصورة وحفظها محلياً عند الحفظ'
+            default: 'اضغط على زر التحميل لإضافة الملف للقائمة'
         },
         urlValidationPattern: {
             type: RegExp,
-            default: () => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i
+            default: null
         },
         defaultUploadType: {
             type: String,
@@ -341,9 +341,26 @@ export default {
         },
         addUrlAsFile() {
             if (this.isValidUrl(this.urlInput)) {
+                // Extract filename from URL, fallback to generic name based on detected type
+                let fileName = this.urlInput.split('/').pop() || 'file';
+
+                // If no extension in URL, try to add one based on content type detection
+                if (!fileName.includes('.')) {
+                    const detectedType = this.getFileTypeFromUrl(this.urlInput);
+                    if (detectedType.startsWith('image/')) {
+                        fileName += '.jpg';
+                    } else if (detectedType.startsWith('video/')) {
+                        fileName += '.mp4';
+                    } else if (detectedType.startsWith('audio/')) {
+                        fileName += '.mp3';
+                    } else {
+                        fileName += '.txt';
+                    }
+                }
+
                 // Create a virtual file object for the URL
                 const urlFile = {
-                    name: this.urlInput.split('/').pop() || 'file.jpg',
+                    name: fileName,
                     type: this.getFileTypeFromUrl(this.urlInput),
                     size: 0,
                     url: this.urlInput,
@@ -352,8 +369,6 @@ export default {
 
                 // Add to existing files
                 this.localFiles = [...this.localFiles, urlFile];
-
-                // Don't update vFileInputFiles since it can't handle URL files
 
                 // Emit the changes
                 this.$emit('update:modelValue', this.localFiles);
@@ -365,17 +380,56 @@ export default {
                 console.log('Added URL file. Total files now:', this.localFiles.length);
             }
         },
+
         getFileTypeFromUrl(url) {
             const extension = url.split('.').pop()?.toLowerCase();
             const typeMap = {
+                // Images
                 'jpg': 'image/jpeg',
                 'jpeg': 'image/jpeg',
                 'png': 'image/png',
                 'gif': 'image/gif',
                 'webp': 'image/webp',
+                'bmp': 'image/bmp',
+                'svg': 'image/svg+xml',
+
+                // Documents
                 'pdf': 'application/pdf',
                 'doc': 'application/msword',
-                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'xls': 'application/vnd.ms-excel',
+                'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'ppt': 'application/vnd.ms-powerpoint',
+                'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+
+                // Text files
+                'txt': 'text/plain',
+                'csv': 'text/csv',
+                'json': 'application/json',
+                'xml': 'text/xml',
+                'html': 'text/html',
+                'css': 'text/css',
+                'js': 'text/javascript',
+
+                // Audio
+                'mp3': 'audio/mpeg',
+                'wav': 'audio/wav',
+                'ogg': 'audio/ogg',
+                'aac': 'audio/aac',
+                'm4a': 'audio/mp4',
+
+                // Video
+                'mp4': 'video/mp4',
+                'avi': 'video/x-msvideo',
+                'mov': 'video/quicktime',
+                'wmv': 'video/x-ms-wmv',
+                'webm': 'video/webm',
+                'mkv': 'video/x-matroska',
+
+                // Archives
+                'zip': 'application/zip',
+                'rar': 'application/x-rar-compressed',
+                '7z': 'application/x-7z-compressed'
             };
             return typeMap[extension] || 'application/octet-stream';
         },
@@ -441,10 +495,21 @@ export default {
         },
 
         isValidUrl(url) {
-            if (!url || !this.urlValidationPattern) return false;
-            return this.urlValidationPattern.test(url);
-        },
+            if (!url) return false;
 
+            // If there's a specific validation pattern, use it
+            if (this.urlValidationPattern) {
+                return this.urlValidationPattern.test(url);
+            }
+
+            // Otherwise, just check if it's a valid URL format
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        },
         removeFile(index) {
             if (this.localFiles && this.localFiles.length > index) {
                 const removedFile = this.localFiles[index];

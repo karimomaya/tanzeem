@@ -228,6 +228,75 @@ export class ImageServiceClient {
             return null;
         }
     }
+
+
+
+    async uploadMultipleContents(files, context, entityType, entityId) {
+        const formData = new FormData();
+        
+        // Add all files to FormData
+        files.forEach((file, index) => {
+            formData.append('files', file);
+            formData.append(`order_${index}`, index); // Track original order
+        });
+        
+        formData.append('context', context);
+        formData.append('entityType', entityType);
+        if (entityId) formData.append('entityId', entityId);
+
+        try {
+            const response = await this.apiClient.post('/upload-multiple', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Bulk content upload error:', error);
+            throw new Error(error.response?.data?.message || 'Failed to upload contents');
+        }
+    }
+
+    async downloadAndStoreMultipleContents(contentUrls, context, entityType, entityId) {
+        const requestData = {
+            contentUrls: contentUrls.map((url, index) => ({
+                url: url,
+                order: index
+            })),
+            context,
+            entityType,
+            entityId
+        };
+
+        try {
+            const response = await this.apiClient.post('/download-and-store-multiple', requestData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Bulk content download error:', error);
+            throw new Error(error.response?.data?.message || 'Failed to download and store contents');
+        }
+    }
+
+    async getContentsForMultipleEntities(entityType, entityIds) {
+        try {
+            const response = await this.apiClient.post('/entity/batch', {
+                entityType,
+                entityIds
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Get multiple entities contents error:', error);
+            throw new Error(error.response?.data?.message || 'Failed to get contents for entities');
+        }
+    }
 }
 
 // Create a singleton instance for convenience
