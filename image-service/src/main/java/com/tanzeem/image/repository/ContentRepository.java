@@ -25,6 +25,8 @@ public interface  ContentRepository  extends JpaRepository<Content, Long> {
     List<Content> findByTenantIdAndContentCategoryOrderByCreatedAtDesc(
             String tenantId, ContentCategory contentCategory);
 
+    List<Content> findByTenantIdAndUrl(String tenantId, String url);
+
     Optional<Content> findByTenantIdAndEntityTypeAndEntityIdAndIsPrimary(
             String tenantId, String entityType, Long entityId, Boolean isPrimary);
 

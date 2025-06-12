@@ -26,15 +26,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/images/health").permitAll()
+                        .requestMatchers("/api/contents/health").permitAll()
 
                         // Image serving - public access (so images can be displayed without auth)
-                        .requestMatchers("GET", "/api/images/**").permitAll()
+                        .requestMatchers("GET", "/api/contents/**").permitAll()
 
                         // Image upload/management - requires authentication
-                        .requestMatchers("POST", "/api/images/**").authenticated()
-                        .requestMatchers("PUT", "/api/images/**").authenticated()
-                        .requestMatchers("DELETE", "/api/images/**").authenticated()
+                        .requestMatchers("POST", "/api/contents/**").authenticated()
+                        .requestMatchers("PUT", "/api/contents/**").authenticated()
+                        .requestMatchers("DELETE", "/api/contents/**").authenticated()
 
                         // All other requests require authentication
                         .anyRequest().authenticated()

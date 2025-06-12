@@ -285,7 +285,7 @@ import { UNIT_ICON_OPTIONS } from '@/constants/icons';
 import { getStockMeta } from '@/utils/product-util';
 import { saveProduct, updateProduct, getCategories } from '@/services/product-service';
 import { success, error } from '@/utils/system-util';
-import { ImageServiceClient } from '@/services/image-service'; // Import the image service client
+import { ContentServiceClient } from '@/services/content-service'; // Import the image service client
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import { fieldValidations } from '@/utils/validation-util';
 import ModalHeader from '@/components/common/ModalHeader.vue'
@@ -345,7 +345,7 @@ export default {
                 active: true,
                 imageUrls: []
             },
-            imageServiceClient: new ImageServiceClient()
+            contentServiceClient: new ContentServiceClient()
         };
     },
     computed: {
@@ -631,6 +631,7 @@ export default {
                         );
 
                         // Add uploaded URLs to the result
+                        console.log(uploadResponses)
                         uploadedContentUrls.push(...uploadResponses.map(response => response.url));
                     } catch (uploadError) {
                         console.error('Bulk file upload failed:', uploadError);

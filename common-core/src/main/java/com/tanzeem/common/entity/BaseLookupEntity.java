@@ -2,15 +2,15 @@ package com.tanzeem.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @MappedSuperclass
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class BaseLookupEntity extends AuditableBaseEntity {
 
     @Column(nullable = false, unique = true)

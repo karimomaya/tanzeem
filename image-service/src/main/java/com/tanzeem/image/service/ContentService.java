@@ -2,6 +2,7 @@ package com.tanzeem.image.service;
 
 import com.tanzeem.image.dto.ContentResponse;
 import com.tanzeem.image.dto.ContentUploadResponse;
+import com.tanzeem.image.dto.ContentUrlRequest;
 import com.tanzeem.image.entity.Content;
 import com.tanzeem.image.enums.ContentCategory;
 import com.tanzeem.image.repository.ContentRepository;
@@ -98,6 +99,24 @@ public class ContentService {
         types.put("application/x-7z-compressed", ContentCategory.ARCHIVE);
 
         return Collections.unmodifiableMap(types);
+    }
+
+
+    public void updateContentEntityReferences(String entityType, Long entityId, List<String> contentUrls) {
+        // Implementation to update existing content entities with new entity references
+        // This is useful when creating a new entity and need to link uploaded content
+        String tenantId = AuthContextHolder.getTenantId();
+
+        for (String contentUrl : contentUrls) {
+            // Find content by URL and update entity references
+            // This is a simplified implementation - you might need more sophisticated logic
+            List<Content> contents = contentRepository.findByTenantIdAndUrl(tenantId, contentUrl);
+            contents.forEach(content -> {
+                content.setEntityType(entityType);
+                content.setEntityId(entityId);
+            });
+            contentRepository.saveAll(contents);
+        }
     }
 
     @Transactional
@@ -383,30 +402,6 @@ public class ContentService {
                 .originalName(originalFilename)
                 .relativePath(relativePath)
                 .build();
-    }
-
-    @Transactional
-    public List<ContentUploadResponse> uploadMultipleContents(List<MultipartFile> files,
-                                                              String context, String entityType,
-                                                              Long entityId) {
-        List<ContentUploadResponse> responses = new ArrayList<>();
-        String tenantId = AuthContextHolder.getTenantId();
-
-        for (int i = 0; i < files.size(); i++) {
-            MultipartFile file = files.get(i);
-            boolean isPrimary = i == 0; // First file is primary
-
-            try {
-                ContentUploadResponse response = uploadContent(file, context, entityType, entityId,
-                        isPrimary, i, null, null);
-                responses.add(response);
-            } catch (Exception e) {
-                // Log error but continue with other files
-                throw new RuntimeException("Failed to upload file: " + file.getOriginalFilename(), e);
-            }
-        }
-
-        return responses;
     }
 
     @Transactional

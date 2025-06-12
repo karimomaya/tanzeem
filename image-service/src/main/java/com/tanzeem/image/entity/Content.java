@@ -3,13 +3,17 @@ package com.tanzeem.image.entity;
 import com.tanzeem.common.entity.AuditableBaseEntity;
 import com.tanzeem.image.enums.ContentCategory;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "contents")
 @Data
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Content extends AuditableBaseEntity {
     @Id
     @GeneratedValue
