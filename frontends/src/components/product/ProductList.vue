@@ -6,8 +6,8 @@
             <template #controls>
                 <div class="items-per-page">
                     <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
-                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined" density="compact"
-                        hide-details style="width: 80px;" class="items-select"
+                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined"
+                        density="compact" hide-details style="width: 80px;" class="items-select"
                         @update:model-value="$emit('update:items-per-page', $event)" />
                 </div>
             </template>
@@ -16,23 +16,18 @@
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
             <v-data-table-server :headers="headers" :items="items" :items-per-page="itemsPerPage" :page="page"
-                :items-length="totalItems" :loading="loading" :sort-by="sortBy" loading-text="جاري التحميل... يرجى الانتظار"
-                no-data-text="لا توجد تصنيفات للعرض" @update:options="updateOptions" class="modern-table" hover
-                show-current-page>
+                :items-length="totalItems" :loading="loading" :sort-by="sortBy"
+                loading-text="جاري التحميل... يرجى الانتظار" no-data-text="لا توجد تصنيفات للعرض"
+                @update:options="updateOptions" class="modern-table" hover show-current-page>
                 <!-- Enhanced Product Column -->
                 <template v-slot:item.name="{ item }">
                     <div class="product-list-cell">
                         <div class="product-list-image">
-                            <v-img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.name" cover class="product-image">
-                                <template v-slot:error>
-                                    <div class="product-image-fallback">
-                                        <v-icon color="grey-lighten-1" size="20">mdi-package-variant</v-icon>
-                                    </div>
-                                </template>
-                            </v-img>
-                            <div v-else class="product-image-fallback">
-                                <v-icon color="grey-lighten-1" size="20">mdi-package-variant</v-icon>
-                            </div>
+                            <ContentThumbnailPreview :entity-type="'Product'" :entity-id="item.id"
+                                :content-category="'IMAGE'" :size="40" :show-counter="true" :show-type-indicator="false"
+                                :clickable="true" placeholder-icon="mdi-package-variant"
+                                placeholder-color="grey-lighten-3" @open-gallery="openProductGallery(item)"
+                                @content-loaded="onContentLoaded" class="product-thumbnail" />
                         </div>
                         <div class="product-list-info">
                             <div class="product-list-name">{{ item.name }}</div>
@@ -43,12 +38,8 @@
                             <div v-if="item.description" class="product-list-description">
                                 {{ truncateText(item.description, 50) }}
                             </div>
-                            <MetaDataDisplay 
-                                :created-at="item.createdAt"
-                                :created-by="item.createdBy"
-                                :updated-at="item.updatedAt"
-                                :updated-by="item.updatedBy"
-                            />
+                            <MetaDataDisplay :created-at="item.createdAt" :created-by="item.createdBy"
+                                :updated-at="item.updatedAt" :updated-by="item.updatedBy" />
 
                         </div>
                     </div>
@@ -61,7 +52,7 @@
                             <v-icon color="white" size="12">{{ item.category?.icon || 'mdi-tag' }}</v-icon>
                         </v-avatar>
                         <span class="product-category-name">{{ item.category?.name || item.categoryName || 'غير محدد'
-                        }}</span>
+                            }}</span>
                     </div>
                 </template>
 
@@ -94,7 +85,8 @@
                         <v-chip
                             :color="getProductStatusColor(getProductStatus(item.stock, item.minimumStock, item.active, item.category?.active))"
                             size="small" variant="tonal" class="product-status-chip">
-                            <v-icon start size="12">{{ getProductStatusIcon(getProductStatus(item.stock, item.minimumStock,
+                            <v-icon start size="12">{{ getProductStatusIcon(getProductStatus(item.stock,
+                                item.minimumStock,
                                 item.active, item.category?.active)) }}</v-icon>
                             {{ getProductStatusText(getProductStatus(item.stock, item.minimumStock, item.active,
                                 item.category?.active)) }}
@@ -131,7 +123,8 @@
                 <template v-slot:loading>
                     <div class="loading-state">
                         <div class="loading-content">
-                            <v-progress-circular indeterminate color="primary" size="40" class="mb-4"></v-progress-circular>
+                            <v-progress-circular indeterminate color="primary" size="40"
+                                class="mb-4"></v-progress-circular>
                             <h4 class="loading-title">جاري تحميل المنتجات...</h4>
                             <p class="loading-subtitle">يرجى الانتظار قليلاً</p>
                         </div>
@@ -159,6 +152,7 @@ import NoDataState from '@/components/common/NoDataState.vue';
 import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
 import StandardTableActions from '@/components/common/StandardTableActions.vue';
 import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
+import ContentThumbnailPreview from '@/components/common/ContentThumbnailPreview.vue';
 import {
     getStockMeta,
     getStockLevel,
@@ -166,11 +160,11 @@ import {
     createDuplicateProduct,
     exportProductsToCSV,
 } from '@/utils/product-util';
-import { 
-  getProductStatusText, 
-  getProductStatusColor, 
-  getProductStatusIcon,
-  getProductStatus
+import {
+    getProductStatusText,
+    getProductStatusColor,
+    getProductStatusIcon,
+    getProductStatus
 } from '@/utils/status-util'
 
 export default {
@@ -180,7 +174,8 @@ export default {
         NoDataState,
         BaseTableHeader,
         StandardTableActions,
-        MetaDataDisplay
+        MetaDataDisplay,
+        ContentThumbnailPreview 
     },
     props: {
         items: {
@@ -208,7 +203,7 @@ export default {
             default: () => []
         }
     },
-    emits: ['view', 'edit', 'delete', 'duplicate', 'refresh', 'update:options', 'add', 'update:page', 'update:items-per-page'],
+    emits: ['view', 'edit', 'delete', 'duplicate', 'refresh', 'update:options', 'add', 'update:page', 'update:items-per-page', 'open-gallery'],
     data() {
         return {
             itemsPerPageOptions: [10, 25, 50, 100],
@@ -262,7 +257,8 @@ export default {
                     width: '8%',
                     align: 'start'
                 }
-            ]
+            ],
+            contentCache: new Map()
         };
     },
     methods: {
@@ -275,7 +271,31 @@ export default {
         getProductStatusText,
         getProductStatusColor,
         getProductStatusIcon,
-        // Action methods
+        openProductGallery(product) {
+            this.$emit('open-gallery', {
+                product: product,
+                entityType: 'Product',
+                entityId: product.id
+            });
+        },
+
+        onContentLoaded(data) {
+            // Cache the loaded content for performance
+            const cacheKey = `${data.entityType}-${data.entityId}`;
+            this.contentCache.set(cacheKey, data.contents);
+            
+            console.log(`Loaded ${data.contents.length} content items for ${data.entityType}:${data.entityId}`);
+        },
+        getProductContent(productId) {
+            return this.contentCache.get(`Product-${productId}`) || [];
+        },
+
+        reloadProductContent(productId) {
+            const thumbnailComponent = this.$refs[`productThumbnail-${productId}`];
+            if (thumbnailComponent && thumbnailComponent.reload) {
+                thumbnailComponent.reload();
+            }
+        },
         handleTableAction(payload) {
             const { type, item } = payload;
 
@@ -326,4 +346,28 @@ export default {
 
 <style scoped>
 @import '@/styles/product.css';
+.product-thumbnail {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.product-list-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+/* Update existing styles to work with the new component */
+.product-list-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.product-list-info {
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+}
 </style>

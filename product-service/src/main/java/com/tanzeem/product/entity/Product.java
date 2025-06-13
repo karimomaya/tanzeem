@@ -4,24 +4,18 @@ import com.tanzeem.common.entity.AuditableBaseEntity;
 import com.tanzeem.product.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class Product  extends AuditableBaseEntity {
     @Id
     @GeneratedValue
@@ -36,7 +30,6 @@ public class Product  extends AuditableBaseEntity {
     private Integer stock;
 
     private Integer minimumStock;
-    private String imageUrl;
 
     @ManyToOne
     private Category category;

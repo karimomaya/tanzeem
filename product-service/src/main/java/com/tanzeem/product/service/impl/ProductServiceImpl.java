@@ -1,7 +1,6 @@
 package com.tanzeem.product.service.impl;
 
 import com.tanzeem.product.dto.CategoryProductCountResponse;
-import com.tanzeem.product.dto.CategoryResponse;
 import com.tanzeem.product.dto.ProductDto;
 import com.tanzeem.product.dto.ProductResponse;
 import com.tanzeem.product.entity.Category;
@@ -41,7 +40,6 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setMinimumStock(dto.getMinimumStock());
-        product.setImageUrl(dto.getImageUrl());
         product.setTenantId(AuthContextHolder.getTenantId());
 
         Category category = categoryRepo.findById(dto.getCategoryId())
@@ -73,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setMinimumStock(dto.getMinimumStock());
-        product.setImageUrl(dto.getImageUrl());
         product.setActive(dto.isActive());
 
         Category category = categoryRepo.findById(dto.getCategoryId())
@@ -144,7 +141,6 @@ public class ProductServiceImpl implements ProductService {
                 .status(product.getStatus() != null ? product.getStatus().name() : "UNKNOWN") // Handle null
                 .isActive(product.isActive())
                 .updatedAt(product.getUpdatedAt()).createdBy(product.getCreatedBy()).updatedBy(product.getUpdatedBy())
-                .imageUrl(product.getImageUrl())
                 .build();
 
     }

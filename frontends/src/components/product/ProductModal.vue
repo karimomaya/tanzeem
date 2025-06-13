@@ -27,7 +27,7 @@
                             <label class="form-label">
                                 رمز المنتج (SKU) <span class="required">*</span>
                             </label>
-                            <v-text-field v-model="editedProduct.sku" :rules="fieldValidations.productSku"
+                            <v-text-field v-model="editedProduct.sku"
                                 variant="outlined" density="comfortable" placeholder="مثال: PRD-001" hide-details="auto"
                                 class="modern-field"></v-text-field>
                         </div>
@@ -366,12 +366,6 @@ export default {
                 return file;
             });
         },
-        handleOpenGallery(data) {
-            this.previewFiles = data.files;
-            this.previewIndex = data.primaryIndex;
-            this.selectedFile = null;
-            this.previewDialog = true;
-        },
         imagePreviewUrl() {
             // Show the first image for preview
             if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
@@ -472,6 +466,12 @@ export default {
         getCategories,
         getStockMeta,
         formatCurrency,
+        handleOpenGallery(data) {
+            this.previewFiles = data.files;
+            this.previewIndex = data.primaryIndex;
+            this.selectedFile = null;
+            this.previewDialog = true;
+        },
         handleFilePreview(file, index) {
             if (this.selectedImageFiles.length > 1) {
                 // Multiple files - show gallery

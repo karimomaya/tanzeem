@@ -1,6 +1,14 @@
 <template>
-    <div v-if="contentFiles.length > 0" class="content-preview-container">
-        <div class="content-gallery-preview" @click="openContentGallery">
+    <div v-if="contentFiles.length > 0 || isLoading" class="content-preview-container">
+        <!-- Loading State -->
+        <div v-if="isLoading" class="content-loading-preview">
+            <v-avatar :size="size" color="grey-lighten-4">
+                <v-progress-circular indeterminate color="primary" :size="size * 0.6"></v-progress-circular>
+            </v-avatar>
+        </div>
+
+        <!-- Content Preview -->
+        <div v-else class="content-gallery-preview" @click="openContentGallery">
             <!-- Dynamic Content Thumbnail -->
             <div class="content-thumbnail" :style="{ backgroundColor: primaryContentColor }">
                 <!-- Image Thumbnail -->
@@ -45,13 +53,15 @@
         </div>
     </div>
     <div v-else class="content-preview-container" @click="openContentGallery">
-        <v-avatar :size="size" :color="placeholderColor" >
+        <v-avatar :size="size" :color="placeholderColor">
             <v-icon :size="size * 0.5" :color="placeholderIconColor">{{ placeholderIcon }}</v-icon>
         </v-avatar>
     </div>
 </template>
 
 <script>
+import { ContentServiceClient } from '@/services/content-service';
+
 export default {
     name: 'ContentThumbnailPreview',
     props: {
@@ -59,6 +69,18 @@ export default {
         files: {
             type: Array,
             default: () => []
+        },
+        entityType: {
+            type: String,
+            default: null
+        },
+        entityId: {
+            type: [String, Number],
+            default: null
+        },
+        contentCategory: {
+            type: String,
+            default: null // IMAGE, DOCUMENT, VIDEO, etc.
         },
         // Thumbnail size
         size: {
@@ -92,31 +114,35 @@ export default {
         clickable: {
             type: Boolean,
             default: true
+        },
+         autoLoad: {
+            type: Boolean,
+            default: true
         }
     },
-    emits: ['click', 'open-gallery'],
+    data(){
+        return {
+            loadedContent: [],
+            isLoading: false,
+            loadError: null,
+            contentServiceClient: new ContentServiceClient()
+        };
+    },
+    emits: ['click', 'open-gallery', 'content-loaded', 'loading-error'],
     computed: {
         contentFiles() {
-            return this.files.map((file, index) => {
-                const fileExtension = this.getFileExtension(file.name || file.url);
-                const contentType = this.getContentTypeFromFile(file);
-                
-                return {
-                    name: file.name || `content-${index + 1}`,
-                    type: file.type || this.getMimeTypeFromExtension(fileExtension),
-                    size: file.size || 0,
-                    url: file.url || (file instanceof File ? URL.createObjectURL(file) : null),
-                    isUrlFile: file.isUrlFile || false,
-                    extension: fileExtension,
-                    contentType: contentType,
-                    icon: this.getFileTypeIcon(fileExtension),
-                    color: this.getFileTypeColor(fileExtension),
-                    iconColor: this.getFileIconColor(fileExtension),
-                    contentId: file.contentId || null,
-                    isPrimary: file.isPrimary || false,
-                    ...file // Preserve any additional properties
-                };
-            });
+            if (this.files && this.files.length > 0) {
+                return this.processFiles(this.files);
+            }
+            
+            // Use auto-loaded content
+            return this.processFiles(this.loadedContent);
+        },
+        shouldAutoLoad() {
+            return this.autoLoad && 
+                   this.entityType && 
+                   this.entityId && 
+                   (!this.files || this.files.length === 0);
         },
 
         primaryContent() {
@@ -177,6 +203,81 @@ export default {
         }
     },
     methods: {
+        async loadContent() {
+            if (!this.entityType || !this.entityId) {
+                return;
+            }
+
+            this.isLoading = true;
+            this.loadError = null;
+
+            try {
+                let contents = [];
+
+                if (this.contentCategory) {
+                    // Load specific category
+                    contents = await this.contentServiceClient.getContentsByEntityAndCategory(
+                        this.entityType,
+                        this.entityId,
+                        this.contentCategory
+                    );
+                } else {
+                    // Load all contents
+                    contents = await this.contentServiceClient.getContentsByEntity(
+                        this.entityType,
+                        this.entityId
+                    );
+                }
+
+                this.loadedContent = contents || [];
+                this.$emit('content-loaded', {
+                    entityType: this.entityType,
+                    entityId: this.entityId,
+                    contents: this.loadedContent
+                });
+
+            } catch (error) {
+                console.warn(`Failed to load content for ${this.entityType}:${this.entityId}`, error);
+                this.loadError = error;
+                this.loadedContent = [];
+                this.$emit('loading-error', {
+                    entityType: this.entityType,
+                    entityId: this.entityId,
+                    error: error
+                });
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        processFiles(files) {
+            return files.map((file, index) => {
+                const fileExtension = this.getFileExtension(file.name || file.originalName || file.url);
+                const contentType = this.getContentTypeFromFile(file);
+                
+                return {
+                    name: file.name || file.originalName || `content-${index + 1}`,
+                    type: file.type || file.contentType || this.getMimeTypeFromExtension(fileExtension),
+                    size: file.size || 0,
+                    url: file.url,
+                    isUrlFile: file.isUrlFile || true, // Most loaded content will be URLs
+                    extension: fileExtension,
+                    contentType: contentType,
+                    icon: this.getFileTypeIcon(fileExtension),
+                    color: this.getFileTypeColor(fileExtension),
+                    iconColor: this.getFileIconColor(fileExtension),
+                    contentId: file.id || file.contentId || null,
+                    isPrimary: file.isPrimary || false,
+                    ...file // Preserve any additional properties
+                };
+            });
+        },
+        async reload() {
+            await this.loadContent();
+        },
+        clear() {
+            this.loadedContent = [];
+            this.loadError = null;
+        },
         getFileExtension(fileName) {
             if (!fileName) return '';
             const parts = fileName.split('.');
@@ -184,8 +285,8 @@ export default {
         },
 
         getContentTypeFromFile(file) {
-            const extension = this.getFileExtension(file.name || file.url);
-            const mimeType = file.type || this.getMimeTypeFromExtension(extension);
+            const extension = this.getFileExtension(file.name || file.originalName || file.url);
+            const mimeType = file.type || file.contentType || this.getMimeTypeFromExtension(extension);
             
             if (mimeType.startsWith('image/')) return 'IMAGE';
             if (mimeType.startsWith('video/')) return 'VIDEO';
@@ -327,7 +428,39 @@ export default {
                 primaryIndex: this.contentFiles.findIndex(f => f.isPrimary) || 0
             });
         }
-    }
+    },
+    watch: {
+        // Watch for changes in entity props to reload content
+        entityId: {
+            handler() {
+                if (this.shouldAutoLoad) {
+                    this.loadContent();
+                }
+            },
+            immediate: false
+        },
+        entityType: {
+            handler() {
+                if (this.shouldAutoLoad) {
+                    this.loadContent();
+                }
+            },
+            immediate: false
+        },
+        contentCategory: {
+            handler() {
+                if (this.shouldAutoLoad) {
+                    this.loadContent();
+                }
+            },
+            immediate: false
+        }
+    },
+     mounted() {
+        if (this.shouldAutoLoad) {
+            this.loadContent();
+        }
+    },
 };
 </script>
 
@@ -420,5 +553,12 @@ export default {
         height: 14px;
         font-size: 7px;
     }
+}
+.content-loading-preview {
+    display: inline-block;
+}
+
+.content-loading-preview .v-avatar {
+    position: relative;
 }
 </style>

@@ -246,6 +246,16 @@
 
         <!-- Delete Confirmation Dialog -->
         <DeleteModal v-model="deleteDialog" ref="deleteModal" @delete-confirmed="handleDeleteConfirmed" />
+
+        <FilePreviewDialog 
+            v-model="galleryDialog"
+            :files="galleryFiles"
+            :initial-index="0"
+            :show-thumbnails="true"
+            :show-counter="true"
+            :allow-download="true"
+            @file-change="onGalleryFileChange"
+            @close="onGalleryClose" />
     </v-app>
 </template>
 
@@ -282,6 +292,9 @@ export default {
     },
     data() {
         return {
+            galleryDialog: false,
+            galleryFiles: [],
+            currentProduct: null,
             refreshStats: false,
             activeTab: 'products',
             searchTerm: '',
@@ -407,6 +420,41 @@ export default {
 
     methods: {
         formatCurrency,
+        async handleProductGallery(data) {
+            this.currentProduct = data.product;
+            
+            try {
+                // Load all content for the product, not just images
+                const contents = await this.$contentService.getContentsByEntity(
+                    data.entityType, 
+                    data.entityId
+                );
+                
+                this.galleryFiles = contents.map(content => ({
+                    name: content.originalName || content.filename,
+                    type: content.contentType,
+                    size: content.size,
+                    url: content.url,
+                    isUrlFile: true,
+                    contentId: content.id,
+                    isPrimary: content.isPrimary
+                }));
+                
+                this.galleryDialog = true;
+            } catch (error) {
+                console.error('Failed to load product gallery:', error);
+                this.$toast.error('فشل في تحميل معرض المنتج');
+            }
+        },
+
+        onGalleryFileChange(data) {
+            console.log('Gallery file changed:', data);
+        },
+
+        onGalleryClose() {
+            this.galleryFiles = [];
+            this.currentProduct = null;
+        },
         notifyWhenReady() {
             success('سيتم إشعارك عند إطلاق ميزات إدارة الخدمات');
         },

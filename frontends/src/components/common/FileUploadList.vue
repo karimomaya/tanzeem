@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <!-- File Preview List -->
+        <!-- Enhanced File Preview List with Thumbnail Grid -->
         <div v-if="localFiles && localFiles.length > 0 && showFileList" class="mt-4">
             <div class="attachments-preview">
                 <h4 class="text-subtitle-2 mb-3">
@@ -82,16 +82,85 @@
                         {{ regularFileCount }} ملف
                     </v-chip>
                 </h4>
-                <v-card elevation="1" class="attachments-list">
+
+                <!-- View Type Toggle -->
+                <div class="d-flex align-center justify-space-between mb-3">
+                    <v-btn-toggle v-model="viewType" variant="outlined" density="compact" mandatory>
+                        <v-btn value="grid" size="small">
+                            <v-icon>mdi-view-grid</v-icon>
+                        </v-btn>
+                        <v-btn value="list" size="small">
+                            <v-icon>mdi-view-list</v-icon>
+                        </v-btn>
+                    </v-btn-toggle>
+
+                    <!-- Quick Actions -->
+                    <div class="d-flex align-center ga-2">
+                        <v-btn v-if="showSelectAll && multiple" size="small" variant="text" @click="selectAll">
+                            اختيار الكل
+                        </v-btn>
+                        <v-btn v-if="showClearAll" size="small" variant="text" color="error" @click="clearAllFiles">
+                            مسح الكل
+                        </v-btn>
+                    </div>
+                </div>
+
+                <!-- Grid View -->
+                <div v-if="viewType === 'grid'" class="files-grid">
+                    <div v-for="(file, index) in localFiles" :key="index" class="file-grid-item">
+                        <!-- Content Thumbnail Preview -->
+                        <ContentThumbnailPreview 
+                            :files="[file]"
+                            :size="gridThumbnailSize"
+                            :show-counter="false"
+                            :show-type-indicator="true"
+                            :clickable="showPreview"
+                            @open-gallery="handleThumbnailClick(file, index)"
+                            class="file-thumbnail-preview" />
+                        
+                        <!-- File Info -->
+                        <div class="file-grid-info">
+                            <div class="file-name">{{ truncateFileName(file.name, 15) }}</div>
+                            <div class="file-size">{{ formatFileSize(file.size) }}</div>
+                        </div>
+
+                        <!-- File Actions -->
+                        <div class="file-grid-actions">
+                            <v-btn v-if="showPreview" icon="mdi-eye" size="x-small" variant="text" color="info"
+                                @click="$emit('preview', file, index)" v-tooltip="'معاينة'">
+                            </v-btn>
+                            <v-btn v-if="showDownload" icon="mdi-download" size="x-small" variant="text"
+                                color="success" @click="downloadFile(file, index)" v-tooltip="'تحميل'">
+                            </v-btn>
+                            <v-btn icon="mdi-delete" size="x-small" variant="text" color="error"
+                                @click="removeFile(index)" v-tooltip="'حذف'">
+                            </v-btn>
+                        </div>
+
+                        <!-- Selection checkbox for multiple mode -->
+                        <v-checkbox v-if="allowSelection && multiple" 
+                            v-model="selectedFiles"
+                            :value="index"
+                            class="file-selection-checkbox"
+                            hide-details
+                            density="compact">
+                        </v-checkbox>
+                    </div>
+                </div>
+
+                <!-- List View (Original) -->
+                <v-card v-else elevation="1" class="attachments-list">
                     <v-list density="compact">
                         <v-list-item v-for="(file, index) in localFiles" :key="index" class="attachment-item">
-
                             <template v-slot:prepend>
-                                <v-avatar size="32" :color="getFileTypeColor(file.name)">
-                                    <v-icon color="white" size="16">
-                                        {{ getFileTypeIcon(file.name) }}
-                                    </v-icon>
-                                </v-avatar>
+                                <!-- Use ContentThumbnailPreview for consistent thumbnails -->
+                                <ContentThumbnailPreview 
+                                    :files="[file]"
+                                    :size="32"
+                                    :show-counter="false"
+                                    :show-type-indicator="false"
+                                    :clickable="showPreview"
+                                    @open-gallery="handleThumbnailClick(file, index)" />
                             </template>
 
                             <v-list-item-title class="text-body-2">
@@ -124,8 +193,12 @@
 </template>
 
 <script>
+import ContentThumbnailPreview from './ContentThumbnailPreview.vue';
 export default {
     name: 'FileUploadList',
+    components: {
+        ContentThumbnailPreview
+    },
     props: {
         modelValue: {
             type: Array,
@@ -239,17 +312,42 @@ export default {
         defaultUploadType: {
             type: String,
             default: 'file'
+        },
+        defaultViewType: {
+            type: String,
+            default: 'list',
+            validator: value => ['grid', 'list'].includes(value)
+        },
+        gridThumbnailSize: {
+            type: Number,
+            default: 80
+        },
+        showSelectAll: {
+            type: Boolean,
+            default: false
+        },
+        showClearAll: {
+            type: Boolean,
+            default: true
+        },
+        allowSelection: {
+            type: Boolean,
+            default: false
         }
     },
-    emits: ['update:modelValue', 'preview', 'download', 'file-removed', 'file-added', 'url-change', 'url-download', 'url-preview', 'upload-type-change'],
+     emits: [
+        'update:modelValue', 'preview', 'download', 'file-removed', 'file-added',  'url-change', 'url-download', 'url-preview', 'upload-type-change', 'thumbnail-click', 'selection-change'
+    ],
     data() {
         return {
             localFiles: [],
             uploadType: this.defaultUploadType || 'file',
             urlInput: '',
             dragOver: false,
-            vFileInputFiles: [], // Separate array for v-file-input
-            syncTimeout: null // Add this
+            vFileInputFiles: [],
+            syncTimeout: null,
+            viewType: this.defaultViewType,
+            selectedFiles: []
         };
     },
     watch: {
@@ -260,6 +358,12 @@ export default {
                     this.uploadType = newValue;
                 }
             }
+        },
+        selectedFiles: {
+            handler(newSelection) {
+                this.$emit('selection-change', newSelection);
+            },
+            deep: true
         },
         modelValue: {
             immediate: true,
@@ -338,6 +442,35 @@ export default {
                     console.log('Dropped', newFiles.length, 'new files. Total now:', this.localFiles.length);
                 }
             }
+        },
+        handleThumbnailClick(file, index) {
+            this.$emit('thumbnail-click', { file, index });
+            if (this.showPreview) {
+                this.$emit('preview', file, index);
+            }
+        },
+
+        selectAll() {
+            this.selectedFiles = this.localFiles.map((_, index) => index);
+        },
+
+        clearAllFiles() {
+            this.localFiles = [];
+            this.vFileInputFiles = [];
+            this.selectedFiles = [];
+            this.$emit('update:modelValue', this.localFiles);
+        },
+
+        getSelectedFiles() {
+            return this.selectedFiles.map(index => this.localFiles[index]);
+        },
+
+        removeSelectedFiles() {
+            const indicesToRemove = [...this.selectedFiles].sort((a, b) => b - a);
+            indicesToRemove.forEach(index => {
+                this.removeFile(index);
+            });
+            this.selectedFiles = [];
         },
         addUrlAsFile() {
             if (this.isValidUrl(this.urlInput)) {
@@ -742,5 +875,102 @@ export default {
 .drag-over .v-field {
     border-color: #1976d2 !important;
     background-color: rgba(25, 118, 210, 0.04) !important;
+}
+
+.files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    padding: 8px;
+}
+
+.file-grid-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.file-grid-item:hover {
+    border-color: #1976d2;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+    transform: translateY(-2px);
+}
+
+.file-thumbnail-preview {
+    margin-bottom: 8px;
+}
+
+.file-grid-info {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.file-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 2px;
+    word-break: break-word;
+}
+
+.file-size {
+    font-size: 10px;
+    color: #6b7280;
+}
+
+.file-grid-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.file-grid-item:hover .file-grid-actions {
+    opacity: 1;
+}
+
+.file-selection-checkbox {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 2px;
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+    .files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+    }
+    
+    .file-grid-item {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .files-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
+}
+
+/* View Toggle Styles */
+@media (max-width: 600px) {
+    .d-flex.justify-space-between {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
 }
 </style>

@@ -19,7 +19,6 @@ public class ProductDto {
     private BigDecimal price;
     private Integer stock;
     private Integer minimumStock;
-    private String imageUrl;
     private String[] imageUrls;
     private Long categoryId;
     private boolean isActive;
