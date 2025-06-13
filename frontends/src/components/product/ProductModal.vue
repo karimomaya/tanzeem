@@ -186,12 +186,13 @@
                 </v-row>
             </FormSection>
 
-            <!-- Image Section -->
             <FormSection title="صورة المنتج" icon="mdi-image" :color="SECTION_COLORS.media">
                 <v-row>
                     <v-col cols="12">
+                        <!-- accept="image/*" -->
                         <FileUploadList ref="imageUpload" v-model="selectedImageFiles" label="صور المنتج"
-                            :multiple="true" accept="image/*" :rules="fieldValidations.productImage"
+                            :multiple="true" 
+                            :rules="fieldValidations.productImage"
                             placeholder="اختر صور المنتج..." file-list-title="الصور المختارة" :show-download="false"
                             :show-url-input="true" url-input-label="رابط الملف"
                             url-placeholder="https://example.com/file.jpg" url-icon="mdi-link" url-icon-color="warning"
@@ -223,24 +224,16 @@
                         <v-col cols="12">
                             <v-card elevation="2" rounded="lg" class="pa-4 bg-grey-lighten-5">
                                 <div class="d-flex align-center">
-                                    <div v-if="allImageUrls.length > 0" class="me-3">
-                                        <div class="image-gallery-preview" @click="openImageGallery">
-                                            <!-- Main Image -->
-                                            <v-img :src="allImageUrls[0]" width="60" height="60" cover
-                                                class="main-preview-image">
-                                            </v-img>
-
-                                            <!-- Image Counter Badge -->
-                                            <div v-if="allImageUrls.length > 1" class="image-counter-badge">
-                                                <v-icon size="12" class="me-1">mdi-image-multiple</v-icon>
-                                                {{ allImageUrls.length }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div v-else class="me-3">
-                                        <v-avatar size="60" color="grey-lighten-3">
-                                            <v-icon size="30" color="grey">mdi-package-variant</v-icon>
-                                        </v-avatar>
+                                    <div class="me-3">
+                                        <ContentThumbnailPreview 
+                                            :files="selectedImageFiles"
+                                            :size="60"
+                                            :show-counter="true"
+                                            :show-type-indicator="true"
+                                            :clickable="true"
+                                            @open-gallery="handleOpenGallery"
+                                            placeholder-icon="mdi-package-variant"
+                                            placeholder-color="grey-lighten-3" />
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="text-subtitle-1 font-weight-medium">
@@ -275,7 +268,7 @@
 
     <!-- Image Preview Dialog -->
     <FilePreviewDialog v-model="previewDialog" :file="selectedFile"
-        :files="previewFiles.length > 0 ? previewFiles : previewableFiles" :initial-index="previewIndex"
+        :files="previewFiles && previewFiles.length > 0 ? previewFiles : previewableFiles" :initial-index="previewIndex"
         :show-thumbnails="true" :show-counter="true" :allow-download="true" :allow-share="false"
         @file-change="onImageChange" @download="onImageDownload" @close="onGalleryClose" />
 </template>
@@ -296,6 +289,7 @@ import { formatCurrency } from '@/utils/currency-util';
 import FormSection from '@/components/common/FormSection.vue'
 import FileUploadList from '@/components/common/FileUploadList.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
+import ContentThumbnailPreview from '@/components/common/ContentThumbnailPreview.vue';
 
 export default {
     name: 'ProductModal',
@@ -307,6 +301,7 @@ export default {
         FormSection,
         FileUploadList,
         BaseModal,
+        ContentThumbnailPreview
     },
     props: {
         modelValue: {
@@ -371,6 +366,12 @@ export default {
                 return file;
             });
         },
+        handleOpenGallery(data) {
+            this.previewFiles = data.files;
+            this.previewIndex = data.primaryIndex;
+            this.selectedFile = null;
+            this.previewDialog = true;
+        },
         imagePreviewUrl() {
             // Show the first image for preview
             if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
@@ -427,6 +428,12 @@ export default {
                     this.editedProductId = newProduct.id;
 
                     let imageUrls = [];
+
+                    if (this.editedProductId) {
+                        await this.loadProductImages();
+                    }
+
+
                     if (newProduct.imageUrl) {
                         imageUrls = [newProduct.imageUrl]; // Convert single to array
                     } else if (newProduct.imageUrls && newProduct.imageUrls.length > 0) {
