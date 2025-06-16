@@ -1,24 +1,24 @@
 package com.tanzeem.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tanzeem.common.entity.AuditableBaseEntity;
 import com.tanzeem.product.enums.ProductStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 public class Product  extends AuditableBaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -31,7 +31,9 @@ public class Product  extends AuditableBaseEntity {
 
     private Integer minimumStock;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @JsonIgnoreProperties("products")
     private Category category;
 
     @Enumerated(EnumType.STRING)

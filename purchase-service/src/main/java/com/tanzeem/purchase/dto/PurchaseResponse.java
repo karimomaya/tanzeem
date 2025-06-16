@@ -16,7 +16,7 @@ public class PurchaseResponse {
     private String invoiceNumber;
     private BigDecimal totalAmount;
     private SupplierResponse supplier;
-    private PaginatedResponse<List<PurchaseItemResponse>> items;
+    private List<PurchaseItemResponse> items;
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime deliveredAt;

@@ -3,8 +3,7 @@ import { makeRequest } from '@/utils/request-util';
 export class ContentServiceClient {
     constructor() {
         this.baseURL = `${import.meta.env.VITE_APP_CONTENT_SERVICE_URL}/api` || 'http://localhost:8081/api/contents';
-        console.log(this.baseURL)
-    }
+        }
     
     async uploadContent(file, context, entityType, entityId, isPrimary, order, title, description) {
         const formData = new FormData();
@@ -83,8 +82,7 @@ export class ContentServiceClient {
 
     async getContentsByEntity(entityType, entityId) {
         try {
-            const response = await this.apiClient.get(`/entity/${entityType}/${entityId}`);
-            return response.data;
+            return await makeRequest(`${this.baseURL}/contents/entity/${entityType}/${entityId}`, { method: 'GET' });
         } catch (error) {
             console.error('Get contents error:', error);
             throw new Error(error.response?.data?.message || 'Failed to get contents');
@@ -93,8 +91,7 @@ export class ContentServiceClient {
 
     async getContentsByEntityAndCategory(entityType, entityId, category) {
         try {
-            const response = await this.apiClient.get(`/entity/${entityType}/${entityId}/category/${category}`);
-            return response.data;
+            return await makeRequest(`${this.baseURL}/contents/entity/${entityType}/${entityId}/category/${category}`, { method: 'GET' });
         } catch (error) {
             console.error('Get contents by category error:', error);
             throw new Error(error.response?.data?.message || 'Failed to get contents by category');

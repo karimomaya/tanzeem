@@ -12,6 +12,7 @@ import com.tanzeem.product.repository.ProductRepository;
 import com.tanzeem.product.service.ProductService;
 import com.tanzeem.security.common.AuthContextHolder;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.LazyInitializationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product update(Long id, ProductDto dto) {
-        Product product = productRepo.findById(id)
+        Product product = productRepo.findById(id).filter(p -> p.getTenantId().equals(AuthContextHolder.getTenantId()))
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         product.setName(dto.getName());
         product.setSku(dto.getSku());
@@ -73,9 +74,12 @@ public class ProductServiceImpl implements ProductService {
         product.setMinimumStock(dto.getMinimumStock());
         product.setActive(dto.isActive());
 
-        Category category = categoryRepo.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        product.setCategory(category);
+        if (!dto.getCategoryId().equals(product.getCategory().getId())) {
+            Category category = categoryRepo.findByCategoryIdAndTenantId(dto.getCategoryId(), AuthContextHolder.getTenantId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            product.setCategory(category);
+
+        }
         // Recalculate status when updating stock
         product.setStatus(calculateProductStatus(product));
 
@@ -137,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
                 .minimumStock(product.getMinimumStock()).unit(product.getUnit()).name(product.getName())
                 .categoryId(product.getCategory().getId()).id(product.getId()).createdAt(product.getCreatedAt())
                 .categoryName(product.getCategory().getName())
-                .category(categoryMapper.mapToResponse(category))
+                .category(categoryMapper.createSafeCategoryResponse(category))
                 .status(product.getStatus() != null ? product.getStatus().name() : "UNKNOWN") // Handle null
                 .isActive(product.isActive())
                 .updatedAt(product.getUpdatedAt()).createdBy(product.getCreatedBy()).updatedBy(product.getUpdatedBy())
@@ -145,15 +149,24 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+
+
     private ProductStatus calculateProductStatus(Product product) {
         Integer stock = product.getStock();
         Integer minimumStock = product.getMinimumStock();
         if (stock == null) stock = 0;
         if (minimumStock == null) minimumStock = 0;
 
-        if (!product.isActive() || !product.getCategory().isActive()) {
-            return ProductStatus.DISABLED;
-        } else if (stock == 0) {
+        if (stock > 0 && stock > minimumStock) {
+            try {
+                if (!product.getCategory().isActive()) {
+                    return ProductStatus.DISABLED;
+                }
+            } catch (LazyInitializationException e) {
+//                return ProductStatus.UNKNOWN;
+            }
+        }
+        if (stock == 0) {
             return ProductStatus.OUT_OF_STOCK;
         } else if (stock <= minimumStock) {
             return ProductStatus.LOW_STOCK;

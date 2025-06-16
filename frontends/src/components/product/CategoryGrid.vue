@@ -1,5 +1,16 @@
 <template>
     <div class="grid-container">
+        <BaseTableHeader title="قائمة التصنيفات" :total-items="totalItems" item-label="تصنيف" add-button-text="إضافة تصنيف"
+            @export="exportData" @add="$emit('add')">
+            <template #controls>
+                <div class="items-per-page">
+                    <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined" density="compact"
+                        hide-details style="width: 80px;" class="items-select"
+                        @update:model-value="$emit('update:items-per-page', $event)" />
+                </div>
+            </template>
+        </BaseTableHeader>
         <!-- Loading State -->
         <div v-if="loading" class="loading-state">
             <div class="loading-content">
@@ -177,29 +188,15 @@
 
         <!-- Empty State -->
         <div v-if="!loading && filteredItems.length === 0" class="empty-state no-data-state">
-            <div class="empty-content no-data-content">
-                <div class="empty-icon">
-                    <v-icon size="80" color="grey-lighten-2">mdi-tag-multiple</v-icon>
-                </div>
-                <h3 class="empty-title no-data-title">لا توجد تصنيفات</h3>
-                <p class="empty-subtitle no-data-subtitle">لم يتم العثور على تصنيفات مطابقة لمعايير البحث</p>
-                <v-btn color="primary" variant="tonal" prepend-icon="mdi-refresh" class="mt-4" @click="$emit('refresh')">
-                    تحديث القائمة
-                </v-btn>
-            </div>
+            <NoDataState icon="mdi-tag-multiple" title="لا توجد تصنيفات"
+                subtitle="لم يتم العثور على تصنيفات مطابقة لمعايير البحث الحالية" add-button-text="إضافة تصنيف جديد"
+                @add-item="$emit('add')" />
         </div>
 
         <!-- Enhanced Pagination Card -->
-        <TablePagination
-    v-if="!loading && totalItems > 0"
-    :page="page"
-    :items-per-page="itemsPerPage"
-    :total-items="totalItems"
-    item-label="تصنيف"
-    :items-per-page-options="itemsPerPageOptions"
-    @update:page="handlePageChange"
-    @update:items-per-page="handleItemsPerPageChange"
-/>
+        <TablePagination v-if="!loading && totalItems > 0" :page="page" :items-per-page="itemsPerPage"
+            :total-items="totalItems" item-label="تصنيف" :items-per-page-options="itemsPerPageOptions"
+            @update:page="handlePageChange" @update:items-per-page="handleItemsPerPageChange" />
 
         <!-- Floating Refresh Button -->
         <v-btn v-if="!loading" icon="mdi-refresh" color="primary" size="large" class="refresh-fab" elevation="8"
@@ -219,12 +216,16 @@ import {
 import { formatDate, isUpdatedRecently } from '@/utils/date-util'
 import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
 import TablePagination from '@/components/common/TablePagination.vue';
+import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
+import NoDataState from '@/components/common/NoDataState.vue';
 
 export default {
     name: 'CategoryGrid',
     components: {
         MetaDataDisplay,
-        TablePagination
+        TablePagination,
+        BaseTableHeader,
+        NoDataState
     },
     props: {
         items: {
@@ -288,7 +289,7 @@ export default {
         },
 
         itemsProperty() {
-            return 'items'; 
+            return 'items';
         }
     },
     methods: {

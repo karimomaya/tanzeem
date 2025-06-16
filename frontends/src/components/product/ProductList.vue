@@ -24,9 +24,9 @@
                     <div class="product-list-cell">
                         <div class="product-list-image">
                             <ContentThumbnailPreview :entity-type="'Product'" :entity-id="item.id"
-                                :content-category="'IMAGE'" :size="40" :show-counter="true" :show-type-indicator="false"
+                                :size="40" :show-counter="true" :show-type-indicator="false"
                                 :clickable="true" placeholder-icon="mdi-package-variant"
-                                placeholder-color="grey-lighten-3" @open-gallery="openProductGallery(item)"
+                                placeholder-color="grey-lighten-3"
                                 @content-loaded="onContentLoaded" class="product-thumbnail" />
                         </div>
                         <div class="product-list-info">
@@ -134,8 +134,8 @@
                 <!-- Enhanced No Data -->
                 <template v-slot:no-data>
                     <NoDataState icon="mdi-package-variant-closed" title="لا توجد منتجات"
-                        subtitle="لم يتم العثور على منتجات مطابقة لمعايير البحث الحالية" add-button-text="تحديث القائمة"
-                        @add-item="refreshData" />
+                        subtitle="لم يتم العثور على منتجات مطابقة لمعايير البحث الحالية" add-button-text="إضافة منتج جديد"
+                        @add-item="$emit('add')" />
                 </template>
             </v-data-table-server>
             <TablePagination :page="page" :items-per-page="itemsPerPage" :total-items="totalItems" item-label="منتج"
@@ -271,20 +271,12 @@ export default {
         getProductStatusText,
         getProductStatusColor,
         getProductStatusIcon,
-        openProductGallery(product) {
-            this.$emit('open-gallery', {
-                product: product,
-                entityType: 'Product',
-                entityId: product.id
-            });
-        },
 
         onContentLoaded(data) {
             // Cache the loaded content for performance
             const cacheKey = `${data.entityType}-${data.entityId}`;
             this.contentCache.set(cacheKey, data.contents);
             
-            console.log(`Loaded ${data.contents.length} content items for ${data.entityType}:${data.entityId}`);
         },
         getProductContent(productId) {
             return this.contentCache.get(`Product-${productId}`) || [];
@@ -348,7 +340,17 @@ export default {
 @import '@/styles/product.css';
 .product-thumbnail {
     border-radius: 8px;
+    overflow: visible;
+}
+
+.product-list-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
     overflow: hidden;
+    position: relative;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
 }
 
 .product-list-image {
@@ -356,6 +358,7 @@ export default {
     align-items: center;
     justify-content: center;
     margin-right: 12px;
+    overflow: visible;
 }
 
 /* Update existing styles to work with the new component */
@@ -370,4 +373,5 @@ export default {
     flex: 1;
     min-width: 0; /* Allow text truncation */
 }
+
 </style>

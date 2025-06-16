@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,7 +17,13 @@ import java.util.List;
 public class PurchaseRequest {
     private Long supplierId;
     private String invoiceNumber;
+    private String status;
     private LocalDate purchaseDate;
-    private PaginatedResponse<List<PurchaseItemRequest>> items;
+    private LocalDateTime expectedDeliveryAt;
+    private LocalDateTime deliveredAt;
+    private LocalDate confirmedAt;
+    private List<PurchaseItemRequest> items;
     private String notes;
+    private BigDecimal totalAmount;
+
 }

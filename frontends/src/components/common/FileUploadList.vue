@@ -32,8 +32,7 @@
                 </template>
             </v-text-field>
 
-            <div v-if="urlInput && !isValidUrl(urlInput) && urlValidationMessage"
-                class="text-caption text-warning mt-1">
+            <div v-if="urlInput && !isValidUrl(urlInput) && urlValidationMessage" class="text-caption text-warning mt-1">
                 {{ urlValidationMessage }}
             </div>
         </div>
@@ -58,8 +57,7 @@
                                     <v-icon start size="14">{{ getFileTypeIcon(fileName) }}</v-icon>
                                     {{ truncateFileName(fileName) }}
                                 </v-chip>
-                                <v-chip v-else-if="index === maxPreviewChips" color="grey" size="small"
-                                    variant="outlined">
+                                <v-chip v-else-if="index === maxPreviewChips" color="grey" size="small" variant="outlined">
                                     +{{ fileNames.length - maxPreviewChips }} ملف(ات) أخرى
                                 </v-chip>
                             </template>
@@ -109,15 +107,9 @@
                 <div v-if="viewType === 'grid'" class="files-grid">
                     <div v-for="(file, index) in localFiles" :key="index" class="file-grid-item">
                         <!-- Content Thumbnail Preview -->
-                        <ContentThumbnailPreview 
-                            :files="[file]"
-                            :size="gridThumbnailSize"
-                            :show-counter="false"
-                            :show-type-indicator="true"
-                            :clickable="showPreview"
-                            @open-gallery="handleThumbnailClick(file, index)"
-                            class="file-thumbnail-preview" />
-                        
+                        <ContentThumbnailPreview :files="[file]" :size="gridThumbnailSize" :show-counter="false"
+                            :show-type-indicator="true" :clickable="showPreview" class="file-thumbnail-preview" />
+
                         <!-- File Info -->
                         <div class="file-grid-info">
                             <div class="file-name">{{ truncateFileName(file.name, 15) }}</div>
@@ -127,23 +119,19 @@
                         <!-- File Actions -->
                         <div class="file-grid-actions">
                             <v-btn v-if="showPreview" icon="mdi-eye" size="x-small" variant="text" color="info"
-                                @click="$emit('preview', file, index)" v-tooltip="'معاينة'">
+                                v-tooltip="'معاينة'" disabled>
                             </v-btn>
-                            <v-btn v-if="showDownload" icon="mdi-download" size="x-small" variant="text"
-                                color="success" @click="downloadFile(file, index)" v-tooltip="'تحميل'">
+                            <v-btn v-if="showDownload" icon="mdi-download" size="x-small" variant="text" color="success"
+                                @click="downloadFile(file, index)" v-tooltip="'تحميل'">
                             </v-btn>
-                            <v-btn icon="mdi-delete" size="x-small" variant="text" color="error"
-                                @click="removeFile(index)" v-tooltip="'حذف'">
+                            <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" @click="removeFile(index)"
+                                v-tooltip="'حذف'">
                             </v-btn>
                         </div>
 
                         <!-- Selection checkbox for multiple mode -->
-                        <v-checkbox v-if="allowSelection && multiple" 
-                            v-model="selectedFiles"
-                            :value="index"
-                            class="file-selection-checkbox"
-                            hide-details
-                            density="compact">
+                        <v-checkbox v-if="allowSelection && multiple" v-model="selectedFiles" :value="index"
+                            class="file-selection-checkbox" hide-details density="compact">
                         </v-checkbox>
                     </div>
                 </div>
@@ -154,13 +142,8 @@
                         <v-list-item v-for="(file, index) in localFiles" :key="index" class="attachment-item">
                             <template v-slot:prepend>
                                 <!-- Use ContentThumbnailPreview for consistent thumbnails -->
-                                <ContentThumbnailPreview 
-                                    :files="[file]"
-                                    :size="32"
-                                    :show-counter="false"
-                                    :show-type-indicator="false"
-                                    :clickable="showPreview"
-                                    @open-gallery="handleThumbnailClick(file, index)" />
+                                <ContentThumbnailPreview :files="[file]" :size="32" :show-counter="false"
+                                    :show-type-indicator="false" :clickable="showPreview" />
                             </template>
 
                             <v-list-item-title class="text-body-2">
@@ -173,9 +156,6 @@
 
                             <template v-slot:append>
                                 <div class="d-flex align-center ga-1">
-                                    <v-btn v-if="showPreview" icon="mdi-eye" size="x-small" variant="text" color="info"
-                                        @click="$emit('preview', file, index)" v-tooltip="'معاينة'">
-                                    </v-btn>
                                     <v-btn v-if="showDownload" icon="mdi-download" size="x-small" variant="text"
                                         color="success" @click="downloadFile(file, index)" v-tooltip="'تحميل'">
                                     </v-btn>
@@ -194,6 +174,7 @@
 
 <script>
 import ContentThumbnailPreview from './ContentThumbnailPreview.vue';
+import { ContentServiceClient } from '@/services/content-service'; // Import the image service client
 export default {
     name: 'FileUploadList',
     components: {
@@ -333,10 +314,30 @@ export default {
         allowSelection: {
             type: Boolean,
             default: false
+        },
+        entityType: {
+            type: String,
+            default: null
+        },
+        entityId: {
+            type: [String, Number],
+            default: null
+        },
+        contentContext: {
+            type: String,
+            default: 'general'
+        },
+        contentCategory: {
+            type: String,
+            default: null
+        },
+        autoLoad: {
+            type: Boolean,
+            default: false
         }
     },
-     emits: [
-        'update:modelValue', 'preview', 'download', 'file-removed', 'file-added',  'url-change', 'url-download', 'url-preview', 'upload-type-change', 'thumbnail-click', 'selection-change'
+    emits: [
+        'update:modelValue', 'download', 'file-removed', 'file-added', 'url-change', 'url-download', 'url-preview', 'upload-type-change', 'thumbnail-click', 'selection-change'
     ],
     data() {
         return {
@@ -347,10 +348,21 @@ export default {
             vFileInputFiles: [],
             syncTimeout: null,
             viewType: this.defaultViewType,
-            selectedFiles: []
+            selectedFiles: [],
+            contentServiceClient: new ContentServiceClient(),
+            isContentLoading: false,
+            loadedContent: []
         };
     },
     watch: {
+        entityId: {
+            handler() {
+                if (this.autoLoad) {
+                    this.loadExistingContent();
+                }
+            },
+            immediate: false
+        },
         defaultUploadType: {
             immediate: true,
             handler(newValue) {
@@ -411,6 +423,118 @@ export default {
         }
     },
     methods: {
+        async loadExistingContent() {
+            if (!this.autoLoad || !this.entityType || !this.entityId) return;
+
+            this.isContentLoading = true;
+            try {
+                let contents = [];
+
+                if (this.contentCategory) {
+                    contents = await this.contentServiceClient.getContentsByEntityAndCategory(
+                        this.entityType,
+                        this.entityId,
+                        this.contentCategory
+                    );
+                } else {
+                    contents = await this.contentServiceClient.getContentsByEntity(
+                        this.entityType,
+                        this.entityId
+                    );
+                }
+
+                // Convert API content to file format
+                const loadedFiles = contents.map((content, index) => ({
+                    name: content.filename || content.originalName || `file-${index + 1}`,
+                    type: content.contentType,
+                    size: content.size || 0,
+                    url: content.url,
+                    isUrlFile: true,
+                    contentId: content.id,
+                    isPrimary: content.isPrimary || index === 0,
+                    ...content
+                }));
+
+                this.localFiles = [...this.localFiles, ...loadedFiles];
+                this.loadedContent = contents;
+                this.$emit('update:modelValue', this.localFiles);
+                this.$emit('content-loaded', contents);
+
+            } catch (error) {
+                console.error('Failed to load content:', error);
+                this.$emit('content-error', error);
+            } finally {
+                this.isContentLoading = false;
+            }
+        },
+
+        async saveContent(entityId) {
+            if (!this.entityType || !entityId) {
+                return { success: true, uploadedUrls: [] };
+            }
+
+            const uploadedContentUrls = [];
+            const filesToUpload = [];
+            const urlsToDownload = [];
+            const existingUrls = [];
+
+            this.localFiles.forEach((file, index) => {
+                if (file.isUrlFile) {
+                    if (file.contentId) {
+                        existingUrls.push(file.url);
+                    } else {
+                        urlsToDownload.push({ url: file.url, order: index });
+                    }
+                } else if (file instanceof File) {
+                    filesToUpload.push({ file: file, order: index });
+                }
+            });
+
+            try {
+                // Upload new files
+                if (filesToUpload.length > 0) {
+                    const files = filesToUpload.map(item => item.file);
+                    const uploadResponses = await this.contentServiceClient.uploadMultipleContents(
+                        files,
+                        this.contentContext,
+                        this.entityType,
+                        entityId
+                    );
+                    uploadedContentUrls.push(...uploadResponses.map(response => response.url));
+                }
+
+                // Download URLs
+                if (urlsToDownload.length > 0) {
+                    const urls = urlsToDownload.map(item => item.url);
+                    const downloadResponses = await this.contentServiceClient.downloadAndStoreMultipleContents(
+                        urls,
+                        this.contentContext,
+                        this.entityType,
+                        entityId
+                    );
+                    uploadedContentUrls.push(...downloadResponses.map(response => response.url));
+                }
+
+                uploadedContentUrls.push(...existingUrls);
+
+                this.$emit('content-saved', {
+                    urls: uploadedContentUrls,
+                    count: uploadedContentUrls.length
+                });
+
+                return { success: true, uploadedUrls: uploadedContentUrls };
+
+            } catch (error) {
+                console.error('Failed to save content:', error);
+                this.$emit('content-error', error);
+                return { success: false, error: error };
+            }
+        },
+
+        // Public method for external saving
+        async save(entityId) {
+            return await this.saveContent(entityId);
+        },
         handleDrop(event) {
             this.dragOver = false;
             const files = Array.from(event.dataTransfer.files);
@@ -441,12 +565,6 @@ export default {
 
                     console.log('Dropped', newFiles.length, 'new files. Total now:', this.localFiles.length);
                 }
-            }
-        },
-        handleThumbnailClick(file, index) {
-            this.$emit('thumbnail-click', { file, index });
-            if (this.showPreview) {
-                this.$emit('preview', file, index);
             }
         },
 
@@ -785,7 +903,13 @@ export default {
             const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
             return allowedTypes.includes(fileExtension);
         }
+    },
+    mounted() {
+        if (this.autoLoad) {
+            this.loadExistingContent();
+        }
     }
+
 };
 </script>
 
@@ -952,7 +1076,7 @@ export default {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 12px;
     }
-    
+
     .file-grid-item {
         padding: 8px;
     }

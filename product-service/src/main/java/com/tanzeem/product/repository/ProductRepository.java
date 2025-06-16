@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByTenantId(String tenantId);
 
     @Query("SELECT MIN(p.minimumStock) FROM Product p WHERE p.tenantId = :tenantId")
     Integer getMinimumStockThreshold(@Param("tenantId") String tenantId);

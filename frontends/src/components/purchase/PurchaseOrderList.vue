@@ -6,7 +6,7 @@
         <v-card class="table-card" elevation="0">
 
             <!-- Data Table -->
-            <v-data-table-server :headers="headers" :items="purchaseOrders" :items-per-page="itemsPerPage" :page="page"
+            <v-data-table-server :headers="headers" :items="items" :items-per-page="itemsPerPage" :page="page"
                 :items-length="totalItems" :loading="loading" @update:options="updateOptions"
                 loading-text="جاري التحميل... يرجى الانتظار" no-data-text="لا توجد أوامر شراء للعرض" class="modern-table"
                 hover show-current-page hide-default-footer>
@@ -144,7 +144,7 @@
                 <template v-slot:no-data>
                     <NoDataState icon="mdi-clipboard-list" title="لا توجد أوامر شراء"
                         subtitle="لم يتم العثور على أوامر شراء مطابقين لمعايير البحث الحالية"
-                        add-button-text="إضافة أمر شراء جديد" @add-item="$emit('add-purchase')" />
+                        add-button-text="إضافة أمر شراء جديد" @add-item="$emit('add')" />
                 </template>
 
                 <!-- Enhanced Loading -->
@@ -189,7 +189,7 @@ export default {
         MetaDataDisplay
     },
     props: {
-        purchaseOrders: {
+        items: {
             type: Array,
             default: () => []
         },

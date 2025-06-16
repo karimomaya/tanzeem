@@ -20,7 +20,6 @@ public class PurchaseItemResponse {
     private Integer quantity;
     private BigDecimal unitPrice;
     private LocalDateTime createdAt;
-    private LocalDateTime receivedAt;
     private String createdBy;
     private String updatedBy;
 

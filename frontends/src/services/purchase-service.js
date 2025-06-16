@@ -29,6 +29,12 @@ export async function getPurchaseOrderById(id) {
 export async function createPurchaseOrder(orderData) {
     try {
         // return await httpService.post(`${PURCHASE_BASE_URL}/orders`, orderData);
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        };
+        return await makeRequest(`${PURCHASE_BASE_URL}/purchases`, options);
     } catch (error) {
         console.error('Error creating purchase order:', error);
         throw error;
@@ -182,22 +188,6 @@ export async function getMostPurchasedProductsReport(params = null) {
         // return await httpService.get(url);
     } catch (error) {
         console.error('Error fetching most purchased products report:', error);
-        throw error;
-    }
-}
-
-// File upload functions
-export async function uploadPurchaseOrderAttachment(orderId, file) {
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        // return await httpService.post(`${PURCHASE_BASE_URL}/orders/${orderId}/attachments`, formData, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // });
-    } catch (error) {
-        console.error('Error uploading purchase order attachment:', error);
         throw error;
     }
 }
@@ -427,7 +417,6 @@ export default {
     getMostPurchasedProductsReport,
     
     // File operations
-    uploadPurchaseOrderAttachment,
     deletePurchaseOrderAttachment,
     downloadPurchaseOrderAttachment,
     

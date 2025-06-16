@@ -38,8 +38,12 @@ public class PurchaseServiceImpl implements PurchaseService {
         Purchase purchase = purchaseMapper.toEntity(purchaseRequest);
         purchase.setSupplier(supplier);
         purchase.setStatus(PurchaseStatus.PENDING); // default status
+        purchase.setTenantId(AuthContextHolder.getTenantId());
 
-        purchase.getItems().forEach(item -> item.setPurchase(purchase));
+        purchase.getItems().forEach(item -> {
+            item.setTenantId(AuthContextHolder.getTenantId());
+            item.setPurchase(purchase);
+        });
         purchaseRepository.save(purchase);
 
         return purchaseMapper.toResponse(purchase);
@@ -76,8 +80,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         existing.setUpdatedAt(LocalDateTime.now());
         existing.getItems().clear();
 
-        List<PurchaseItem> updatedItems = request.getItems().getContent().stream()
-                .flatMap(List::stream)
+        List<PurchaseItem> updatedItems = request.getItems().stream()
                 .map(purchaseMapper::toItemEntity)
                 .peek(item -> item.setPurchase(existing)) // Ensure setPurchase exists in PurchaseItem
                 .toList();

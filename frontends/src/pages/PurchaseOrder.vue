@@ -474,8 +474,9 @@ export default {
                 const response = await getPurchaseOrders(params);
                 if (response && response.content) {
                     this.purchaseOrders = response.content;
-                    this.orderPagination.totalItems = response.page.totalElements;
-                    this.totalOrders = response.page.totalElements;
+                    this.orderPagination.totalItems = response.totalElements?? response.page.totalElements;
+                    console.log(this.orderPagination.totalItems)
+                    this.totalOrders = response.totalElements?? response.page.totalElements;
                 } else {
                     console.warn('No data received from getPurchaseOrders');
                     this.purchaseOrders = [];
@@ -501,8 +502,8 @@ export default {
                 if (response && response.content) {
                     this.suppliers = response.content;
                     console.log(response)
-                    this.supplierPagination.totalItems = response.page.totalElements;
-                    this.totalSuppliers = response.page.totalElements;
+                    this.supplierPagination.totalItems = response.totalElements?? response.page.totalElements;
+                    this.totalSuppliers = response.totalElements?? response.page.totalElements;
                 } else {
                     console.warn('No data received from getSuppliers');
                     this.suppliers = [];

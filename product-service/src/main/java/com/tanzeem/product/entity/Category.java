@@ -1,23 +1,22 @@
 package com.tanzeem.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tanzeem.common.entity.AuditableBaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
 @Table(name = "categories")
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 public class Category extends AuditableBaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String icon;
@@ -25,6 +24,7 @@ public class Category extends AuditableBaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Product> products;
 
 

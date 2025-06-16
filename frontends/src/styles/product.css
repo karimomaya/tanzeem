@@ -639,16 +639,6 @@
     padding: 8px 0;
 }
 
-.product-list-image {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
-}
-
 .product-list-info {
     flex: 1;
     min-width: 0;

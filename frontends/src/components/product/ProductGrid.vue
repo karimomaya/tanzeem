@@ -1,5 +1,17 @@
 <template>
     <div class="grid-container">
+
+        <BaseTableHeader title="قائمة المنتجات" :total-items="totalItems" item-label="منتج" add-button-text="إضافة منتج"
+            @export="exportData" @add="$emit('add')">
+            <template #controls>
+                <div class="items-per-page">
+                    <span class="text-body-2 text-medium-emphasis me-2">عرض:</span>
+                    <v-select :model-value="itemsPerPage" :items="itemsPerPageOptions" variant="outlined" density="compact"
+                        hide-details style="width: 80px;" class="items-select"
+                        @update:model-value="$emit('update:items-per-page', $event)" />
+                </div>
+            </template>
+        </BaseTableHeader>
         <!-- Loading State -->
         <div v-if="loading" class="loading-state">
             <div class="loading-content">
@@ -16,16 +28,12 @@
                     <!-- Product Image Section -->
                     <div class="image-section">
                         <div class="image-container">
-                            <v-img v-if="product.imageUrl" :src="product.imageUrl" :alt="product.name" cover
-                                class="product-image" gradient="to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 100%">
-                                <template v-slot:error>
-                                    <div class="product-image-fallback">
-                                        <v-icon color="grey-lighten-1" size="32">mdi-package-variant</v-icon>
-                                    </div>
-                                </template>
-                            </v-img>
-                            <div v-else class="product-image-fallback">
-                                <v-icon color="grey-lighten-1" size="32">mdi-package-variant</v-icon>
+                            <div class="product-image-wrapper">
+                                <ContentThumbnailPreview :entity-type="'Product'" :entity-id="product.id" :size="200"
+                                    :show-counter="true" :show-type-indicator="false" :clickable="false"
+                                    placeholder-icon="mdi-package-variant" placeholder-color="grey-lighten-3"
+                                    placeholder-icon-color="grey-lighten-1" class="product-content-preview"
+                                    @content-loaded="onContentLoaded" />
                             </div>
 
                             <!-- Product Overlay -->
@@ -164,16 +172,9 @@
 
         <!-- Empty State -->
         <div v-if="!loading && filteredItems.length === 0" class="no-data-state">
-            <div class="no-data-content">
-                <div class="empty-icon">
-                    <v-icon size="80" color="grey-lighten-2">mdi-package-variant-closed</v-icon>
-                </div>
-                <h3 class="no-data-title">لا توجد منتجات</h3>
-                <p class="no-data-subtitle">لم يتم العثور على منتجات مطابقة لمعايير البحث</p>
-                <v-btn color="primary" variant="tonal" prepend-icon="mdi-refresh" class="mt-4" @click="$emit('refresh')">
-                    تحديث القائمة
-                </v-btn>
-            </div>
+            <NoDataState icon="mdi-package-variant-closed" title="لا توجد منتجات"
+                subtitle="لم يتم العثور على منتجات مطابقة لمعايير البحث الحالية" add-button-text="إضافة منتج جديد"
+                @add-item="$emit('add')" />
         </div>
 
         <!-- Enhanced Pagination Card -->
@@ -193,6 +194,9 @@
 </template>
 
 <script>
+import ContentThumbnailPreview from '@/components/common/ContentThumbnailPreview.vue';
+import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
+
 import { formatCurrency } from '@/utils/currency-util'
 import {
     getStockMeta,
@@ -202,19 +206,23 @@ import {
     createDuplicateProduct,
 } from '@/utils/product-util';
 
-import { 
-  getProductStatusText, 
-  getProductStatusColor, 
-  getProductStatusIcon,
-  getProductStatus 
+import {
+    getProductStatusText,
+    getProductStatusColor,
+    getProductStatusIcon,
+    getProductStatus
 } from '@/utils/status-util'
 
 import TablePagination from '@/components/common/TablePagination.vue';
+import NoDataState from '@/components/common/NoDataState.vue';
 
 export default {
     name: 'ProductGrid',
     components: {
-        TablePagination
+        TablePagination,
+        ContentThumbnailPreview,
+        BaseTableHeader,
+        NoDataState
     },
     props: {
         items: {
@@ -278,7 +286,7 @@ export default {
         },
 
         itemsProperty() {
-            return 'items'; 
+            return 'items';
         }
     },
     methods: {
@@ -321,4 +329,141 @@ export default {
 
 <style scoped>
 @import '@/styles/product.css';
+
+/* Product Content Preview Integration */
+.product-image-wrapper {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.product-content-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fix ContentThumbnailPreview sizing and centering */
+.product-content-preview :deep(.content-preview-container) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-content-preview :deep(.content-gallery-preview) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-content-preview :deep(.content-thumbnail) {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-content-preview :deep(.main-preview-content) {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+}
+
+.product-content-preview :deep(.main-preview-content .v-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-content-preview :deep(.file-icon-container) {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+/* Fix placeholder avatar centering */
+.product-content-preview :deep(.v-avatar) {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Content counter badge positioning */
+.product-content-preview :deep(.content-counter-badge) {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+/* Overlay positioning */
+.image-section {
+    position: relative;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.1) 70%,
+            rgba(0, 0, 0, 0.3) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 12px;
+    z-index: 5;
+}
+
+.product-card-hover:hover .overlay {
+    opacity: 1;
+}
+
+/* Status badge positioning */
+.status-badge {
+    align-self: flex-start;
+}
+
+/* Quick actions positioning */
+.quick-actions {
+    align-self: flex-end;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-image-wrapper {
+        height: 160px;
+    }
+}
+
+@media (max-width: 600px) {
+    .product-image-wrapper {
+        height: 140px;
+    }
+}
 </style>

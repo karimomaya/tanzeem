@@ -14,7 +14,7 @@
         </BaseTableHeader>
         <!-- Enhanced Data Table -->
         <v-card class="table-card" elevation="0">
-            <v-data-table-server :headers="categoryHeaders" :items="categories" :items-per-page="itemsPerPage" :page="page"
+            <v-data-table-server :headers="categoryHeaders" :items="items" :items-per-page="itemsPerPage" :page="page"
                 :items-length="totalItems" :loading="loading" loading-text="جاري التحميل... يرجى الانتظار"
                 no-data-text="لا توجد تصنيفات للعرض" @update:options="updateOptions" class="modern-table" hover
                 show-current-page>
@@ -159,7 +159,7 @@ export default {
         MetaDataDisplay
     },
     props: {
-        categories: {
+        items: {
             type: Array,
             default: () => []
         },
@@ -219,7 +219,7 @@ export default {
                     icon: 'mdi-pause',
                     color: 'warning',
                     text: 'تغيير الحالة',
-                    condition: (item) => item.active // Only show for active items
+                    condition: (item) => item.active 
                 },
                 { divider: true },
                 {

@@ -190,12 +190,12 @@
                                         :status-filter="statusFilter" :total-items="productPagination.totalItems"
                                         @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:sort-by="updateSorting" @refresh="loadProducts" />
+                                        @update:sort-by="updateSorting" @refresh="loadProducts" @add="openAddDialog" />
                                     <ProductList v-else :items="products" :loading="loading"
                                         :total-items="productPagination.totalItems" :page="productPagination.page"
                                         :items-per-page="productPagination.itemsPerPage" :sort-by="productPagination.sortBy"
-                                        @edit="editProduct" @delete="confirmDeleteProduct" @view="viewProduct"
-                                        @update:options="updateTableOptions" />
+                                        @add="openAddDialog" @edit="editProduct" @delete="confirmDeleteProduct"
+                                        @view="viewProduct" @update:options="updateTableOptions" />
                                 </div>
                             </v-window-item>
 
@@ -214,14 +214,13 @@
                                 </div>
 
                                 <div v-else>
-                                    <CategoryGrid v-if="categoryViewMode === 'grid'" :items="categories"
-                                        :loading="loading" :page="categoryPagination.page"
-                                        :items-per-page="categoryPagination.itemsPerPage"
+                                    <CategoryGrid v-if="categoryViewMode === 'grid'" :items="categories" :loading="loading"
+                                        :page="categoryPagination.page" :items-per-page="categoryPagination.itemsPerPage"
                                         :total-items="categoryPagination.totalItems" :sort-by="categoryPagination.sortBy"
                                         :search-term="searchTerm" :status-filter="statusFilter" @edit="editCategory"
                                         @delete="confirmDeleteCategory" @update:page="updatePage"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
-                                        @refresh="loadCategories" @toggle-status="updateCategoryStatus" />
+                                        @refresh="loadCategories" @toggle-status="updateCategoryStatus" @add="openAddDialog" />
                                     <CategoryList v-else :items="categories" :loading="loading"
                                         :page="categoryPagination.page" :items-per-page="categoryPagination.itemsPerPage"
                                         :total-items="categoryPagination.totalItems" :search-term="searchTerm"
@@ -229,7 +228,7 @@
                                         @delete="confirmDeleteCategory" @update:page="updatePage"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-option="updateSortOption"
                                         @refresh="loadCategories" @update:options="updateTableOptions"
-                                        @toggle-status="updateCategoryStatus" />
+                                        @toggle-status="updateCategoryStatus"/>
                                 </div>
                             </v-window-item>
                         </v-window>
@@ -247,15 +246,6 @@
         <!-- Delete Confirmation Dialog -->
         <DeleteModal v-model="deleteDialog" ref="deleteModal" @delete-confirmed="handleDeleteConfirmed" />
 
-        <FilePreviewDialog 
-            v-model="galleryDialog"
-            :files="galleryFiles"
-            :initial-index="0"
-            :show-thumbnails="true"
-            :show-counter="true"
-            :allow-download="true"
-            @file-change="onGalleryFileChange"
-            @close="onGalleryClose" />
     </v-app>
 </template>
 
@@ -292,9 +282,6 @@ export default {
     },
     data() {
         return {
-            galleryDialog: false,
-            galleryFiles: [],
-            currentProduct: null,
             refreshStats: false,
             activeTab: 'products',
             searchTerm: '',
@@ -420,41 +407,7 @@ export default {
 
     methods: {
         formatCurrency,
-        async handleProductGallery(data) {
-            this.currentProduct = data.product;
-            
-            try {
-                // Load all content for the product, not just images
-                const contents = await this.$contentService.getContentsByEntity(
-                    data.entityType, 
-                    data.entityId
-                );
-                
-                this.galleryFiles = contents.map(content => ({
-                    name: content.originalName || content.filename,
-                    type: content.contentType,
-                    size: content.size,
-                    url: content.url,
-                    isUrlFile: true,
-                    contentId: content.id,
-                    isPrimary: content.isPrimary
-                }));
-                
-                this.galleryDialog = true;
-            } catch (error) {
-                console.error('Failed to load product gallery:', error);
-                this.$toast.error('فشل في تحميل معرض المنتج');
-            }
-        },
 
-        onGalleryFileChange(data) {
-            console.log('Gallery file changed:', data);
-        },
-
-        onGalleryClose() {
-            this.galleryFiles = [];
-            this.currentProduct = null;
-        },
         notifyWhenReady() {
             success('سيتم إشعارك عند إطلاق ميزات إدارة الخدمات');
         },
@@ -528,8 +481,6 @@ export default {
         },
 
         updateTableOptions(options) {
-            console.log('Table options updated:', options); // Debug log
-
             if (this.activeTab === 'products') {
                 this.productPagination.page = options.page || 1;
                 this.productPagination.itemsPerPage = options.itemsPerPage || 12;
@@ -550,8 +501,8 @@ export default {
                 const response = await getProducts(params);
                 if (response && response.content) {
                     this.products = response.content;
-                    this.productPagination.totalItems = response.page.totalElements; 
-                    this.totalProducts = response.page.totalElements; 
+                    this.productPagination.totalItems = response.totalElements
+                    this.totalProducts = response.totalElements
                 } else {
                     console.warn('No data received from getProducts');
                     this.products = [];
@@ -669,11 +620,17 @@ export default {
 
                 // Construct query parameters
                 let params = this.buildSearchParameter('categories');
+                console.log('Loading categories with params:', params.toString()); // Debug
+
                 const response = await getCategories(params);
+
+                console.log('Categories response:', response); // Debug
                 if (response && response.content) {
                     this.categories = response.content;
-                    this.categoryPagination.totalItems = response.page.totalElements;
-                    this.totalCategories = response.page.totalElements; // Backward compatibility
+                    this.categoryPagination.totalItems = response.totalElements;
+                    this.totalCategories = response.totalElements; // Backward compatibility
+                    console.log('Category pagination after load:', this.categoryPagination); // Debug
+
                 } else {
                     console.warn('No data received from getCategories');
                     this.categories = [];

@@ -19,14 +19,14 @@
                     <!-- Navigation buttons for multiple files -->
                     <template v-if="isMultipleFiles">
                         <v-btn 
-                            icon="mdi-chevron-left" 
+                            icon="mdi-chevron-right" 
                             variant="text" 
                             @click="previousFile"
                             :disabled="currentFileIndex === 0 && !infiniteLoop"
                             v-tooltip="'الملف السابق'">
                         </v-btn>
                         <v-btn 
-                            icon="mdi-chevron-right" 
+                            icon="mdi-chevron-left" 
                             variant="text" 
                             @click="nextFile"
                             :disabled="currentFileIndex === files.length - 1 && !infiniteLoop"
@@ -810,7 +810,7 @@ export default {
     top: 16px;
     right: 16px;
     background: rgba(0, 0, 0, 0.7);
-    color: white;
+    color: white!important;;
     padding: 8px 12px;
     border-radius: 20px;
     font-size: 12px;

@@ -196,14 +196,16 @@
                 info-text="يمكن رفع ملفات متعددة (PDF, JPG, PNG) - حد أقصى 10 ميجابايت لكل ملف">
                 <v-row>
                     <v-col cols="12">
-                        <FileUploadList v-model="formData.attachments" label="رفع الفواتير أو المستندات"
-                            :rules="fieldValidations.attachments"
-                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx,.xls,image/*" placeholder="اختر الملفات..."
-                            file-list-title="الملفات المرفقة" :show-url-input="true" url-input-label="رابط الملف"
-                            url-placeholder="https://example.com/file.pdf" :show-url-download="true"
-                            url-validation-message="اضغط على زر التحميل لإضافة الملف للقائمة"
-                            :url-validation-pattern="/\.(pdf|jpg|jpeg|png|gif|webp|bmp|svg|doc|docx|xlsx|xls)$/i"
-                            @preview="previewFile" @file-removed="onFileRemoved" @file-added="onFileAdded" />
+                        <FileUploadList ref="contentUpload" v-model="formData.attachments" label="رفع الفواتير أو المستندات" :multiple="true"
+                            :rules="fieldValidations.attachments" placeholder="اختر الملفات..."
+                            file-list-title="الملفات المرفقة" :show-download="true" :show-url-input="true"
+                            url-input-label="رابط الملف" url-placeholder="https://example.com/file.pdf" url-icon="mdi-link"
+                            url-icon-color="warning" :url-rules="fieldValidations.url" :show-url-download="true"
+                            :show-url-preview="true" url-validation-message="اضغط على زر التحميل لإضافة الملف للقائمة"
+                            :entity-type="'Purchase'" :entity-id="editedPurchaseOrderId" content-context="purchase"
+                            :auto-load="!!editedPurchaseOrderId"
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx,.xls,image/*" 
+                            :url-validation-pattern="/\.(pdf|jpg|jpeg|png|gif|webp|bmp|svg|doc|docx|xlsx|xls)$/i" />
                     </v-col>
                 </v-row>
             </FormSection>
@@ -248,7 +250,6 @@
         </template>
     </BaseModal>
     <!-- Image Preview Dialog -->
-    <FilePreviewDialog v-model="previewDialog" :file="selectedFile" />
 </template>
 
 <script>
@@ -260,7 +261,6 @@ import { success, error } from '@/utils/system-util';
 import { fieldValidations } from '@/utils/validation-util';
 import ModalHeader from '@/components/common/ModalHeader.vue'
 import ModalActions from '@/components/common/ModalActions.vue'
-import FilePreviewDialog from '@/components/common/FilePreviewDialog.vue'
 import { SECTION_COLORS } from '@/constants/colors'
 import FormSection from '@/components/common/FormSection.vue'
 import FileUploadList from '@/components/common/FileUploadList.vue'
@@ -272,7 +272,6 @@ export default {
         SearchableSelect,
         ModalHeader,
         ModalActions,
-        FilePreviewDialog,
         FormSection,
         FileUploadList,
         BaseModal
@@ -295,8 +294,6 @@ export default {
             productOptions: [],
             loading: false,
             editedPurchaseOrderId: null,
-            previewDialog: false,
-            selectedFile: null,
             statusOptions: [
                 { text: 'في الانتظار', value: 'PENDING' },
                 { text: 'تم الاستلام', value: 'RECEIVED' },
@@ -361,13 +358,6 @@ export default {
     methods: {
         getSuppliers,
         formatCurrency,
-        onFileRemoved(file, index) {
-            console.log('File removed:', file.name);
-        },
-
-        onFileAdded(files) {
-            console.log('Files added:', files.length);
-        },
         getStatusColor(status) {
             const colors = {
                 'PENDING': 'warning',
@@ -399,11 +389,6 @@ export default {
                 confirmedAt: ''
             };
 
-        },
-
-        previewFile(file) {
-            this.selectedFile = file;
-            this.previewDialog = true;
         },
         async loadProducts() {
             try {
@@ -489,7 +474,8 @@ export default {
                     response = await createPurchaseOrder(orderData);
                 }
 
-                if (response && response.id) {
+                if (response?.id) {
+                    await this.$refs.contentUpload.save(response?.id);
                     success(this.editedPurchaseOrderId ? 'تم تحديث أمر الشراء بنجاح' : 'تم إنشاء أمر الشراء بنجاح');
                     this.$emit('save');
                     this.closeDialog();

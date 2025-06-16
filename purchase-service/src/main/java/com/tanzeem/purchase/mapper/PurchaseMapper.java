@@ -4,6 +4,7 @@ import com.tanzeem.purchase.dto.*;
 import com.tanzeem.purchase.entity.Purchase;
 import com.tanzeem.purchase.entity.PurchaseItem;
 import com.tanzeem.purchase.entity.Supplier;
+import com.tanzeem.purchase.enums.PurchaseStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +16,20 @@ import java.util.stream.Collectors;
 public class PurchaseMapper {
 
     private final SupplierMapper supplierMapper;
+    private final PurchaseItemMapper purchaseItemMapper;
 
     public Purchase toEntity(PurchaseRequest request) {
-        Purchase purchase = new Purchase();
-        List<PurchaseItem> items = request.getItems().getContent().stream()
-        .flatMap(List::stream)
+        Purchase purchase = Purchase.builder()
+                .invoiceNumber(request.getInvoiceNumber())
+                .purchaseDate(request.getPurchaseDate())
+                .status(request.getStatus() != null ? PurchaseStatus.valueOf(request.getStatus()) : PurchaseStatus.PENDING)
+                .notes(request.getNotes())
+                .expectedDeliveryAt(request.getExpectedDeliveryAt())
+                .deliveredAt(request.getDeliveredAt())
+                .confirmedAt(request.getConfirmedAt())
+                .totalAmount(request.getTotalAmount())
+                .build();
+        List<PurchaseItem> items = request.getItems().stream()
                 .map(this::toItemEntity)
                 .collect(Collectors.toList());
         purchase.setItems(items);
@@ -40,6 +50,7 @@ public class PurchaseMapper {
         return PurchaseResponse.builder()
                 .id(purchase.getId())
                 .supplier(supplier != null? supplierMapper.mapToResponse(supplier) : null)
+                .items(purchase.getItems().stream().map(purchaseItemMapper::toResponse).toList())
                 .totalAmount(purchase.getTotalAmount())
                 .createdAt(purchase.getCreatedAt())
                 .createdBy(purchase.getCreatedBy())
