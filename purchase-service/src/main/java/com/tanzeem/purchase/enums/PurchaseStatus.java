@@ -2,7 +2,7 @@ package com.tanzeem.purchase.enums;
 
 public enum PurchaseStatus {
     PENDING,
-    COMPLETED,
+    DELIVERED,
     CANCELLED,
     RECEIVED,
     PARTIALLY_RECEIVED;

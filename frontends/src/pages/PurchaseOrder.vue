@@ -172,19 +172,23 @@
                                     <SupplierGrid v-if="supplierViewMode === 'grid'" :items="suppliers"
                                         :loading="loading" :page="supplierPagination.page"
                                         :items-per-page="supplierPagination.itemsPerPage"
-                                        :total-items="supplierPagination.totalItems" :sort-by="supplierPagination.sortBy"
-                                        :search-term="searchTerm" :status-filter="statusFilter" @edit="editSupplier"
+                                        :total-items="supplierPagination.totalItems"
+                                        :sort-by="supplierPagination.sortBy" :search-term="searchTerm"
+                                        :status-filter="statusFilter" @edit="editSupplier"
                                         @delete="confirmDeleteSupplier" @update:page="updatePage"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
                                         @refresh="loadSuppliers" @toggle-status="updateSupplierStatus" />
                                     <SupplierList v-else :items="suppliers" :loading="loading"
-                                        :page="supplierPagination.page" :items-per-page="supplierPagination.itemsPerPage"
+                                        :page="supplierPagination.page"
+                                        :items-per-page="supplierPagination.itemsPerPage"
                                         :total-items="supplierPagination.totalItems" :search-term="searchTerm"
                                         :status-filter="statusFilter" @add="openAddDialog" @edit="editSupplier"
                                         @delete="confirmDeleteSupplier" @update:page="updatePage"
-                                        @update:items-per-page="updateItemsPerPage" @update:search-term="updateSearchTerm"
-                                        @update:status-filter="updateStatusFilter" @update:sort-option="updateSortOption"
-                                        @refresh="loadSuppliers" @toggle-status="updateSupplierStatus" />
+                                        @update:items-per-page="updateItemsPerPage"
+                                        @update:search-term="updateSearchTerm"
+                                        @update:status-filter="updateStatusFilter"
+                                        @update:sort-option="updateSortOption" @refresh="loadSuppliers"
+                                        @toggle-status="updateSupplierStatus" />
                                 </div>
                             </v-window-item>
                         </v-window>
@@ -242,6 +246,9 @@ export default {
     },
     data() {
         return {
+            isLoadingPurchaseOrders: false,
+            isLoadingSuppliers: false,
+            isComponentInitialized: false,
             refreshStats: false,
             activeTab: 'orders',
             searchTerm: '',
@@ -321,25 +328,56 @@ export default {
         }
     },
 
-    created() {
-        this.loadSuppliers();
-        this.loadPurchaseOrders();
-        this.loadSupplierOptionsForSearch();
+    async created() {
+        await this.loadSupplierOptionsForSearch();
+
+        if (this.activeTab === 'orders') {
+            await this.loadPurchaseOrders();
+        } else {
+            await this.loadSuppliers();
+        }
+
+        // Mark component as initialized
+        this.isComponentInitialized = true;
     },
 
     watch: {
-        activeTab(newTab) {
-            this.statusFilter = 'all';
-            this.searchTerm = '';
-            if (newTab === 'suppliers') {
-                this.loadSuppliers();
-            } else if (newTab === 'orders') {
-                this.loadPurchaseOrders();
-            }
+        activeTab: {
+            handler(newTab, oldTab) {
+                if (!this.isComponentInitialized || newTab === oldTab) return;
+                this.statusFilter = 'all';
+                this.searchTerm = '';
+                if (newTab === 'suppliers') {
+                    this.loadSuppliers();
+                } else if (newTab === 'orders') {
+                    this.loadPurchaseOrders();
+                }
+            },
+            immediate: false
+
         },
-        searchTerm() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
+        searchTerm: {
+            handler(newVal, oldVal) {
+                if (!this.isComponentInitialized || newVal === oldVal) return;
+
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    if (this.activeTab === 'suppliers') {
+                        this.supplierPagination.page = 1;
+                        this.loadSuppliers();
+                    } else if (this.activeTab === 'orders') {
+                        this.orderPagination.page = 1;
+                        this.loadPurchaseOrders();
+                    }
+                }, 500);
+            },
+            immediate: false
+
+        },
+        statusFilter: {
+            handler(newVal, oldVal) {
+                if (!this.isComponentInitialized || newVal === oldVal) return;
+
                 if (this.activeTab === 'suppliers') {
                     this.supplierPagination.page = 1;
                     this.loadSuppliers();
@@ -347,16 +385,9 @@ export default {
                     this.orderPagination.page = 1;
                     this.loadPurchaseOrders();
                 }
-            }, 500);
-        },
-        statusFilter() {
-            if (this.activeTab === 'suppliers') {
-                this.supplierPagination.page = 1;
-                this.loadSuppliers();
-            } else if (this.activeTab === 'orders') {
-                this.orderPagination.page = 1;
-                this.loadPurchaseOrders();
-            }
+            },
+            immediate: false
+
         }
     },
 
@@ -468,15 +499,17 @@ export default {
         },
 
         async loadPurchaseOrders() {
+            if (this.isLoadingPurchaseOrders) return;
             try {
+                this.isLoadingPurchaseOrders = true;
                 this.loading = true;
                 let params = this.buildSearchParameter('orders');
                 const response = await getPurchaseOrders(params);
                 if (response && response.content) {
                     this.purchaseOrders = response.content;
-                    this.orderPagination.totalItems = response.totalElements?? response.page.totalElements;
+                    this.orderPagination.totalItems = response.totalElements ?? response.page.totalElements;
                     console.log(this.orderPagination.totalItems)
-                    this.totalOrders = response.totalElements?? response.page.totalElements;
+                    this.totalOrders = response.totalElements ?? response.page.totalElements;
                 } else {
                     console.warn('No data received from getPurchaseOrders');
                     this.purchaseOrders = [];
@@ -491,10 +524,12 @@ export default {
                 this.purchaseOrders = [];
             } finally {
                 this.loading = false;
+                this.isLoadingPurchaseOrders = false;
             }
         },
 
         async loadSuppliers() {
+            if (this.isLoadingSuppliers) return;
             try {
                 this.loading = true;
                 let params = this.buildSearchParameter('suppliers');
@@ -502,8 +537,8 @@ export default {
                 if (response && response.content) {
                     this.suppliers = response.content;
                     console.log(response)
-                    this.supplierPagination.totalItems = response.totalElements?? response.page.totalElements;
-                    this.totalSuppliers = response.totalElements?? response.page.totalElements;
+                    this.supplierPagination.totalItems = response.totalElements ?? response.page.totalElements;
+                    this.totalSuppliers = response.totalElements ?? response.page.totalElements;
                 } else {
                     console.warn('No data received from getSuppliers');
                     this.suppliers = [];
@@ -518,6 +553,7 @@ export default {
                 this.totalSuppliers = 0;
             } finally {
                 this.loading = false;
+                this.isLoadingSuppliers = false;
             }
         },
         buildSearchParameter(type = null) {

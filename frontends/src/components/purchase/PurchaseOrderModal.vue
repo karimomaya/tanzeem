@@ -122,24 +122,37 @@
                                 elevation="2">
                                 <v-card-text class="pa-4">
                                     <v-row align="center">
-                                        <!-- Product Selection -->
+                                        <!-- Product Selection with SearchableSelect -->
                                         <v-col cols="12" md="4">
-                                            <v-select v-model="item.productId" :items="productOptions" label="المنتج"
-                                                variant="outlined" density="compact"
-                                                :rules="fieldValidations.orderItems" hide-details="auto"
-                                                item-title="name" item-value="id"
+                                            <SearchableSelect 
+                                                v-model="item.productId" 
+                                                :api-service="getProducts"
+                                                :current-item="getProductById(item.productId)"
+                                                :rules="fieldValidations.orderItems"
+                                                placeholder="ابحث عن المنتج..."
+                                                label="المنتج"
+                                                variant="outlined"
+                                                density="compact"
+                                                hide-details="auto"
                                                 @update:model-value="updateProductPrice(item, $event)">
+
                                                 <template v-slot:item="{ props, item: product }">
                                                     <v-list-item v-bind="props">
-                                                        <v-list-item-title>{{ product.raw.name
-                                                        }}</v-list-item-title>
-                                                        <v-list-item-subtitle>{{
-                                                            formatCurrency(product.raw.purchasePrice ||
-                                                                0)
-                                                        }}</v-list-item-subtitle>
+                                                        <template v-slot:prepend>
+                                                            <v-icon>mdi-package-variant</v-icon>
+                                                        </template>
+                                                        <v-list-item-title>{{ product.raw.name }}</v-list-item-title>
+                                                        <v-list-item-subtitle>
+                                                            {{ formatCurrency(product.raw.price || 0) }} - 
+                                                            {{ product.raw.sku }}
+                                                        </v-list-item-subtitle>
                                                     </v-list-item>
                                                 </template>
-                                            </v-select>
+
+                                                <template v-slot:prepend-inner>
+                                                    <v-icon color="primary" size="20">mdi-package-variant</v-icon>
+                                                </template>
+                                            </SearchableSelect>
                                         </v-col>
 
                                         <!-- Quantity -->
@@ -249,7 +262,6 @@
             </FormSection>
         </template>
     </BaseModal>
-    <!-- Image Preview Dialog -->
 </template>
 
 <script>
@@ -290,10 +302,9 @@ export default {
         return {
             SECTION_COLORS,
             fieldValidations,
-            loadingProducts: false,
-            productOptions: [],
             loading: false,
             editedPurchaseOrderId: null,
+            productCache: new Map(), // Cache for loaded products
             statusOptions: [
                 { text: 'في الانتظار', value: 'PENDING' },
                 { text: 'تم الاستلام', value: 'RECEIVED' },
@@ -324,9 +335,15 @@ export default {
     watch: {
         itemToEdit: {
             immediate: true,
-            handler(newPurchaseOrder) {
+            async handler(newPurchaseOrder) {
                 if (newPurchaseOrder) {
                     this.editedPurchaseOrderId = newPurchaseOrder.id;
+                    
+                    // Load products for existing items to populate cache
+                    if (newPurchaseOrder.items && newPurchaseOrder.items.length > 0) {
+                        await this.loadProductsForItems(newPurchaseOrder.items);
+                    }
+                    
                     this.formData = {
                         id: newPurchaseOrder.id,
                         invoiceNumber: newPurchaseOrder.invoiceNumber,
@@ -347,9 +364,7 @@ export default {
         },
 
         modelValue(newValue) {
-            if (newValue) {
-                this.loadProducts();
-            } else {
+            if (!newValue) {
                 this.resetForm();
             }
         }
@@ -357,7 +372,48 @@ export default {
 
     methods: {
         getSuppliers,
+        getProducts,
         formatCurrency,
+        
+        // Get product by ID from cache or API
+        getProductById(productId) {
+            if (!productId) return null;
+            return this.productCache.get(productId) || null;
+        },
+        
+        // Load products for existing items to populate cache
+        async loadProductsForItems(items) {
+            const productIds = items
+                .map(item => item.productId || item.product?.id)
+                .filter(id => id && !this.productCache.has(id));
+            
+            if (productIds.length === 0) return;
+            
+            try {
+                // Load products individually or in batch depending on your API
+                for (const productId of productIds) {
+                    if (!this.productCache.has(productId)) {
+                        // You might need to implement getProductById service method
+                        // or modify this to fetch all products at once
+                        const params = new URLSearchParams({
+                            page: 0,
+                            size: 1000,
+                            isActive: 'true',
+                            search: '' // You might need to search by ID
+                        });
+                        const response = await getProducts(params);
+                        if (response && response.content) {
+                            response.content.forEach(product => {
+                                this.productCache.set(product.id, product);
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading products for items:', err);
+            }
+        },
+        
         getStatusColor(status) {
             const colors = {
                 'PENDING': 'warning',
@@ -376,6 +432,7 @@ export default {
         },
         resetForm() {
             this.editedPurchaseOrderId = null;
+            this.productCache.clear(); // Clear product cache
             this.formData = {
                 invoiceNumber: this.generateInvoiceNumber(),
                 purchaseDate: new Date().toISOString().split('T')[0],
@@ -388,27 +445,8 @@ export default {
                 deliveredAt: '',
                 confirmedAt: ''
             };
-
         },
-        async loadProducts() {
-            try {
-                this.loadingProducts = true;
-                const params = new URLSearchParams({
-                    page: 0,
-                    size: 1000,
-                    isActive: 'true'
-                });
-                const response = await getProducts(params);
-                if (response && response.content) {
-                    this.productOptions = response.content;
-                }
-            } catch (err) {
-                console.error('Error loading products:', err);
-                error('فشل تحميل المنتجات');
-            } finally {
-                this.loadingProducts = false;
-            }
-        },
+        
         generateInvoiceNumber() {
             const now = new Date();
             const year = now.getFullYear();
@@ -440,10 +478,32 @@ export default {
             this.formData.items.splice(index, 1);
         },
 
-        updateProductPrice(item, productId) {
-            const product = this.productOptions.find(p => p.id === productId);
+        async updateProductPrice(item, productId) {
+            // Check cache first
+            let product = this.productCache.get(productId);
+            
+            if (!product) {
+                // If not in cache, fetch it
+                try {
+                    const params = new URLSearchParams({
+                        page: 0,
+                        size: 1,
+                        search: productId.toString()
+                    });
+                    const response = await getProducts(params);
+                    if (response && response.content && response.content.length > 0) {
+                        product = response.content.find(p => p.id === productId);
+                        if (product) {
+                            this.productCache.set(productId, product);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error fetching product:', err);
+                }
+            }
+            
             if (product) {
-                item.unitPrice = product.purchasePrice || 0;
+                item.unitPrice = product.price || 0; // Use price instead of purchasePrice
                 this.calculateItemTotal(item);
             }
         },

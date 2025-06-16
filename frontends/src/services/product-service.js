@@ -11,6 +11,16 @@ export async function saveCategory(data) {
     return await makeRequest(`${url}/categories`, options);
 }
 
+export const getProductById = async (productId) => {
+    try {
+        const response = await makeRequest(`${url}/products/${productId}`, 'GET');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        throw error;
+    }
+};
+
 export async function saveProduct(data) {
     const options = {
         method: 'POST',

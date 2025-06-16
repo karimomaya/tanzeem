@@ -27,7 +27,7 @@
 						</v-avatar>
 						<div class="flex-grow-1">
 							<div class="text-subtitle-1 font-weight-bold text-error mb-1">خطأ</div>
-							<div class="text-body-2 text-white">{{ errorMessage }}</div>
+							<div class="text-body-2 ">{{ errorMessage }}</div>
 						</div>
 						<v-btn
 							icon="mdi-close"
