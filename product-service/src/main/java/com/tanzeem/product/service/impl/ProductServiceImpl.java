@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +52,10 @@ public class ProductServiceImpl implements ProductService {
 
         product=  productRepo.save(product);
         return mapToResponse(product);
+    }
+
+    public ProductResponse getById(Long id){
+        return mapToResponse(Objects.requireNonNull(productRepo.findById(id).orElse(null)));
     }
     @Transactional
     @Override

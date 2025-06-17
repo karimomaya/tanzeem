@@ -59,10 +59,10 @@ VALUES
 ( '2024-01-20', 20, 'INV-020', 690.00, 'شراء جزئي', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
 INSERT INTO purchase_items ( product_id, product_name_at_purchase, quantity, unit_price, total_price, purchase_id, created_at, updated_at, created_by, updated_by)
 VALUES
-( 101, 'منتج أ', 2, 200.00, 400.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( 102, 'منتج ب', 3, 150.00, 450.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( 103, 'منتج ج', 1, 100.00, 100.00, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( 104, 'منتج د', 5, 180.00, 900.00, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( 105, 'منتج هـ', 2, 250.00, 500.00, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( 106, 'منتج و', 4, 300.00, 1200.00, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
+( 1, 'منتج أ', 2, 200.00, 400.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( 2, 'منتج ب', 3, 150.00, 450.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( 3, 'منتج ج', 1, 100.00, 100.00, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( 4, 'منتج د', 5, 180.00, 900.00, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( 5, 'منتج هـ', 2, 250.00, 500.00, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( 6, 'منتج و', 4, 300.00, 1200.00, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
 

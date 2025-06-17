@@ -13,7 +13,7 @@ export async function saveCategory(data) {
 
 export const getProductById = async (productId) => {
     try {
-        const response = await makeRequest(`${url}/products/${productId}`, 'GET');
+        const response = await makeRequest(`${url}/products/${productId}`,  { method: 'GET' });
         return response.data;
     } catch (error) {
         console.error('Error fetching product:', error);

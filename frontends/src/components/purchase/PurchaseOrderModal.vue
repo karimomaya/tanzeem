@@ -127,7 +127,7 @@
                                             <SearchableSelect 
                                                 v-model="item.productId" 
                                                 :api-service="getProducts"
-                                                :current-item="getProductById(item.productId)"
+                                                :current-item="currentProducts[item.productId] || null"
                                                 :rules="fieldValidations.orderItems"
                                                 placeholder="ابحث عن المنتج..."
                                                 label="المنتج"
@@ -267,7 +267,7 @@
 <script>
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import { formatCurrency } from '@/utils/currency-util';
-import { getProducts } from '@/services/product-service';
+import { getProducts, getProductById } from '@/services/product-service';
 import { createPurchaseOrder, updatePurchaseOrder, getSuppliers } from '@/services/purchase-service';
 import { success, error } from '@/utils/system-util';
 import { fieldValidations } from '@/utils/validation-util';
@@ -329,6 +329,20 @@ export default {
             return this.formData.items.reduce((total, item) => {
                 return total + (item.totalPrice || 0);
             }, 0);
+        },
+        
+        // Get current products for items to display in SearchableSelect
+        currentProducts() {
+            const products = {};
+            this.formData.items.forEach(item => {
+                if (item.productId) {
+                    const product = this.getProductById(item.productId);
+                    if (product) {
+                        products[item.productId] = product;
+                    }
+                }
+            });
+            return products;
         }
     },
     emits: ['update:modelValue', 'save'],
@@ -350,7 +364,7 @@ export default {
                         purchaseDate: newPurchaseOrder.purchaseDate,
                         supplierId: newPurchaseOrder.supplier?.id,
                         status: newPurchaseOrder.status,
-                        items: newPurchaseOrder.items ? [...newPurchaseOrder.items] : [],
+                        items: this.mapPurchaseOrderItems(newPurchaseOrder.items || []),
                         notes: newPurchaseOrder.notes || '',
                         attachments: [],
                         expectedDeliveryAt: this.formatDateTime(newPurchaseOrder.expectedDeliveryAt),
@@ -375,40 +389,49 @@ export default {
         getProducts,
         formatCurrency,
         
+        // Map purchase order items to ensure correct structure
+        mapPurchaseOrderItems(items) {
+            return items.map(item => ({
+                productId: item.productId || item.product?.id,
+                quantity: item.quantity || 1,
+                unitPrice: item.unitPrice || 0,
+                totalPrice: item.totalPrice || (item.quantity * item.unitPrice) || 0
+            }));
+        },
+        
         // Get product by ID from cache or API
-        getProductById(productId) {
+        async getProductById(productId) {
+            console.log("********"+productId+"**********")
             if (!productId) return null;
-            return this.productCache.get(productId) || null;
+            const product = await getProductById(productId);
+            return product || null;
         },
         
         // Load products for existing items to populate cache
         async loadProductsForItems(items) {
-            const productIds = items
-                .map(item => item.productId || item.product?.id)
-                .filter(id => id && !this.productCache.has(id));
-            
-            if (productIds.length === 0) return;
+            if (!items || items.length === 0) return;
             
             try {
-                // Load products individually or in batch depending on your API
-                for (const productId of productIds) {
-                    if (!this.productCache.has(productId)) {
-                        // You might need to implement getProductById service method
-                        // or modify this to fetch all products at once
-                        const params = new URLSearchParams({
-                            page: 0,
-                            size: 1000,
-                            isActive: 'true',
-                            search: '' // You might need to search by ID
-                        });
-                        const response = await getProducts(params);
-                        if (response && response.content) {
-                            response.content.forEach(product => {
-                                this.productCache.set(product.id, product);
-                            });
-                        }
-                    }
+                // Load all products to populate cache
+                const params = new URLSearchParams({
+                    page: 0,
+                    size: 1000,
+                    isActive: 'true'
+                });
+                const response = await getProducts(params);
+                if (response && response.content) {
+                    response.content.forEach(product => {
+                        this.productCache.set(product.id, product);
+                    });
                 }
+                
+                // Also ensure each item's product is properly referenced
+                items.forEach(item => {
+                    const productId = item.productId || item.product?.id;
+                    if (productId && !item.productId) {
+                        item.productId = productId;
+                    }
+                });
             } catch (err) {
                 console.error('Error loading products for items:', err);
             }
@@ -483,27 +506,27 @@ export default {
             let product = this.productCache.get(productId);
             
             if (!product) {
-                // If not in cache, fetch it
+                // If not in cache, fetch all products and update cache
                 try {
                     const params = new URLSearchParams({
                         page: 0,
-                        size: 1,
-                        search: productId.toString()
+                        size: 1000,
+                        isActive: 'true'
                     });
                     const response = await getProducts(params);
-                    if (response && response.content && response.content.length > 0) {
-                        product = response.content.find(p => p.id === productId);
-                        if (product) {
-                            this.productCache.set(productId, product);
-                        }
+                    if (response && response.content) {
+                        response.content.forEach(p => {
+                            this.productCache.set(p.id, p);
+                        });
+                        product = this.productCache.get(productId);
                     }
                 } catch (err) {
-                    console.error('Error fetching product:', err);
+                    console.error('Error fetching products:', err);
                 }
             }
             
             if (product) {
-                item.unitPrice = product.price || 0; // Use price instead of purchasePrice
+                item.unitPrice = product.price || 0;
                 this.calculateItemTotal(item);
             }
         },

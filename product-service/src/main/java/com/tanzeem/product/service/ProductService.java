@@ -21,4 +21,6 @@ public interface ProductService {
     Long getOutOfStockProductsCount();
     List<CategoryProductCountResponse> getProductCountByCategory();
     Long getProductsWithoutMinimumStockCount();
+
+    ProductResponse getById(Long id);
 }
