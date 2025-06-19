@@ -214,14 +214,16 @@ export default {
             default: () => []
         }
     },
-    emits: ['add', 'edit', 'delete', 'view', 'duplicate', 'mark-received', 'update:page', 'update:items-per-page', 'update:options', 'refresh'],
+    emits: ['add', 'edit', 'delete', 'view', 'duplicate', 'mark-received', 'mark-partially-received', 'mark-canceled', 'update:page', 'update:items-per-page', 'update:options', 'refresh'],
     data() {
         return {
             purchaseOrderActions: [
                 { key: 'view', icon: 'mdi-eye', color: 'info', text: 'عرض التفاصيل' },
+                { key: 'mark-received', icon: 'mdi-check-circle', color: 'success', text: 'تم الاستلام', condition: (item) => item.status === 'PENDING' },
+                { key: 'mark-partially-received', icon: 'mdi-truck-check', color: 'info', text:  'تم الاستلام جزئيا', condition: (item) => item.status === 'PENDING' },
+                { key: 'mark-canceled', icon: 'mdi-close-circle', color: 'error', text:  'إلغاء الأمر', condition: (item) => item.status === 'PENDING' },
                 { key: 'edit', icon: 'mdi-pencil', color: 'primary', text: 'تعديل الأمر', condition: (item) => item.status === 'PENDING' },
-                { key: 'duplicate', icon: 'mdi-content-copy', color: 'success', text: 'نسخ الأمر', condition: (item) => item.status === 'PENDING' },
-                { key: 'mark-received', icon: 'mdi-check', color: 'success', text: 'تسليم الأمر', condition: (item) => item.status === 'PENDING' },
+                // { key: 'duplicate', icon: 'mdi-content-copy', color: 'success', text: 'نسخ الأمر', condition: (item) => item.status === 'PENDING' },
                 { divider: true, condition: (item) => item.status === 'PENDING' },
                 { key: 'delete', icon: 'mdi-delete', color: 'error', text: 'حذف الأمر', danger: true, condition: (item) => item.status === 'PENDING' }
             ],
@@ -260,6 +262,10 @@ export default {
                 case 'mark-received':
                     this.$emit('mark-received', item);
                     break;
+                case 'mark-partially-received':
+                    this.$emit('mark-partially-received', item);
+                case 'mark-canceled':
+                    this.$emit('mark-canceled', item);
                 case 'delete':
                     this.$emit('delete', item);
                     break;

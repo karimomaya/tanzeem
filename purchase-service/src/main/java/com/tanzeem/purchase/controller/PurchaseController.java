@@ -54,4 +54,17 @@ public class PurchaseController {
         return ResponseEntity.ok(updatedPurchase);
     }
 
+
+    @PostMapping("/{id}/mark-canceled")
+    public ResponseEntity<PurchaseResponse> markAsCanceled(@PathVariable Long id) {
+        PurchaseResponse updatedPurchase = purchaseService.markAsCanceled(id);
+        return ResponseEntity.ok(updatedPurchase);
+    }
+
+    @PostMapping("/{id}/mark-partially-received")
+    public ResponseEntity<PurchaseResponse> markAsPartiallyReceived(@PathVariable Long id) {
+        PurchaseResponse updatedPurchase = purchaseService.markAsPartiallyReceived(id);
+        return ResponseEntity.ok(updatedPurchase);
+    }
+
 }

@@ -56,13 +56,13 @@
     computed: {
       processedActions() {
         return this.actions.filter(action => {
-          // Show divider
-          if (action.divider) return true;
-          
           // Check if action should be shown based on condition
           if (action.condition) {
             return action.condition(this.item);
           }
+
+          // Show divider
+          if (action.divider) return true;
           
           return true;
         });

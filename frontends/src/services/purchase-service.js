@@ -61,18 +61,42 @@ export async function deletePurchaseOrder(id) {
 
 export async function markPurchaseOrderAsReceived(id) {
     try {
-        // return await httpService.patch(`${PURCHASE_BASE_URL}/orders/${id}/receive`);
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        };
+        return await makeRequest(`${PURCHASE_BASE_URL}/${id}/mark-received`, options);
     } catch (error) {
         console.error('Error marking purchase order as received:', error);
         throw error;
     }
 }
 
-export async function cancelPurchaseOrder(id) {
+export async function markPurchaseOrderAsCanceled(id) {
     try {
-        // return await httpService.patch(`${PURCHASE_BASE_URL}/orders/${id}/cancel`);
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        };
+        return await makeRequest(`${PURCHASE_BASE_URL}/${id}/mark-canceled`, options);
     } catch (error) {
-        console.error('Error cancelling purchase order:', error);
+        console.error('Error marking purchase order as canceled:', error);
+        throw error;
+    }
+}
+
+export async function markPurchaseOrderAsPartiallyReceived(id) {
+    try {
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        };
+        return await makeRequest(`${PURCHASE_BASE_URL}/${id}/mark-partially-received`, options);
+    } catch (error) {
+        console.error('Error marking purchase order as partially received:', error);
         throw error;
     }
 }
@@ -398,7 +422,6 @@ export default {
     updatePurchaseOrder,
     deletePurchaseOrder,
     markPurchaseOrderAsReceived,
-    cancelPurchaseOrder,
     
     // Suppliers
     getSuppliers,

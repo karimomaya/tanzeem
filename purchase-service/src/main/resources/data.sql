@@ -37,25 +37,25 @@ VALUES
 ( 'شركة التميز','SUP0020', 'نادر مراد', '01000000020', 'supplier20@example.com', 'شارع المقطم', true, 'tanzeem', 'EG','ALEX','WHOLESALE', 'NET_30', 10,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
 INSERT INTO purchases ( purchase_date, supplier_id, invoice_number, total_amount, notes, tenant_id, status, created_at, updated_at, created_by, updated_by)
 VALUES
-( '2024-01-01', 1, 'INV-001', 1000.00, 'شراء فاتورة أولى', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-01', 1, 'INV-001', 1000.00, 'شراء فاتورة أولى', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-02', 2, 'INV-002', 850.00, 'شراء فاتورة ثانية', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-03', 3, 'INV-003', 500.00, 'شراء فاتورة ثالثة', 'tanzeem', 'CANCELLED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-04', 4, 'INV-004', 600.00, 'شراء خامس', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-04', 4, 'INV-004', 600.00, 'شراء خامس', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-05', 5, 'INV-005', 920.00, 'شراء سادس', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-06', 6, 'INV-006', 100.00, 'شراء سابع', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-06', 6, 'INV-006', 100.00, 'شراء سابع', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-07', 7, 'INV-007', 1150.00, 'شراء ثامن', 'tanzeem', 'CANCELLED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-08', 8, 'INV-008', 730.00, 'شراء تاسع', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-08', 8, 'INV-008', 730.00, 'شراء تاسع', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-09', 9, 'INV-009', 660.00, 'شراء عاشر', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-10', 10, 'INV-010', 200.00, 'شراء إضافي', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-11', 11, 'INV-011', 1240.00, 'شراء عادي', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-12', 12, 'INV-012', 990.00, 'طلب سريع', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-10', 10, 'INV-010', 200.00, 'شراء إضافي', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-11', 11, 'INV-011', 1240.00, 'شراء عادي', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-12', 12, 'INV-012', 990.00, 'طلب سريع', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-13', 13, 'INV-013', 115.00, 'طلب تجريبي', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-14', 14, 'INV-014', 1800.00, 'شراء خاص', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-14', 14, 'INV-014', 1800.00, 'شراء خاص', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-15', 15, 'INV-015', 500.00, 'شراء داخلي', 'tanzeem', 'CANCELLED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-16', 16, 'INV-016', 750.00, 'شراء خارجي', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-16', 16, 'INV-016', 750.00, 'شراء خارجي', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-17', 17, 'INV-017', 420.00, 'تجربة', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-18', 18, 'INV-018', 1320.00, 'فاتورة مرتجعة', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
-( '2024-01-19', 19, 'INV-019', 560.00, 'طلب تخفيض', 'tanzeem', 'DELIVERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-18', 18, 'INV-018', 1320.00, 'فاتورة مرتجعة', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
+( '2024-01-19', 19, 'INV-019', 560.00, 'طلب تخفيض', 'tanzeem', 'RECEIVED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin'),
 ( '2024-01-20', 20, 'INV-020', 690.00, 'شراء جزئي', 'tanzeem', 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin', 'admin');
 INSERT INTO purchase_items ( product_id, product_name_at_purchase, quantity, unit_price, total_price, purchase_id, created_at, updated_at, created_by, updated_by)
 VALUES

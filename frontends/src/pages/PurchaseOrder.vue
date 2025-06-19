@@ -140,17 +140,21 @@
                                         :search-term="searchTerm" :status-filter="statusFilter"
                                         :total-items="orderPagination.totalItems" @edit="editPurchaseOrder"
                                         @delete="confirmDeletePurchaseOrder" @view="viewPurchaseOrder"
-                                        @mark-received="markAsReceived" @update:page="updatePage"
+                                        @update:page="updatePage" @refresh="loadPurchaseOrders"
                                         @update:items-per-page="updateItemsPerPage" @update:sort-by="updateSorting"
-                                        @refresh="loadPurchaseOrders" />
+                                        @mark-received="markAsReceived"
+                                        @mark-partially-received="markAsPartiallyReceived"
+                                        @mark-canceled="markAsCanceled" />
                                     <PurchaseOrderList v-else :items="purchaseOrders" :loading="loading"
                                         :total-items="orderPagination.totalItems" :page="orderPagination.page"
                                         :items-per-page="orderPagination.itemsPerPage" :sort-by="orderPagination.sortBy"
                                         @edit="editPurchaseOrder" @delete="confirmDeletePurchaseOrder"
-                                        @view="viewPurchaseOrder" @mark-received="markAsReceived"
                                         @duplicate="handleDuplicatePurchaseOrder" @add="openAddDialog"
                                         @update:page="updatePage" @update:items-per-page="updateItemsPerPage"
-                                        @update:options="updateTableOptions" />
+                                        @update:options="updateTableOptions" @view="viewPurchaseOrder"
+                                        @mark-received="markAsReceived"
+                                        @mark-partially-received="markAsPartiallyReceived"
+                                        @mark-canceled="markAsCanceled" />
                                 </div>
                             </v-window-item>
 
@@ -460,6 +464,43 @@ export default {
             } else {
                 error('فشل تحديث المورد');
                 console.error(response);
+            }
+        },
+
+        async markAsPartiallyReceived(purchaseOrder) {
+            try {
+                this.loading = true;
+                const response = await markPurchaseOrderAsPartiallyReceived(purchaseOrder.id);
+                if (response && response.id) {
+                    success('تم تحديث حالة أمر الشراء إلى "مستلم" وتم تحديث المخزون');
+                    this.loadPurchaseOrders();
+                    this.refreshStats = true;
+                } else {
+                    error('فشل في تحديث حالة أمر الشراء');
+                }
+            } catch (err) {
+                console.error('Error marking purchase order as received:', err);
+                error('فشل في تحديث حالة أمر الشراء');
+            } finally {
+                this.loading = false;
+            }
+        },
+        async markAsCanceled(purchaseOrder) {
+            try {
+                this.loading = true;
+                const response = await markPurchaseOrderAsCanceled(purchaseOrder.id);
+                if (response && response.id) {
+                    success('تم تحديث حالة أمر الشراء إلى "مستلم" وتم تحديث المخزون');
+                    this.loadPurchaseOrders();
+                    this.refreshStats = true;
+                } else {
+                    error('فشل في تحديث حالة أمر الشراء');
+                }
+            } catch (err) {
+                console.error('Error marking purchase order as received:', err);
+                error('فشل في تحديث حالة أمر الشراء');
+            } finally {
+                this.loading = false;
             }
         },
 

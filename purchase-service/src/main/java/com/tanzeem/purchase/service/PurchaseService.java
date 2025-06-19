@@ -16,4 +16,7 @@ public interface PurchaseService {
     Double getAverageResponseTimeInDays(long supplierId);
     Integer countBySupplierId(long supplierId);
     Long countOnTimeDeliveriesBySupplierId(long supplierId);
+
+    PurchaseResponse markAsPartiallyReceived(long id);
+    PurchaseResponse markAsCanceled(long id);
 }

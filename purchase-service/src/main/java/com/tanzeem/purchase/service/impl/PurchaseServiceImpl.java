@@ -110,6 +110,24 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    public PurchaseResponse markAsPartiallyReceived(long id) {
+        Purchase purchase = purchaseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Purchase not found"));
+        purchase.setStatus(PurchaseStatus.PARTIALLY_RECEIVED);
+        purchaseRepository.save(purchase);
+        return purchaseMapper.toResponse(purchase);
+    }
+
+    @Override
+    public PurchaseResponse markAsCanceled(long id) {
+        Purchase purchase = purchaseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Purchase not found"));
+        purchase.setStatus(PurchaseStatus.CANCELLED);
+        purchaseRepository.save(purchase);
+        return purchaseMapper.toResponse(purchase);
+    }
+
+    @Override
     public Double getAverageResponseTimeInDays(long supplierId) {
         return purchaseRepository
                 .getAverageResponseTimeInDays(supplierId, AuthContextHolder.getTenantId())
