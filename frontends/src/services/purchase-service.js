@@ -63,10 +63,9 @@ export async function markPurchaseOrderAsReceived(id) {
     try {
         const options = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            headers: { 'Content-Type': 'application/json' }
         };
-        return await makeRequest(`${PURCHASE_BASE_URL}/${id}/mark-received`, options);
+        return await makeRequest(`${PURCHASE_BASE_URL}/purchases/${id}/mark-received`, options);
     } catch (error) {
         console.error('Error marking purchase order as received:', error);
         throw error;
@@ -77,10 +76,9 @@ export async function markPurchaseOrderAsCanceled(id) {
     try {
         const options = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            headers: { 'Content-Type': 'application/json' }
         };
-        return await makeRequest(`${PURCHASE_BASE_URL}/${id}/mark-canceled`, options);
+        return await makeRequest(`${PURCHASE_BASE_URL}/purchases/${id}/mark-canceled`, options);
     } catch (error) {
         console.error('Error marking purchase order as canceled:', error);
         throw error;
@@ -91,10 +89,9 @@ export async function markPurchaseOrderAsPartiallyReceived(id) {
     try {
         const options = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            headers: { 'Content-Type': 'application/json' }
         };
-        return await makeRequest(`${PURCHASE_BASE_URL}/${id}/mark-partially-received`, options);
+        return await makeRequest(`${PURCHASE_BASE_URL}/purchases/${id}/mark-partially-received`, options);
     } catch (error) {
         console.error('Error marking purchase order as partially received:', error);
         throw error;

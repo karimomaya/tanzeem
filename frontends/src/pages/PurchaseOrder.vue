@@ -227,7 +227,7 @@ import SupplierStats from '@/components/purchase/SupplierStats.vue';
 // import PurchaseOrderViewModal from '@/components/purchase/PurchaseOrderViewModal.vue';
 import DeleteModal from '@/components/layouts/DeleteModal.vue';
 import PurchaseStats from '@/components/purchase/PurchaseStats.vue';
-import { getPurchaseOrders, deletePurchaseOrder, getSuppliers, deleteSupplier, updateSupplier, markPurchaseOrderAsReceived } from '@/services/purchase-service';
+import { getPurchaseOrders, deletePurchaseOrder, getSuppliers, deleteSupplier, updateSupplier, markPurchaseOrderAsReceived, markPurchaseOrderAsCanceled, markPurchaseOrderAsPartiallyReceived } from '@/services/purchase-service';
 import { success, error } from '@/utils/system-util';
 import { formatCurrency } from '@/utils/currency-util';
 import AdvancedSearch from '@/components/common/AdvancedSearch.vue';
