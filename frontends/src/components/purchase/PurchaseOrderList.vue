@@ -108,6 +108,7 @@
                         <div class="status-badge">
                             <v-chip :color="getOrderStatusColor(item.status)" variant="tonal" size="x-small"
                                 class="mini-status-chip">
+                                <v-icon start size="16">{{ getOrderStatusIcon(item.status) }}</v-icon>
                                 {{ getOrderStatusText(item.status) }}
                             </v-chip>
                         </div>
@@ -178,7 +179,7 @@ import { truncateText } from '@/utils/product-util';
 import BaseTableHeader from '@/components/common/BaseTableHeader.vue';
 import StandardTableActions from '@/components/common/StandardTableActions.vue';
 import MetaDataDisplay from '@/components/common/MetaDataDisplay.vue';
-import { getOrderStatusText, getOrderStatusColor } from '@/utils/status-util';
+import { getOrderStatusText, getOrderStatusColor, getOrderStatusIcon } from '@/utils/status-util';
 export default {
     name: 'PurchaseOrderList',
     components: {
@@ -219,10 +220,10 @@ export default {
         return {
             purchaseOrderActions: [
                 { key: 'view', icon: 'mdi-eye', color: 'info', text: 'عرض التفاصيل' },
-                { key: 'mark-received', icon: 'mdi-check-circle', color: 'success', text: 'تم الاستلام', condition: (item) => item.status === 'PENDING' },
+                { key: 'mark-received', icon: 'mdi-check-circle', color: 'success', text: 'تم الاستلام', condition: (item) => item.status === 'PENDING' || item.status === 'PARTIALLY_RECEIVED' },
                 { key: 'mark-partially-received', icon: 'mdi-truck-check', color: 'info', text:  'تم الاستلام جزئيا', condition: (item) => item.status === 'PENDING' },
                 { key: 'mark-canceled', icon: 'mdi-close-circle', color: 'error', text:  'إلغاء الأمر', condition: (item) => item.status === 'PENDING' },
-                { key: 'edit', icon: 'mdi-pencil', color: 'primary', text: 'تعديل الأمر', condition: (item) => item.status === 'PENDING' },
+                { key: 'edit', icon: 'mdi-pencil', color: 'primary', text: 'تعديل الأمر', condition: (item) => item.status === 'PENDING' || item.status === 'PARTIALLY_RECEIVED' },
                 // { key: 'duplicate', icon: 'mdi-content-copy', color: 'success', text: 'نسخ الأمر', condition: (item) => item.status === 'PENDING' },
                 { divider: true, condition: (item) => item.status === 'PENDING' },
                 { key: 'delete', icon: 'mdi-delete', color: 'error', text: 'حذف الأمر', danger: true, condition: (item) => item.status === 'PENDING' }
@@ -246,7 +247,7 @@ export default {
         truncateText,
         formatCurrency,
         formatDate,
-        getOrderStatusText, getOrderStatusColor,
+        getOrderStatusText, getOrderStatusColor, getOrderStatusIcon,
         handleTableAction(payload) {
             const { type, item } = payload;
             switch (type) {
@@ -264,8 +265,10 @@ export default {
                     break;
                 case 'mark-partially-received':
                     this.$emit('mark-partially-received', item);
+                    break;
                 case 'mark-canceled':
                     this.$emit('mark-canceled', item);
+                    break;
                 case 'delete':
                     this.$emit('delete', item);
                     break;

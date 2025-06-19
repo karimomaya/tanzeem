@@ -69,6 +69,10 @@ export default {
 /* Import base styles */
 @import '@/styles/product.css';
 
+.table-header .header-title {
+  color: #2d3748!important;
+}
+
 .table-controls {
   padding: 24px 32px 16px;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);

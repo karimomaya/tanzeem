@@ -82,6 +82,12 @@ export const ORDER_STATUS = {
     text: 'ملغي',
     color: 'error',
     icon: 'mdi-close-circle'
+  },
+  PARTIALLY_RECEIVED: {
+    value: 'PARTIALLY_RECEIVED',
+    text: 'تم الاستلام جزئيا',
+    color: 'info',
+    icon: 'mdi-truck-check'
   }
 };
 
